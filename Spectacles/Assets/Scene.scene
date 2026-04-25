@@ -1605,6 +1605,8 @@
     edgeMesh: true
     dataScale: true
     nodeHalfSize: true
+    nodeCornerRadius: true
+    cornerSegments: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
@@ -1615,6 +1617,8 @@
       cityDataJson: !<reference.JsonAsset> b29a6490-633b-4d8a-9299-9ca2fe299f84
       dataScale: !<float> 1.000000
       nodeHalfSize: !<float> 1.000000
+      nodeCornerRadius: 0.300000
+      cornerSegments: 3
       connectionRadius: 0.080000
   ScriptTypes:
     "":
@@ -2593,6 +2597,8 @@
     cityDataJson: true
     dataScale: true
     nodeHalfSize: true
+    nodeCornerRadius: true
+    cornerSegments: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
@@ -2603,6 +2609,8 @@
       cityDataJson: !<reference.JsonAsset> 00000000-0000-0000-0000-000000000000
       dataScale: !<float> 1.000000
       nodeHalfSize: !<float> 1.000000
+      nodeCornerRadius: 0.300000
+      cornerSegments: 3
       connectionRadius: 0.080000
   ScriptTypes:
     "":

@@ -4,6 +4,8 @@
 //@input Asset.JsonAsset cityDataJson
 //@input float dataScale = 0.1
 //@input float nodeHalfSize = 1
+//@input float nodeCornerRadius = 0.3
+//@input int cornerSegments = 3
 //@input float connectionRadius = 0.08
 
 // Builds a simple “graph city” from a JsonAsset with shape:
@@ -41,6 +43,8 @@ function getPositiveInput(value, fallback) {
 
 var DATA_SCALE = getPositiveInput(script.dataScale, 0.1);
 var NODE_HALF_SIZE = getPositiveInput(script.nodeHalfSize, 1);
+var NODE_CORNER_RADIUS = getPositiveInput(script.nodeCornerRadius, 0.3);
+var CORNER_SEGMENTS = Math.max(1, Math.floor(script.cornerSegments || 3));
 var CONNECTION_RADIUS = getPositiveInput(script.connectionRadius, 0.08);
 var EDGE_RADIUS = 0.04;
 var CYLINDER_SEGMENTS = 12;
@@ -48,6 +52,7 @@ var EDGE_SEGMENTS = 6;
 var LABEL_SCALE = 0.2;
 var LABEL_TOP_OFFSET = 1;
 var CITY_OFFSET = new vec3(0, 0, 0);
+var NODE_XZ_SCALE = 2.0;
 
 // Holographic palette: translucent blue body + bright cyan edges/connections
 var HOLO_BODY = { r: 0.05, g: 0.25, b: 0.9,  a: 0.10 };
@@ -113,7 +118,7 @@ function nodeSurfaceAnchorPosition(node, targetNode) {
     }
 
     var halfHeight = Math.max(node.height * DATA_SCALE * 0.5, 0.0001);
-    var halfWidth = Math.max(NODE_HALF_SIZE * DATA_SCALE, 0.0001);
+    var halfWidth = Math.max(NODE_HALF_SIZE * DATA_SCALE * NODE_XZ_SCALE, 0.0001);
 
     // Ray-box intersection (AABB) in parametric form; since we start at center, we can do the “slab” min.
     var t = Number.MAX_VALUE;
@@ -142,16 +147,28 @@ function createNodeLabel(node) {
 
     var top = nodeTopPosition(node);
     var transform = labelObject.getTransform();
-    transform.setLocalPosition(new vec3(top.x, top.y + LABEL_TOP_OFFSET, top.z));
+    transform.setLocalPosition(new vec3(top.x, top.y + 0.01, top.z));
     transform.setLocalScale(new vec3(LABEL_SCALE, LABEL_SCALE, LABEL_SCALE));
-    // Keep text upright (the previous -90° made it lie flat on the ground).
-    transform.setLocalRotation(quat.fromEulerAngles(0, 0, 0));
+    // Lay the label flat on top of the node.
+    transform.setLocalRotation(quat.fromEulerAngles(-90, 0, 0));
 
     var labelText = labelObject.createComponent("Component.Text");
-    labelText.text = node.name;
-    labelText.fontSize = 48;
+    var supportsRichMarkup = false;
+    if (labelText.richText !== undefined) {
+        labelText.richText = true;
+        supportsRichMarkup = true;
+    }
+    if (labelText.enableMarkup !== undefined) {
+        labelText.enableMarkup = true;
+        supportsRichMarkup = true;
+    }
+    labelText.text = supportsRichMarkup ? "<b>" + node.name + "</b>" : String(node.name).toUpperCase();
+    labelText.fontSize = 56;
     labelText.sizeToFit = true;
     labelText.depthTest = false;
+    if (labelText.textFill && labelText.textFill.color) {
+        labelText.textFill.color = new vec4(0.0, 0.0, 0.0, 1.0);
+    }
     if (typeof HorizontalAlignment !== "undefined") {
         labelText.horizontalAlignment = HorizontalAlignment.Center;
     }
@@ -164,30 +181,33 @@ function addBuilding(node) {
     var startIdx = nodeBuilder.getVerticesCount();
     var base = scaledNodePosition(node);
     var h = node.height * DATA_SCALE;
-    var s = NODE_HALF_SIZE * DATA_SCALE;
+    var s = NODE_HALF_SIZE * DATA_SCALE * NODE_XZ_SCALE;
+    var profile = getRoundedProfilePoints(s);
+    var pointCount = profile.length;
 
-    // The 8 corners of our building
-    var v = [
-        new vec3(base.x - s, base.y,     base.z - s),
-        new vec3(base.x + s, base.y,     base.z - s),
-        new vec3(base.x + s, base.y + h, base.z - s),
-        new vec3(base.x - s, base.y + h, base.z - s),
-        new vec3(base.x - s, base.y,     base.z + s),
-        new vec3(base.x + s, base.y,     base.z + s),
-        new vec3(base.x + s, base.y + h, base.z + s),
-        new vec3(base.x - s, base.y + h, base.z + s)
-    ];
-
-    for (var i = 0; i < 8; i++) {
-        appendColoredVertex(nodeBuilder, v[i], HOLO_BODY);
+    for (var i = 0; i < pointCount; i++) {
+        var p = profile[i];
+        appendColoredVertex(nodeBuilder, new vec3(base.x + p.x, base.y, base.z + p.z), HOLO_BODY);
+        appendColoredVertex(nodeBuilder, new vec3(base.x + p.x, base.y + h, base.z + p.z), HOLO_BODY);
     }
 
-    // Offset indices for this specific building.
-    var offsetIndices = [];
-    for (var index = 0; index < CUBE_INDICES.length; index++) {
-        offsetIndices.push(CUBE_INDICES[index] + startIdx);
+    var bottomCenterIndex = nodeBuilder.getVerticesCount();
+    appendColoredVertex(nodeBuilder, new vec3(base.x, base.y, base.z), HOLO_BODY);
+    var topCenterIndex = nodeBuilder.getVerticesCount();
+    appendColoredVertex(nodeBuilder, new vec3(base.x, base.y + h, base.z), HOLO_BODY);
+
+    for (var side = 0; side < pointCount; side++) {
+        var next = (side + 1) % pointCount;
+        var bottomA = startIdx + side * 2;
+        var topA = bottomA + 1;
+        var bottomB = startIdx + next * 2;
+        var topB = bottomB + 1;
+
+        // Side quads.
+        appendDoubleSidedIndices(nodeBuilder, [bottomA, topA, bottomB, bottomB, topA, topB]);
+        // Top and bottom caps.
+        appendDoubleSidedIndices(nodeBuilder, [topCenterIndex, topA, topB, bottomCenterIndex, bottomB, bottomA]);
     }
-    appendDoubleSidedIndices(nodeBuilder, offsetIndices);
 }
 
 // Connections are built as actual thin cylinders so they render on device.
@@ -296,36 +316,58 @@ function addEdgeCylinder(start, end, color) {
 function addBuildingEdges(node) {
     var base = scaledNodePosition(node);
     var h = node.height * DATA_SCALE;
-    var s = NODE_HALF_SIZE * DATA_SCALE;
+    var s = NODE_HALF_SIZE * DATA_SCALE * NODE_XZ_SCALE;
+    var profile = getRoundedProfilePoints(s);
+    var vBottom = [];
+    var vTop = [];
+    var i;
 
-    // 8 corners, same layout as addBuilding
-    var v = [
-        new vec3(base.x - s, base.y,     base.z - s), // 0 bottom front-left
-        new vec3(base.x + s, base.y,     base.z - s), // 1 bottom front-right
-        new vec3(base.x + s, base.y + h, base.z - s), // 2 top front-right
-        new vec3(base.x - s, base.y + h, base.z - s), // 3 top front-left
-        new vec3(base.x - s, base.y,     base.z + s), // 4 bottom back-left
-        new vec3(base.x + s, base.y,     base.z + s), // 5 bottom back-right
-        new vec3(base.x + s, base.y + h, base.z + s), // 6 top back-right
-        new vec3(base.x - s, base.y + h, base.z + s)  // 7 top back-left
-    ];
+    for (i = 0; i < profile.length; i++) {
+        vBottom.push(new vec3(base.x + profile[i].x, base.y, base.z + profile[i].z));
+        vTop.push(new vec3(base.x + profile[i].x, base.y + h, base.z + profile[i].z));
+    }
 
     var c = HOLO_EDGE;
-    // Bottom ring
-    addEdgeCylinder(v[0], v[1], c);
-    addEdgeCylinder(v[1], v[5], c);
-    addEdgeCylinder(v[5], v[4], c);
-    addEdgeCylinder(v[4], v[0], c);
-    // Top ring
-    addEdgeCylinder(v[3], v[2], c);
-    addEdgeCylinder(v[2], v[6], c);
-    addEdgeCylinder(v[6], v[7], c);
-    addEdgeCylinder(v[7], v[3], c);
-    // Vertical pillars
-    addEdgeCylinder(v[0], v[3], c);
-    addEdgeCylinder(v[1], v[2], c);
-    addEdgeCylinder(v[5], v[6], c);
-    addEdgeCylinder(v[4], v[7], c);
+    for (i = 0; i < profile.length; i++) {
+        var next = (i + 1) % profile.length;
+        addEdgeCylinder(vBottom[i], vBottom[next], c);
+        addEdgeCylinder(vTop[i], vTop[next], c);
+        addEdgeCylinder(vBottom[i], vTop[i], c);
+    }
+}
+
+function appendArcPoints(points, centerX, centerZ, startAngle, endAngle, radius, segments, includeFirst) {
+    var stepStart = includeFirst ? 0 : 1;
+    for (var i = stepStart; i <= segments; i++) {
+        var t = i / segments;
+        var angle = startAngle + (endAngle - startAngle) * t;
+        points.push({
+            x: centerX + Math.cos(angle) * radius,
+            z: centerZ + Math.sin(angle) * radius
+        });
+    }
+}
+
+function getRoundedProfilePoints(halfSize) {
+    var radius = Math.min(NODE_CORNER_RADIUS * DATA_SCALE, halfSize);
+    if (radius <= 0.0001) {
+        return [
+            { x: halfSize,  z: -halfSize },
+            { x: halfSize,  z: halfSize },
+            { x: -halfSize, z: halfSize },
+            { x: -halfSize, z: -halfSize }
+        ];
+    }
+
+    var inner = halfSize - radius;
+    var points = [];
+
+    appendArcPoints(points, inner, -inner, -Math.PI * 0.5, 0, radius, CORNER_SEGMENTS, true);
+    appendArcPoints(points, inner, inner, 0, Math.PI * 0.5, radius, CORNER_SEGMENTS, false);
+    appendArcPoints(points, -inner, inner, Math.PI * 0.5, Math.PI, radius, CORNER_SEGMENTS, false);
+    appendArcPoints(points, -inner, -inner, Math.PI, Math.PI * 1.5, radius, CORNER_SEGMENTS, false);
+
+    return points;
 }
 
 function findNodeById(nodes, id) {

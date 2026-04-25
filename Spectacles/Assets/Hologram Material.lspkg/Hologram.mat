@@ -304,13 +304,13 @@
       value: {x: 0.400000, y: 1.000000, z: 0.999207, w: 1.000000}
     thickLines:
       typeIdx: 1
-      value: 0.440000
+      value: 0.670000
     thicklinesColor:
       typeIdx: 5
       value: {x: 0.000107, y: 0.001755, z: 0.998215, w: 1.000000}
     thinLines:
       typeIdx: 1
-      value: 6.340000
+      value: 7.630000
     thinlinesColor:
       typeIdx: 5
       value: {x: 0.059510, y: 0.501930, z: 0.998459, w: 1.000000}

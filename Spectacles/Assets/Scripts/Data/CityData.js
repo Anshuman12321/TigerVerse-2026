@@ -57,6 +57,14 @@ module.exports = {
     {
       "from": 0,
       "to": 3
+    },
+    {
+      "from": 1,
+      "to": 3
+    },
+    {
+      "from": 4,
+      "to": 3
     }
   ]
   };

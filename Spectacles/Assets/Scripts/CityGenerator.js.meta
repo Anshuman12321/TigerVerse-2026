@@ -29,8 +29,10 @@
     cityDataJson: false
     connectionMesh: false
     connectionRadius: false
+    cornerSegments: false
     dataScale: false
     edgeMesh: false
+    nodeCornerRadius: false
     nodeHalfSize: false
     nodeMesh: false
   ScriptTypesHidden:
@@ -48,6 +50,8 @@
       cityDataJson: !<reference.JsonAsset> 00000000-0000-0000-0000-000000000000
       dataScale: !<float> 1.000000
       nodeHalfSize: !<float> 1.000000
+      nodeCornerRadius: 0.300000
+      cornerSegments: 3
       connectionRadius: 0.250000
   ScriptTypes:
     -
