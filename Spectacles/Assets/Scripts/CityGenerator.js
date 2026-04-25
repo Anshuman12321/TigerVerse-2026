@@ -3,7 +3,7 @@
 //@input Asset.JsonAsset cityDataJson
 //@input float dataScale = 0.1
 //@input float nodeHalfSize = 1
-//@input float connectionRadius = 0.25
+//@input float connectionRadius = 0.08
 
 // Builds a simple “graph city” from a JsonAsset with shape:
 // {
@@ -18,11 +18,21 @@ var nodeBuilder = new MeshBuilder([
 nodeBuilder.topology = MeshTopology.Triangles;
 nodeBuilder.indexType = MeshIndexType.UInt16;
 
-// Standard cube indices (12 triangles, 36 indices)
+// Standard cube indices (12 triangles, 36 indices), including a top cap.
 var CUBE_INDICES = [
     0,1,2, 2,3,0, 4,5,6, 6,7,4, 0,4,7, 7,3,0,
     1,5,6, 6,2,1, 0,1,5, 5,4,0, 3,2,6, 6,7,3
 ];
+
+function appendDoubleSidedIndices(builder, triangleIndices) {
+    // Duplicate every triangle with reversed winding so faces render from both sides.
+    for (var i = 0; i < triangleIndices.length; i += 3) {
+        var a = triangleIndices[i];
+        var b = triangleIndices[i + 1];
+        var c = triangleIndices[i + 2];
+        builder.appendIndices([a, b, c, a, c, b]);
+    }
+}
 
 function getPositiveInput(value, fallback) {
     return value && value > 0 ? value : fallback;
@@ -30,8 +40,10 @@ function getPositiveInput(value, fallback) {
 
 var DATA_SCALE = getPositiveInput(script.dataScale, 0.1);
 var NODE_HALF_SIZE = getPositiveInput(script.nodeHalfSize, 1);
-var CONNECTION_RADIUS = getPositiveInput(script.connectionRadius, 0.25);
+var CONNECTION_RADIUS = getPositiveInput(script.connectionRadius, 0.08);
 var CYLINDER_SEGMENTS = 12;
+var LABEL_SCALE = 0.2;
+var LABEL_TOP_OFFSET = 1;
 var CITY_OFFSET = new vec3(0, 0, 0);
 
 function makeColor(colorArray) {
@@ -76,6 +88,70 @@ function nodeTopPosition(node) {
     return new vec3(base.x, base.y + node.height * DATA_SCALE, base.z);
 }
 
+function nodeCenterPosition(node) {
+    var base = scaledNodePosition(node);
+    return new vec3(base.x, base.y + node.height * DATA_SCALE * 0.5, base.z);
+}
+
+function nodeSurfaceAnchorPosition(node, targetNode) {
+    // Finds the point where a ray from this node's center toward the target hits the node's box bounds.
+    // We then extend slightly by the connection radius so the cylinder visually reaches the cube face.
+    var center = nodeCenterPosition(node);
+    var targetCenter = nodeCenterPosition(targetNode);
+
+    var dir = normalize(subtract(targetCenter, center));
+    if (length(dir) <= 0.0001) {
+        return nodeTopPosition(node);
+    }
+
+    var halfHeight = Math.max(node.height * DATA_SCALE * 0.5, 0.0001);
+    var halfWidth = Math.max(NODE_HALF_SIZE * DATA_SCALE, 0.0001);
+
+    // Ray-box intersection (AABB) in parametric form; since we start at center, we can do the “slab” min.
+    var t = Number.MAX_VALUE;
+    if (Math.abs(dir.x) > 0.0001) {
+        t = Math.min(t, halfWidth / Math.abs(dir.x));
+    }
+    if (Math.abs(dir.y) > 0.0001) {
+        t = Math.min(t, halfHeight / Math.abs(dir.y));
+    }
+    if (Math.abs(dir.z) > 0.0001) {
+        t = Math.min(t, halfWidth / Math.abs(dir.z));
+    }
+
+    // Push out by the cylinder radius so the cap meets the cube face (avoids tiny visual gaps).
+    var radius = CONNECTION_RADIUS * DATA_SCALE;
+    return add(center, scale(dir, t));
+}
+
+function createNodeLabel(node) {
+    if (!node.name) {
+        return;
+    }
+
+    var labelObject = global.scene.createSceneObject("Label_" + node.name);
+    labelObject.setParent(script.getSceneObject());
+
+    var top = nodeTopPosition(node);
+    var transform = labelObject.getTransform();
+    transform.setLocalPosition(new vec3(top.x, top.y + LABEL_TOP_OFFSET, top.z));
+    transform.setLocalScale(new vec3(LABEL_SCALE, LABEL_SCALE, LABEL_SCALE));
+    // Keep text upright (the previous -90° made it lie flat on the ground).
+    transform.setLocalRotation(quat.fromEulerAngles(0, 0, 0));
+
+    var labelText = labelObject.createComponent("Component.Text");
+    labelText.text = node.name;
+    labelText.fontSize = 48;
+    labelText.sizeToFit = true;
+    labelText.depthTest = false;
+    if (typeof HorizontalAlignment !== "undefined") {
+        labelText.horizontalAlignment = HorizontalAlignment.Center;
+    }
+    if (typeof VerticalAlignment !== "undefined") {
+        labelText.verticalAlignment = VerticalAlignment.Center;
+    }
+}
+
 function addBuilding(node, color) {
     var startIdx = nodeBuilder.getVerticesCount();
     var base = scaledNodePosition(node);
@@ -99,12 +175,12 @@ function addBuilding(node, color) {
         appendColoredVertex(nodeBuilder, v[i], color);
     }
 
-    // Offset indices for this specific building
+    // Offset indices for this specific building.
     var offsetIndices = [];
     for (var index = 0; index < CUBE_INDICES.length; index++) {
         offsetIndices.push(CUBE_INDICES[index] + startIdx);
     }
-    nodeBuilder.appendIndices(offsetIndices);
+    appendDoubleSidedIndices(nodeBuilder, offsetIndices);
 }
 
 // Connections are built as actual thin cylinders so they render on device.
@@ -210,10 +286,8 @@ function calculateCityOffset(nodes) {
     }
 
     var minX = nodes[0].pos[0] * DATA_SCALE;
-    var maxX = minX;
     var minY = nodes[0].pos[1] * DATA_SCALE;
     var minZ = nodes[0].pos[2] * DATA_SCALE;
-    var maxZ = minZ;
 
     for (var i = 1; i < nodes.length; i++) {
         var x = nodes[i].pos[0] * DATA_SCALE;
@@ -221,14 +295,12 @@ function calculateCityOffset(nodes) {
         var z = nodes[i].pos[2] * DATA_SCALE;
 
         minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
         minY = Math.min(minY, y);
         minZ = Math.min(minZ, z);
-        maxZ = Math.max(maxZ, z);
     }
 
-    // Center the graph around the placed object, while keeping its base on the tabletop plane.
-    return new vec3((minX + maxX) * 0.5, minY, (minZ + maxZ) * 0.5);
+    // Anchor the city's first visible corner to placement origin.
+    return new vec3(minX, minY, minZ);
 }
 
 function getCityData() {
@@ -290,6 +362,7 @@ function buildCity() {
         var col = makeColor(node.color);
         nodeColorsById[node.id] = col;
         addBuilding(node, col);
+        createNodeLabel(node);
     });
 
     // 2. Build Connections
@@ -298,8 +371,8 @@ function buildCity() {
         var toNode = findNodeById(data.nodes, conn.to);
 
         if (fromNode && toNode) {
-            var start = nodeTopPosition(fromNode);
-            var end = nodeTopPosition(toNode);
+            var start = nodeSurfaceAnchorPosition(fromNode, toNode);
+            var end = nodeSurfaceAnchorPosition(toNode, fromNode);
             var connectionColor = averageColor(nodeColorsById[fromNode.id], nodeColorsById[toNode.id]);
             addConnectionCylinder(start, end, connectionColor);
         } else {
