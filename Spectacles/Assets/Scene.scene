@@ -759,8 +759,8 @@
   ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
   ShadowDensity: 1.000000
   Materials:
-    - !<reference> cdf9b0c5-4e99-4d2f-83a8-946abf5b41d9
-  Mesh: !<reference> dad7d83c-2316-433a-8aa3-d8ffe8f1af72
+    - !<reference> 8ac9b1f8-0e05-4aea-9311-4f4cf267e017
+  Mesh: !<reference> 00000000-0000-0000-0000-000000000000
   Skin: !<reference> 00000000-0000-0000-0000-000000000000
   BlendShapesEnabled: true
   BlendNormals: false
@@ -1097,7 +1097,7 @@
   LocalTransform: !<TransformEntity>
     Position: {x: 0.000000, y: 0.000000, z: 0.000000}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
-    Scale: {x: 1.000000, y: 1.000000, z: 0.250000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     HasSegmentScaleCompensation: false
   Children:
     []
@@ -1169,27 +1169,22 @@
   PrefabRemaps:
     - 047af9b7-8152-4e95-8a94-af85b36c9ecc: a6ba9326-8a9e-41d9-9fed-200b3a1a311a
     - 0807e316-3590-4d5a-b54c-47633f2a25c0: 9ede8e4f-685a-4118-866d-06f38d790fdd
-    - 09e58ddc-782c-4691-9d11-30f2ec2b056a: 69fac052-baec-4891-a35f-e58e1b651595
     - 0bf6212b-87e2-4a3e-af44-bf049e8b8712: af0b620b-6f99-4786-9146-28d07504e7b5
-    - 0d616404-bfc3-4273-aca5-5afa09617552: af114440-63a3-4f7a-a5cc-66d075dea6c5
-    - 12b2e0d5-dde9-4967-8e4e-ed3be2dd341a: d63223b2-7e29-4cd0-8cc0-377dce5c9007
     - 1a362d69-34c2-4bba-ad55-29f8c2cdc72b: d47bad39-09dc-4c32-9989-75efdd425a3e
     - 2c9a34a7-9a89-40ab-8095-38f3686ed675: 9f65ac0a-a000-4420-bdcb-c0e6af5dea09
-    - 352098ee-f7e6-4e77-96c5-825c89c88ec9: 4fc6ef66-f9a2-4323-9439-9e7660a76d26
-    - 3adbb591-d203-4069-8966-3f0baeda4ccd: 956628db-8f67-450f-9ba8-1b7c7d4e8413
     - 43a3c5bb-9a32-45a1-a272-162c3b6b7949: 8334bdae-2098-4af3-8a81-d286fab64cfd
     - 4a724b88-f88e-4350-a380-28024c1e5301: 86f2e4c0-0fbd-46f4-5b95-da381fb9f73e
     - 4cee710f-b22d-48ad-8de8-b0604a429ff7: f9068150-669e-4637-6b8c-ea22158713e1
     - 60a96441-07db-467e-8304-e290ef937921: 977c8586-5878-45d3-9a96-f2131e4d6b9e
     - 6d288778-4438-4161-a700-0b8f28ee79b9: 32ae1423-4d59-4a59-4274-689e2155915b
     - 84cbd202-4409-4287-aec8-8058c09500e0: 724234ef-392c-490d-8e6b-d9a0b6d3dfdb
+    - 8ff5cfbf-5bb6-4149-91ef-b6321776f631: d03cf1ce-2d4d-48f9-8845-b6441bbd036f
     - a1cee39f-bb09-468b-82fc-9a791bcee34a: e45ece85-6334-4921-9331-02ca206c26d0
     - afcae68c-2436-42ca-900a-8a5229c4b204: 41086738-c556-4007-9e02-f6bf8413618f
     - c3c4f3fc-a29f-4fdf-82b0-86cad29e3896: 741ab876-83ba-42dd-b9ad-978617feb785
     - c4c3d490-90cd-4a86-9ab4-bef01eb4bd09: 3a35010f-236f-421c-9408-b5b6c9578490
     - c60b26a7-2f4a-4ce3-940a-7490516e8caa: c9fcb722-51e1-4d27-82bc-f8dac7477cc4
     - e793a88e-43ef-4ec6-99ae-65beeb36f985: 5feb1d48-4e86-46df-9906-6c8be371395f
-    - fdb87a42-8eb4-4a96-8688-44f70b919df6: c502dc76-5b00-4d35-bdbd-6005cf27a6ff
   Name: "Example Surface [EDIT ME]"
   Enabled: true
   Layers: 1
@@ -1607,6 +1602,7 @@
   Enabled: true
   ScriptAsset: !<reference> ac727489-37f8-4c18-a1a8-abaea1531ef2
   ScriptInputsDefault:
+    edgeMesh: true
     dataScale: true
     nodeHalfSize: true
   ScriptTypesDefault:
@@ -1615,6 +1611,7 @@
     "":
       nodeMesh: !<reference.RenderMeshVisual> 2c9a34a7-9a89-40ab-8095-38f3686ed675
       connectionMesh: !<reference.RenderMeshVisual> 84cbd202-4409-4287-aec8-8058c09500e0
+      edgeMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
       cityDataJson: !<reference.JsonAsset> b29a6490-633b-4d8a-9299-9ca2fe299f84
       dataScale: !<float> 1.000000
       nodeHalfSize: !<float> 1.000000
@@ -1975,8 +1972,8 @@
   ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
   ShadowDensity: 1.000000
   Materials:
-    - !<reference> cdf9b0c5-4e99-4d2f-83a8-946abf5b41d9
-  Mesh: !<reference> 2e5e428e-9a20-4c3f-ad4a-4451f07df611
+    - !<reference> 8ac9b1f8-0e05-4aea-9311-4f4cf267e017
+  Mesh: !<reference> 00000000-0000-0000-0000-000000000000
   Skin: !<reference> 00000000-0000-0000-0000-000000000000
   BlendShapesEnabled: true
   BlendNormals: false
@@ -2042,6 +2039,26 @@
     []
   Components:
     []
+- !<RenderMeshVisual/8ff5cfbf-5bb6-4149-91ef-b6321776f631>
+  PrefabRemaps:
+    []
+  Name: Render Mesh Visual
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> cdf9b0c5-4e99-4d2f-83a8-946abf5b41d9
+  Mesh: !<reference> 00000000-0000-0000-0000-000000000000
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
 - !<SceneObject/91191875-22ce-4150-892c-d780508fa8e5>
   PrefabRemaps:
     []
@@ -2161,6 +2178,7 @@
   Children:
     []
   Components:
+    - !<own> 8ff5cfbf-5bb6-4149-91ef-b6321776f631
     - !<own> 2c9a34a7-9a89-40ab-8095-38f3686ed675
 - !<SceneObject/a4be667c-356e-4cf4-81ef-21e3e55cb1c2>
   PrefabRemaps:
@@ -2571,6 +2589,7 @@
   ScriptInputsDefault:
     nodeMesh: true
     connectionMesh: true
+    edgeMesh: true
     cityDataJson: true
     dataScale: true
     nodeHalfSize: true
@@ -2580,6 +2599,7 @@
     "":
       nodeMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
       connectionMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
+      edgeMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
       cityDataJson: !<reference.JsonAsset> 00000000-0000-0000-0000-000000000000
       dataScale: !<float> 1.000000
       nodeHalfSize: !<float> 1.000000

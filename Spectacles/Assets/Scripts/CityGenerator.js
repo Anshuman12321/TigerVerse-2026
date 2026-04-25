@@ -1,5 +1,6 @@
 //@input Component.RenderMeshVisual nodeMesh
 //@input Component.RenderMeshVisual connectionMesh
+//@input Component.RenderMeshVisual edgeMesh
 //@input Asset.JsonAsset cityDataJson
 //@input float dataScale = 0.1
 //@input float nodeHalfSize = 1
@@ -41,10 +42,17 @@ function getPositiveInput(value, fallback) {
 var DATA_SCALE = getPositiveInput(script.dataScale, 0.1);
 var NODE_HALF_SIZE = getPositiveInput(script.nodeHalfSize, 1);
 var CONNECTION_RADIUS = getPositiveInput(script.connectionRadius, 0.08);
+var EDGE_RADIUS = 0.04;
 var CYLINDER_SEGMENTS = 12;
+var EDGE_SEGMENTS = 6;
 var LABEL_SCALE = 0.2;
 var LABEL_TOP_OFFSET = 1;
 var CITY_OFFSET = new vec3(0, 0, 0);
+
+// Holographic palette: translucent blue body + bright cyan edges/connections
+var HOLO_BODY = { r: 0.05, g: 0.25, b: 0.9,  a: 0.10 };
+var HOLO_EDGE = { r: 0.2,  g: 0.82, b: 1.0,  a: 1.0  };
+var HOLO_CONN = { r: 0.1,  g: 0.6,  b: 1.0,  a: 0.85 };
 
 function makeColor(colorArray) {
     if (!colorArray || colorArray.length < 4) {
@@ -121,7 +129,7 @@ function nodeSurfaceAnchorPosition(node, targetNode) {
 
     // Push out by the cylinder radius so the cap meets the cube face (avoids tiny visual gaps).
     var radius = CONNECTION_RADIUS * DATA_SCALE;
-    return add(center, scale(dir, t));
+    return add(center, scale(dir, t + radius));
 }
 
 function createNodeLabel(node) {
@@ -152,7 +160,7 @@ function createNodeLabel(node) {
     }
 }
 
-function addBuilding(node, color) {
+function addBuilding(node) {
     var startIdx = nodeBuilder.getVerticesCount();
     var base = scaledNodePosition(node);
     var h = node.height * DATA_SCALE;
@@ -170,9 +178,8 @@ function addBuilding(node, color) {
         new vec3(base.x - s, base.y + h, base.z + s)
     ];
 
-    // Interleave the positions with the color provided
     for (var i = 0; i < 8; i++) {
-        appendColoredVertex(nodeBuilder, v[i], color);
+        appendColoredVertex(nodeBuilder, v[i], HOLO_BODY);
     }
 
     // Offset indices for this specific building.
@@ -190,6 +197,14 @@ var connectionBuilder = new MeshBuilder([
 ]);
 connectionBuilder.topology = MeshTopology.Triangles;
 connectionBuilder.indexType = MeshIndexType.UInt16;
+
+// Edge outlines for the holographic cube borders.
+var edgeBuilder = new MeshBuilder([
+    { name: "position", components: 3 },
+    { name: "color", components: 4 }
+]);
+edgeBuilder.topology = MeshTopology.Triangles;
+edgeBuilder.indexType = MeshIndexType.UInt16;
 
 function subtract(a, b) {
     return new vec3(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -223,7 +238,7 @@ function cross(a, b) {
     );
 }
 
-function addConnectionCylinder(start, end, color) {
+function addCylinder(builder, segments, radius, start, end, color) {
     var axis = subtract(end, start);
     var axisLength = length(axis);
     if (axisLength <= 0.0001) {
@@ -234,33 +249,32 @@ function addConnectionCylinder(start, end, color) {
     var helper = Math.abs(direction.y) < 0.9 ? new vec3(0, 1, 0) : new vec3(1, 0, 0);
     var right = normalize(cross(helper, direction));
     var forward = normalize(cross(direction, right));
-    var startIndex = connectionBuilder.getVerticesCount();
-    var radius = CONNECTION_RADIUS * DATA_SCALE;
+    var startIndex = builder.getVerticesCount();
 
-    for (var i = 0; i < CYLINDER_SEGMENTS; i++) {
-        var angle = (i / CYLINDER_SEGMENTS) * Math.PI * 2;
+    for (var i = 0; i < segments; i++) {
+        var angle = (i / segments) * Math.PI * 2;
         var radial = add(scale(right, Math.cos(angle) * radius), scale(forward, Math.sin(angle) * radius));
-        appendColoredVertex(connectionBuilder, add(start, radial), color);
-        appendColoredVertex(connectionBuilder, add(end, radial), color);
+        appendColoredVertex(builder, add(start, radial), color);
+        appendColoredVertex(builder, add(end, radial), color);
     }
 
-    for (var side = 0; side < CYLINDER_SEGMENTS; side++) {
-        var next = (side + 1) % CYLINDER_SEGMENTS;
+    for (var side = 0; side < segments; side++) {
+        var next = (side + 1) % segments;
         var startA = startIndex + side * 2;
         var endA = startA + 1;
         var startB = startIndex + next * 2;
         var endB = startB + 1;
-        connectionBuilder.appendIndices([startA, endA, startB, startB, endA, endB]);
+        builder.appendIndices([startA, endA, startB, startB, endA, endB]);
     }
 
-    var startCenterIndex = connectionBuilder.getVerticesCount();
-    appendColoredVertex(connectionBuilder, start, color);
-    var endCenterIndex = connectionBuilder.getVerticesCount();
-    appendColoredVertex(connectionBuilder, end, color);
+    var startCenterIndex = builder.getVerticesCount();
+    appendColoredVertex(builder, start, color);
+    var endCenterIndex = builder.getVerticesCount();
+    appendColoredVertex(builder, end, color);
 
-    for (var cap = 0; cap < CYLINDER_SEGMENTS; cap++) {
-        var capNext = (cap + 1) % CYLINDER_SEGMENTS;
-        connectionBuilder.appendIndices([
+    for (var cap = 0; cap < segments; cap++) {
+        var capNext = (cap + 1) % segments;
+        builder.appendIndices([
             startCenterIndex,
             startIndex + capNext * 2,
             startIndex + cap * 2,
@@ -269,6 +283,49 @@ function addConnectionCylinder(start, end, color) {
             startIndex + capNext * 2 + 1
         ]);
     }
+}
+
+function addConnectionCylinder(start, end, color) {
+    addCylinder(connectionBuilder, CYLINDER_SEGMENTS, CONNECTION_RADIUS * DATA_SCALE, start, end, color);
+}
+
+function addEdgeCylinder(start, end, color) {
+    addCylinder(edgeBuilder, EDGE_SEGMENTS, EDGE_RADIUS * DATA_SCALE, start, end, color);
+}
+
+function addBuildingEdges(node) {
+    var base = scaledNodePosition(node);
+    var h = node.height * DATA_SCALE;
+    var s = NODE_HALF_SIZE * DATA_SCALE;
+
+    // 8 corners, same layout as addBuilding
+    var v = [
+        new vec3(base.x - s, base.y,     base.z - s), // 0 bottom front-left
+        new vec3(base.x + s, base.y,     base.z - s), // 1 bottom front-right
+        new vec3(base.x + s, base.y + h, base.z - s), // 2 top front-right
+        new vec3(base.x - s, base.y + h, base.z - s), // 3 top front-left
+        new vec3(base.x - s, base.y,     base.z + s), // 4 bottom back-left
+        new vec3(base.x + s, base.y,     base.z + s), // 5 bottom back-right
+        new vec3(base.x + s, base.y + h, base.z + s), // 6 top back-right
+        new vec3(base.x - s, base.y + h, base.z + s)  // 7 top back-left
+    ];
+
+    var c = HOLO_EDGE;
+    // Bottom ring
+    addEdgeCylinder(v[0], v[1], c);
+    addEdgeCylinder(v[1], v[5], c);
+    addEdgeCylinder(v[5], v[4], c);
+    addEdgeCylinder(v[4], v[0], c);
+    // Top ring
+    addEdgeCylinder(v[3], v[2], c);
+    addEdgeCylinder(v[2], v[6], c);
+    addEdgeCylinder(v[6], v[7], c);
+    addEdgeCylinder(v[7], v[3], c);
+    // Vertical pillars
+    addEdgeCylinder(v[0], v[3], c);
+    addEdgeCylinder(v[1], v[2], c);
+    addEdgeCylinder(v[5], v[6], c);
+    addEdgeCylinder(v[4], v[7], c);
 }
 
 function findNodeById(nodes, id) {
@@ -334,6 +391,13 @@ function validateInputs() {
         }
     }
 
+    if (!script.edgeMesh) {
+        script.edgeMesh = script.getSceneObject().createComponent("Component.RenderMeshVisual");
+        if (script.nodeMesh.getMaterial(0)) {
+            script.edgeMesh.addMaterial(script.nodeMesh.getMaterial(0));
+        }
+    }
+
     return true;
 }
 
@@ -357,11 +421,9 @@ function buildCity() {
     CITY_OFFSET = calculateCityOffset(data.nodes);
 
     // 1. Build Nodes
-    var nodeColorsById = {};
     data.nodes.forEach(function(node) {
-        var col = makeColor(node.color);
-        nodeColorsById[node.id] = col;
-        addBuilding(node, col);
+        addBuilding(node);
+        addBuildingEdges(node);
         createNodeLabel(node);
     });
 
@@ -373,8 +435,7 @@ function buildCity() {
         if (fromNode && toNode) {
             var start = nodeSurfaceAnchorPosition(fromNode, toNode);
             var end = nodeSurfaceAnchorPosition(toNode, fromNode);
-            var connectionColor = averageColor(nodeColorsById[fromNode.id], nodeColorsById[toNode.id]);
-            addConnectionCylinder(start, end, connectionColor);
+            addConnectionCylinder(start, end, HOLO_CONN);
         } else {
             print("WARNING: Connection skipped because a node id was not found: " + conn.from + " -> " + conn.to);
         }
@@ -391,6 +452,10 @@ function finalizeCity() {
     if (connectionBuilder.isValid()) {
         script.connectionMesh.mesh = connectionBuilder.getMesh();
         connectionBuilder.updateMesh();
+    }
+    if (edgeBuilder.isValid()) {
+        script.edgeMesh.mesh = edgeBuilder.getMesh();
+        edgeBuilder.updateMesh();
     }
 }
 

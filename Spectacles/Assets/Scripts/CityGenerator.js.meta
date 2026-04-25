@@ -30,6 +30,7 @@
     connectionMesh: false
     connectionRadius: false
     dataScale: false
+    edgeMesh: false
     nodeHalfSize: false
     nodeMesh: false
   ScriptTypesHidden:
@@ -43,6 +44,7 @@
   DefaultScriptInputs:
     - nodeMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
       connectionMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
+      edgeMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
       cityDataJson: !<reference.JsonAsset> 00000000-0000-0000-0000-000000000000
       dataScale: !<float> 1.000000
       nodeHalfSize: !<float> 1.000000
