@@ -54,3 +54,29 @@ def test_build_visualizer_map_keeps_hierarchy_relationships_and_related_files() 
     assert visualizer["nodes"][1]["related_files"] == ["server/auth.py"]
     assert "source_context" not in visualizer["nodes"][0]
     assert visualizer["edges"][0]["from"] == "backend.auth"
+
+
+def test_build_visualizer_map_accepts_string_evidence_from_agent() -> None:
+    full = {
+        "schema_version": "analysis-full-v1",
+        "repo": {"name": "demo", "source_url": "https://example.com/demo.git", "commit_sha": "abc"},
+        "nodes": [
+            {
+                "id": "backend",
+                "parent_id": None,
+                "name": "Backend",
+                "description": "Server side surface.",
+                "type": "system",
+                "category": "backend",
+                "confidence": 0.9,
+                "related_files": ["server/main.py"],
+                "evidence": ["server/main.py is the entrypoint"],
+                "source_context": [{"path": "server/main.py", "content": "print('hello')"}],
+            }
+        ],
+        "relationships": [],
+    }
+
+    visualizer = build_visualizer_map(full)
+
+    assert visualizer["nodes"][0]["evidence_notes"] == ["server/main.py is the entrypoint"]

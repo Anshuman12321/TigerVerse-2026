@@ -24,7 +24,7 @@ def build_visualizer_map(full_analysis: dict[str, Any]) -> dict[str, Any]:
                 "depth": depth,
                 "hierarchy_path": _hierarchy_path(node, nodes_by_id),
                 "related_files": node["related_files"],
-                "evidence_notes": [item.get("note", "") for item in node.get("evidence", []) if item.get("note")],
+                "evidence_notes": _evidence_notes(node.get("evidence", [])),
                 "layout": {
                     "importance": _importance(node),
                     "suggested_radius": max(0.12, 0.42 - depth * 0.06),
@@ -76,3 +76,16 @@ def _importance(node: dict[str, Any]) -> float:
     file_weight = min(len(node["related_files"]) / 10, 0.5)
     confidence = float(node["confidence"])
     return round(min(1.0, confidence * 0.5 + file_weight), 3)
+
+
+def _evidence_notes(evidence: Any) -> list[str]:
+    if not isinstance(evidence, list):
+        return []
+
+    notes = []
+    for item in evidence:
+        if isinstance(item, dict) and item.get("note"):
+            notes.append(str(item["note"]))
+        elif isinstance(item, str) and item:
+            notes.append(item)
+    return notes
