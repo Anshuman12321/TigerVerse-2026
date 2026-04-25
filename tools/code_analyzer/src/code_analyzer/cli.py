@@ -29,7 +29,12 @@ def main(argv: list[str] | None = None) -> int:
     analyze.add_argument("--out", required=True, type=Path, help="Directory where artifacts will be written.")
     analyze.add_argument("--workspace", type=Path, default=Path(".analyzer-workspace"))
     analyze.add_argument("--ref", help="Optional branch, tag, or commit to check out after cloning.")
-    analyze.add_argument("--agent", choices=["static", "codex"], default="static")
+    analyze.add_argument("--agent", choices=["static", "opencode"], default="static")
+    analyze.add_argument(
+        "--opencode-model",
+        default=None,
+        help="OpenCode model to use when --agent opencode is selected.",
+    )
     analyze.add_argument("--max-file-bytes", type=int, default=80_000)
     render = subparsers.add_parser("render", help="Render visualizer-map.json into a Mermaid graph preview.")
     render.add_argument("visualizer_map", type=Path, help="Path to visualizer-map.json.")
@@ -64,12 +69,14 @@ def _analyze(args: argparse.Namespace) -> int:
             _log_step("Running static analysis", started_at=started_at)
             full_analysis = build_static_full_analysis(evidence)
         else:
-            from .agent import CodexAgentRunner
+            from .agent import DEFAULT_OPENCODE_MODEL, OpenCodeAgentRunner
 
-            _log_step("Running Codex semantic analysis; this can take a few minutes", started_at=started_at)
+            model = args.opencode_model or DEFAULT_OPENCODE_MODEL
+
+            _log_step(f"Running OpenCode semantic analysis with {model}; this can take a few minutes", started_at=started_at)
             full_analysis = _run_with_spinner(
-                "Running Codex semantic analysis",
-                lambda: CodexAgentRunner().analyze(evidence),
+                "Running OpenCode semantic analysis",
+                lambda: OpenCodeAgentRunner(model=model).analyze(evidence),
                 stream=sys.stderr,
             )
 
