@@ -1,0 +1,1992 @@
+{
+  "edges": [],
+  "nodes": [
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 12 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        ".Claude"
+      ],
+      "id": "claude",
+      "layout": {
+        "group": "repository",
+        "importance": 0.725,
+        "suggested_radius": 0.42
+      },
+      "name": ".Claude",
+      "parent_id": null,
+      "related_files": [
+        ".claude/sessions/session-1774998936453.json",
+        ".claude/sessions/session-1774998994373.json",
+        ".claude/sessions/session-1775007533836.json",
+        ".claude/sessions/session-1775007622154.json",
+        ".claude/sessions/session-1775007632904.json",
+        ".claude/sessions/session-1775007846522.json",
+        ".claude/sessions/session-1775009126105.json",
+        ".claude/sessions/session-1775009583240.json",
+        ".claude/sessions/session-1775009651284.json",
+        ".claude/sessions/session-1775010002596.json",
+        ".claude/sessions/session-1775010229294.json",
+        ".claude/sessions/session-1775010237519.json"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 12 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        ".Claude",
+        "Sessions"
+      ],
+      "id": "claude.sessions",
+      "layout": {
+        "group": "repository",
+        "importance": 0.675,
+        "suggested_radius": 0.36
+      },
+      "name": "Sessions",
+      "parent_id": "claude",
+      "related_files": [
+        ".claude/sessions/session-1774998936453.json",
+        ".claude/sessions/session-1774998994373.json",
+        ".claude/sessions/session-1775007533836.json",
+        ".claude/sessions/session-1775007622154.json",
+        ".claude/sessions/session-1775007632904.json",
+        ".claude/sessions/session-1775007846522.json",
+        ".claude/sessions/session-1775009126105.json",
+        ".claude/sessions/session-1775009583240.json",
+        ".claude/sessions/session-1775009651284.json",
+        ".claude/sessions/session-1775010002596.json",
+        ".claude/sessions/session-1775010229294.json",
+        ".claude/sessions/session-1775010237519.json"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        ".Claude.Json"
+      ],
+      "id": "claude.json",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": ".Claude.Json",
+      "parent_id": null,
+      "related_files": [
+        ".claude.json"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        ".Claw.Json"
+      ],
+      "id": "claw.json",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": ".Claw.Json",
+      "parent_id": null,
+      "related_files": [
+        ".claw.json"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 4 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        ".Github"
+      ],
+      "id": "github",
+      "layout": {
+        "group": "repository",
+        "importance": 0.625,
+        "suggested_radius": 0.42
+      },
+      "name": ".Github",
+      "parent_id": null,
+      "related_files": [
+        ".github/FUNDING.yml",
+        ".github/scripts/check_doc_source_of_truth.py",
+        ".github/workflows/release.yml",
+        ".github/workflows/rust-ci.yml"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        ".Github",
+        "Scripts"
+      ],
+      "id": "github.scripts",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Scripts",
+      "parent_id": "github",
+      "related_files": [
+        ".github/scripts/check_doc_source_of_truth.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 2 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        ".Github",
+        "Workflows"
+      ],
+      "id": "github.workflows",
+      "layout": {
+        "group": "repository",
+        "importance": 0.375,
+        "suggested_radius": 0.36
+      },
+      "name": "Workflows",
+      "parent_id": "github",
+      "related_files": [
+        ".github/workflows/release.yml",
+        ".github/workflows/rust-ci.yml"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        ".Gitignore"
+      ],
+      "id": "gitignore",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": ".Gitignore",
+      "parent_id": null,
+      "related_files": [
+        ".gitignore"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Claude.Md"
+      ],
+      "id": "claude.md",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Claude.Md",
+      "parent_id": null,
+      "related_files": [
+        "CLAUDE.md"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Containerfile"
+      ],
+      "id": "containerfile",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Containerfile",
+      "parent_id": null,
+      "related_files": [
+        "Containerfile"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Parity.Md"
+      ],
+      "id": "parity.md",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Parity.Md",
+      "parent_id": null,
+      "related_files": [
+        "PARITY.md"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Philosophy.Md"
+      ],
+      "id": "philosophy.md",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Philosophy.Md",
+      "parent_id": null,
+      "related_files": [
+        "PHILOSOPHY.md"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Readme.Md"
+      ],
+      "id": "readme.md",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Readme.Md",
+      "parent_id": null,
+      "related_files": [
+        "README.md"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Roadmap.Md"
+      ],
+      "id": "roadmap.md",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Roadmap.Md",
+      "parent_id": null,
+      "related_files": [
+        "ROADMAP.md"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Usage.Md"
+      ],
+      "id": "usage.md",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Usage.Md",
+      "parent_id": null,
+      "related_files": [
+        "USAGE.md"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 7 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Assets"
+      ],
+      "id": "assets",
+      "layout": {
+        "group": "repository",
+        "importance": 0.725,
+        "suggested_radius": 0.42
+      },
+      "name": "Assets",
+      "parent_id": null,
+      "related_files": [
+        "assets/claw-hero.jpeg",
+        "assets/omx/omx-readme-review-1.png",
+        "assets/omx/omx-readme-review-2.png",
+        "assets/sigrid-photo.png",
+        "assets/star-history.png",
+        "assets/tweet-screenshot.png",
+        "assets/wsj-feature.png"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 2 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Assets",
+        "Omx"
+      ],
+      "id": "assets.omx",
+      "layout": {
+        "group": "repository",
+        "importance": 0.375,
+        "suggested_radius": 0.36
+      },
+      "name": "Omx",
+      "parent_id": "assets",
+      "related_files": [
+        "assets/omx/omx-readme-review-1.png",
+        "assets/omx/omx-readme-review-2.png"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "docs",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 2 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Docs"
+      ],
+      "id": "docs",
+      "layout": {
+        "group": "docs",
+        "importance": 0.425,
+        "suggested_radius": 0.42
+      },
+      "name": "Docs",
+      "parent_id": null,
+      "related_files": [
+        "docs/MODEL_COMPATIBILITY.md",
+        "docs/container.md"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Install.Sh"
+      ],
+      "id": "install.sh",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Install.Sh",
+      "parent_id": null,
+      "related_files": [
+        "install.sh"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Prd.Json"
+      ],
+      "id": "prd.json",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Prd.Json",
+      "parent_id": null,
+      "related_files": [
+        "prd.json"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Progress.Txt"
+      ],
+      "id": "progress.txt",
+      "layout": {
+        "group": "repository",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Progress.Txt",
+      "parent_id": null,
+      "related_files": [
+        "progress.txt"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 145 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Rust"
+      ],
+      "id": "rust",
+      "layout": {
+        "group": "repository",
+        "importance": 0.725,
+        "suggested_radius": 0.42
+      },
+      "name": "Rust",
+      "parent_id": null,
+      "related_files": [
+        "rust/.claude/sessions/session-1775007453382.json",
+        "rust/.claude/sessions/session-1775007484031.json",
+        "rust/.claude/sessions/session-1775007490104.json",
+        "rust/.claude/sessions/session-1775007981374.json",
+        "rust/.claude/sessions/session-1775008007069.json",
+        "rust/.claude/sessions/session-1775008071886.json",
+        "rust/.claude/sessions/session-1775008137143.json",
+        "rust/.claude/sessions/session-1775008161929.json",
+        "rust/.claude/sessions/session-1775008308936.json",
+        "rust/.claude/sessions/session-1775008427969.json",
+        "rust/.claude/sessions/session-1775008464519.json",
+        "rust/.claude/sessions/session-1775008997307.json",
+        "rust/.claude/sessions/session-1775009119214.json",
+        "rust/.claude/sessions/session-1775009126336.json",
+        "rust/.claude/sessions/session-1775009145469.json",
+        "rust/.claude/sessions/session-1775009431231.json",
+        "rust/.claude/sessions/session-1775009769569.json",
+        "rust/.claude/sessions/session-1775009841982.json",
+        "rust/.claude/sessions/session-1775009869734.json",
+        "rust/.claude/sessions/session-1775010047738.json",
+        "rust/.claude/sessions/session-1775010333630.json",
+        "rust/.claude/sessions/session-1775010384918.json",
+        "rust/.claude/sessions/session-1775010909274.json",
+        "rust/.claude/sessions/session-1775011146355.json",
+        "rust/.claude/sessions/session-1775011562247.json",
+        "rust/.claude/sessions/session-1775012674485.json",
+        "rust/.claude/sessions/session-1775012687059.json",
+        "rust/.claude/sessions/session-1775013221875.json",
+        "rust/.claw/sessions/session-1775386832313-0.jsonl",
+        "rust/.claw/sessions/session-1775386842352-0.jsonl",
+        "rust/.claw/sessions/session-1775386852257-0.jsonl",
+        "rust/.claw/sessions/session-1775386853666-0.jsonl",
+        "rust/.claw.json",
+        "rust/.clawd-todos.json",
+        "rust/.gitignore",
+        "rust/.omc/plans/tui-enhancement-plan.md",
+        "rust/.sandbox-home/.rustup/settings.toml",
+        "rust/CLAUDE.md",
+        "rust/Cargo.lock",
+        "rust/Cargo.toml",
+        "rust/MOCK_PARITY_HARNESS.md",
+        "rust/PARITY.md",
+        "rust/README.md",
+        "rust/TUI-ENHANCEMENT-PLAN.md",
+        "rust/USAGE.md",
+        "rust/crates/api/Cargo.toml",
+        "rust/crates/api/benches/request_building.rs",
+        "rust/crates/api/src/client.rs",
+        "rust/crates/api/src/error.rs",
+        "rust/crates/api/src/http_client.rs",
+        "rust/crates/api/src/lib.rs",
+        "rust/crates/api/src/prompt_cache.rs",
+        "rust/crates/api/src/providers/anthropic.rs",
+        "rust/crates/api/src/providers/mod.rs",
+        "rust/crates/api/src/providers/openai_compat.rs",
+        "rust/crates/api/src/sse.rs",
+        "rust/crates/api/src/types.rs",
+        "rust/crates/api/tests/client_integration.rs",
+        "rust/crates/api/tests/openai_compat_integration.rs",
+        "rust/crates/api/tests/provider_client_integration.rs",
+        "rust/crates/api/tests/proxy_integration.rs",
+        "rust/crates/commands/Cargo.toml",
+        "rust/crates/commands/src/lib.rs",
+        "rust/crates/compat-harness/Cargo.toml",
+        "rust/crates/compat-harness/src/lib.rs",
+        "rust/crates/mock-anthropic-service/Cargo.toml",
+        "rust/crates/mock-anthropic-service/src/lib.rs",
+        "rust/crates/mock-anthropic-service/src/main.rs",
+        "rust/crates/plugins/Cargo.toml",
+        "rust/crates/plugins/bundled/example-bundled/.claude-plugin/plugin.json",
+        "rust/crates/plugins/bundled/example-bundled/hooks/post.sh",
+        "rust/crates/plugins/bundled/example-bundled/hooks/pre.sh",
+        "rust/crates/plugins/bundled/sample-hooks/.claude-plugin/plugin.json",
+        "rust/crates/plugins/bundled/sample-hooks/hooks/post.sh",
+        "rust/crates/plugins/bundled/sample-hooks/hooks/pre.sh",
+        "rust/crates/plugins/src/hooks.rs",
+        "rust/crates/plugins/src/lib.rs",
+        "rust/crates/plugins/src/test_isolation.rs",
+        "rust/crates/runtime/Cargo.toml",
+        "rust/crates/runtime/src/bash.rs",
+        "rust/crates/runtime/src/bash_validation.rs",
+        "rust/crates/runtime/src/bootstrap.rs",
+        "rust/crates/runtime/src/branch_lock.rs",
+        "rust/crates/runtime/src/compact.rs",
+        "rust/crates/runtime/src/config.rs",
+        "rust/crates/runtime/src/config_validate.rs",
+        "rust/crates/runtime/src/conversation.rs",
+        "rust/crates/runtime/src/file_ops.rs",
+        "rust/crates/runtime/src/git_context.rs",
+        "rust/crates/runtime/src/green_contract.rs",
+        "rust/crates/runtime/src/hooks.rs",
+        "rust/crates/runtime/src/json.rs",
+        "rust/crates/runtime/src/lane_events.rs",
+        "rust/crates/runtime/src/lib.rs",
+        "rust/crates/runtime/src/lsp_client.rs",
+        "rust/crates/runtime/src/mcp.rs",
+        "rust/crates/runtime/src/mcp_client.rs",
+        "rust/crates/runtime/src/mcp_lifecycle_hardened.rs",
+        "rust/crates/runtime/src/mcp_server.rs",
+        "rust/crates/runtime/src/mcp_stdio.rs",
+        "rust/crates/runtime/src/mcp_tool_bridge.rs",
+        "rust/crates/runtime/src/oauth.rs",
+        "rust/crates/runtime/src/permission_enforcer.rs",
+        "rust/crates/runtime/src/permissions.rs",
+        "rust/crates/runtime/src/plugin_lifecycle.rs",
+        "rust/crates/runtime/src/policy_engine.rs",
+        "rust/crates/runtime/src/prompt.rs",
+        "rust/crates/runtime/src/recovery_recipes.rs",
+        "rust/crates/runtime/src/remote.rs",
+        "rust/crates/runtime/src/sandbox.rs",
+        "rust/crates/runtime/src/session.rs",
+        "rust/crates/runtime/src/session_control.rs",
+        "rust/crates/runtime/src/sse.rs",
+        "rust/crates/runtime/src/stale_base.rs",
+        "rust/crates/runtime/src/stale_branch.rs",
+        "rust/crates/runtime/src/summary_compression.rs",
+        "rust/crates/runtime/src/task_packet.rs",
+        "rust/crates/runtime/src/task_registry.rs",
+        "rust/crates/runtime/src/team_cron_registry.rs",
+        "rust/crates/runtime/src/trust_resolver.rs",
+        "rust/crates/runtime/src/usage.rs",
+        "rust/crates/runtime/src/worker_boot.rs",
+        "rust/crates/runtime/tests/integration_tests.rs",
+        "rust/crates/rusty-claude-cli/.claw/sessions/session-newer.jsonl",
+        "rust/crates/rusty-claude-cli/Cargo.toml",
+        "rust/crates/rusty-claude-cli/build.rs",
+        "rust/crates/rusty-claude-cli/src/init.rs",
+        "rust/crates/rusty-claude-cli/src/input.rs",
+        "rust/crates/rusty-claude-cli/src/main.rs",
+        "rust/crates/rusty-claude-cli/src/render.rs",
+        "rust/crates/rusty-claude-cli/tests/cli_flags_and_config_defaults.rs",
+        "rust/crates/rusty-claude-cli/tests/compact_output.rs",
+        "rust/crates/rusty-claude-cli/tests/mock_parity_harness.rs",
+        "rust/crates/rusty-claude-cli/tests/output_format_contract.rs",
+        "rust/crates/rusty-claude-cli/tests/resume_slash_commands.rs",
+        "rust/crates/telemetry/Cargo.toml",
+        "rust/crates/telemetry/src/lib.rs",
+        "rust/crates/tools/.gitignore",
+        "rust/crates/tools/Cargo.toml",
+        "rust/crates/tools/src/lane_completion.rs",
+        "rust/crates/tools/src/lib.rs",
+        "rust/crates/tools/src/pdf_extract.rs",
+        "rust/mock_parity_scenarios.json",
+        "rust/scripts/run_mock_parity_diff.py",
+        "rust/scripts/run_mock_parity_harness.sh"
+      ],
+      "type": "module"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 28 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Rust",
+        ".Claude"
+      ],
+      "id": "rust.claude",
+      "layout": {
+        "group": "repository",
+        "importance": 0.675,
+        "suggested_radius": 0.36
+      },
+      "name": ".Claude",
+      "parent_id": "rust",
+      "related_files": [
+        "rust/.claude/sessions/session-1775007453382.json",
+        "rust/.claude/sessions/session-1775007484031.json",
+        "rust/.claude/sessions/session-1775007490104.json",
+        "rust/.claude/sessions/session-1775007981374.json",
+        "rust/.claude/sessions/session-1775008007069.json",
+        "rust/.claude/sessions/session-1775008071886.json",
+        "rust/.claude/sessions/session-1775008137143.json",
+        "rust/.claude/sessions/session-1775008161929.json",
+        "rust/.claude/sessions/session-1775008308936.json",
+        "rust/.claude/sessions/session-1775008427969.json",
+        "rust/.claude/sessions/session-1775008464519.json",
+        "rust/.claude/sessions/session-1775008997307.json",
+        "rust/.claude/sessions/session-1775009119214.json",
+        "rust/.claude/sessions/session-1775009126336.json",
+        "rust/.claude/sessions/session-1775009145469.json",
+        "rust/.claude/sessions/session-1775009431231.json",
+        "rust/.claude/sessions/session-1775009769569.json",
+        "rust/.claude/sessions/session-1775009841982.json",
+        "rust/.claude/sessions/session-1775009869734.json",
+        "rust/.claude/sessions/session-1775010047738.json",
+        "rust/.claude/sessions/session-1775010333630.json",
+        "rust/.claude/sessions/session-1775010384918.json",
+        "rust/.claude/sessions/session-1775010909274.json",
+        "rust/.claude/sessions/session-1775011146355.json",
+        "rust/.claude/sessions/session-1775011562247.json",
+        "rust/.claude/sessions/session-1775012674485.json",
+        "rust/.claude/sessions/session-1775012687059.json",
+        "rust/.claude/sessions/session-1775013221875.json"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 4 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Rust",
+        ".Claw"
+      ],
+      "id": "rust.claw",
+      "layout": {
+        "group": "repository",
+        "importance": 0.575,
+        "suggested_radius": 0.36
+      },
+      "name": ".Claw",
+      "parent_id": "rust",
+      "related_files": [
+        "rust/.claw/sessions/session-1775386832313-0.jsonl",
+        "rust/.claw/sessions/session-1775386842352-0.jsonl",
+        "rust/.claw/sessions/session-1775386852257-0.jsonl",
+        "rust/.claw/sessions/session-1775386853666-0.jsonl"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Rust",
+        ".Omc"
+      ],
+      "id": "rust.omc",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": ".Omc",
+      "parent_id": "rust",
+      "related_files": [
+        "rust/.omc/plans/tui-enhancement-plan.md"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Rust",
+        ".Sandbox Home"
+      ],
+      "id": "rust.sandbox.home",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": ".Sandbox Home",
+      "parent_id": "rust",
+      "related_files": [
+        "rust/.sandbox-home/.rustup/settings.toml"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 97 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Rust",
+        "Crates"
+      ],
+      "id": "rust.crates",
+      "layout": {
+        "group": "repository",
+        "importance": 0.675,
+        "suggested_radius": 0.36
+      },
+      "name": "Crates",
+      "parent_id": "rust",
+      "related_files": [
+        "rust/crates/api/Cargo.toml",
+        "rust/crates/api/benches/request_building.rs",
+        "rust/crates/api/src/client.rs",
+        "rust/crates/api/src/error.rs",
+        "rust/crates/api/src/http_client.rs",
+        "rust/crates/api/src/lib.rs",
+        "rust/crates/api/src/prompt_cache.rs",
+        "rust/crates/api/src/providers/anthropic.rs",
+        "rust/crates/api/src/providers/mod.rs",
+        "rust/crates/api/src/providers/openai_compat.rs",
+        "rust/crates/api/src/sse.rs",
+        "rust/crates/api/src/types.rs",
+        "rust/crates/api/tests/client_integration.rs",
+        "rust/crates/api/tests/openai_compat_integration.rs",
+        "rust/crates/api/tests/provider_client_integration.rs",
+        "rust/crates/api/tests/proxy_integration.rs",
+        "rust/crates/commands/Cargo.toml",
+        "rust/crates/commands/src/lib.rs",
+        "rust/crates/compat-harness/Cargo.toml",
+        "rust/crates/compat-harness/src/lib.rs",
+        "rust/crates/mock-anthropic-service/Cargo.toml",
+        "rust/crates/mock-anthropic-service/src/lib.rs",
+        "rust/crates/mock-anthropic-service/src/main.rs",
+        "rust/crates/plugins/Cargo.toml",
+        "rust/crates/plugins/bundled/example-bundled/.claude-plugin/plugin.json",
+        "rust/crates/plugins/bundled/example-bundled/hooks/post.sh",
+        "rust/crates/plugins/bundled/example-bundled/hooks/pre.sh",
+        "rust/crates/plugins/bundled/sample-hooks/.claude-plugin/plugin.json",
+        "rust/crates/plugins/bundled/sample-hooks/hooks/post.sh",
+        "rust/crates/plugins/bundled/sample-hooks/hooks/pre.sh",
+        "rust/crates/plugins/src/hooks.rs",
+        "rust/crates/plugins/src/lib.rs",
+        "rust/crates/plugins/src/test_isolation.rs",
+        "rust/crates/runtime/Cargo.toml",
+        "rust/crates/runtime/src/bash.rs",
+        "rust/crates/runtime/src/bash_validation.rs",
+        "rust/crates/runtime/src/bootstrap.rs",
+        "rust/crates/runtime/src/branch_lock.rs",
+        "rust/crates/runtime/src/compact.rs",
+        "rust/crates/runtime/src/config.rs",
+        "rust/crates/runtime/src/config_validate.rs",
+        "rust/crates/runtime/src/conversation.rs",
+        "rust/crates/runtime/src/file_ops.rs",
+        "rust/crates/runtime/src/git_context.rs",
+        "rust/crates/runtime/src/green_contract.rs",
+        "rust/crates/runtime/src/hooks.rs",
+        "rust/crates/runtime/src/json.rs",
+        "rust/crates/runtime/src/lane_events.rs",
+        "rust/crates/runtime/src/lib.rs",
+        "rust/crates/runtime/src/lsp_client.rs",
+        "rust/crates/runtime/src/mcp.rs",
+        "rust/crates/runtime/src/mcp_client.rs",
+        "rust/crates/runtime/src/mcp_lifecycle_hardened.rs",
+        "rust/crates/runtime/src/mcp_server.rs",
+        "rust/crates/runtime/src/mcp_stdio.rs",
+        "rust/crates/runtime/src/mcp_tool_bridge.rs",
+        "rust/crates/runtime/src/oauth.rs",
+        "rust/crates/runtime/src/permission_enforcer.rs",
+        "rust/crates/runtime/src/permissions.rs",
+        "rust/crates/runtime/src/plugin_lifecycle.rs",
+        "rust/crates/runtime/src/policy_engine.rs",
+        "rust/crates/runtime/src/prompt.rs",
+        "rust/crates/runtime/src/recovery_recipes.rs",
+        "rust/crates/runtime/src/remote.rs",
+        "rust/crates/runtime/src/sandbox.rs",
+        "rust/crates/runtime/src/session.rs",
+        "rust/crates/runtime/src/session_control.rs",
+        "rust/crates/runtime/src/sse.rs",
+        "rust/crates/runtime/src/stale_base.rs",
+        "rust/crates/runtime/src/stale_branch.rs",
+        "rust/crates/runtime/src/summary_compression.rs",
+        "rust/crates/runtime/src/task_packet.rs",
+        "rust/crates/runtime/src/task_registry.rs",
+        "rust/crates/runtime/src/team_cron_registry.rs",
+        "rust/crates/runtime/src/trust_resolver.rs",
+        "rust/crates/runtime/src/usage.rs",
+        "rust/crates/runtime/src/worker_boot.rs",
+        "rust/crates/runtime/tests/integration_tests.rs",
+        "rust/crates/rusty-claude-cli/.claw/sessions/session-newer.jsonl",
+        "rust/crates/rusty-claude-cli/Cargo.toml",
+        "rust/crates/rusty-claude-cli/build.rs",
+        "rust/crates/rusty-claude-cli/src/init.rs",
+        "rust/crates/rusty-claude-cli/src/input.rs",
+        "rust/crates/rusty-claude-cli/src/main.rs",
+        "rust/crates/rusty-claude-cli/src/render.rs",
+        "rust/crates/rusty-claude-cli/tests/cli_flags_and_config_defaults.rs",
+        "rust/crates/rusty-claude-cli/tests/compact_output.rs",
+        "rust/crates/rusty-claude-cli/tests/mock_parity_harness.rs",
+        "rust/crates/rusty-claude-cli/tests/output_format_contract.rs",
+        "rust/crates/rusty-claude-cli/tests/resume_slash_commands.rs",
+        "rust/crates/telemetry/Cargo.toml",
+        "rust/crates/telemetry/src/lib.rs",
+        "rust/crates/tools/.gitignore",
+        "rust/crates/tools/Cargo.toml",
+        "rust/crates/tools/src/lane_completion.rs",
+        "rust/crates/tools/src/lib.rs",
+        "rust/crates/tools/src/pdf_extract.rs"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 2 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Rust",
+        "Scripts"
+      ],
+      "id": "rust.scripts",
+      "layout": {
+        "group": "repository",
+        "importance": 0.375,
+        "suggested_radius": 0.36
+      },
+      "name": "Scripts",
+      "parent_id": "rust",
+      "related_files": [
+        "rust/scripts/run_mock_parity_diff.py",
+        "rust/scripts/run_mock_parity_harness.sh"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 99 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure.",
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Src"
+      ],
+      "id": "src",
+      "layout": {
+        "group": "repository",
+        "importance": 0.725,
+        "suggested_radius": 0.42
+      },
+      "name": "Src",
+      "parent_id": null,
+      "related_files": [
+        "src/QueryEngine.py",
+        "src/Tool.py",
+        "src/__init__.py",
+        "src/_archive_helper.py",
+        "src/assistant/__init__.py",
+        "src/bootstrap/__init__.py",
+        "src/bootstrap_graph.py",
+        "src/bridge/__init__.py",
+        "src/buddy/__init__.py",
+        "src/cli/__init__.py",
+        "src/command_graph.py",
+        "src/commands.py",
+        "src/components/__init__.py",
+        "src/constants/__init__.py",
+        "src/context.py",
+        "src/coordinator/__init__.py",
+        "src/costHook.py",
+        "src/cost_tracker.py",
+        "src/deferred_init.py",
+        "src/dialogLaunchers.py",
+        "src/direct_modes.py",
+        "src/entrypoints/__init__.py",
+        "src/execution_registry.py",
+        "src/history.py",
+        "src/hooks/__init__.py",
+        "src/ink.py",
+        "src/interactiveHelpers.py",
+        "src/keybindings/__init__.py",
+        "src/main.py",
+        "src/memdir/__init__.py",
+        "src/migrations/__init__.py",
+        "src/models.py",
+        "src/moreright/__init__.py",
+        "src/native_ts/__init__.py",
+        "src/outputStyles/__init__.py",
+        "src/parity_audit.py",
+        "src/permissions.py",
+        "src/plugins/__init__.py",
+        "src/port_manifest.py",
+        "src/prefetch.py",
+        "src/projectOnboardingState.py",
+        "src/query.py",
+        "src/query_engine.py",
+        "src/reference_data/__init__.py",
+        "src/reference_data/archive_surface_snapshot.json",
+        "src/reference_data/commands_snapshot.json",
+        "src/reference_data/subsystems/assistant.json",
+        "src/reference_data/subsystems/bootstrap.json",
+        "src/reference_data/subsystems/bridge.json",
+        "src/reference_data/subsystems/buddy.json",
+        "src/reference_data/subsystems/cli.json",
+        "src/reference_data/subsystems/components.json",
+        "src/reference_data/subsystems/constants.json",
+        "src/reference_data/subsystems/coordinator.json",
+        "src/reference_data/subsystems/entrypoints.json",
+        "src/reference_data/subsystems/hooks.json",
+        "src/reference_data/subsystems/keybindings.json",
+        "src/reference_data/subsystems/memdir.json",
+        "src/reference_data/subsystems/migrations.json",
+        "src/reference_data/subsystems/moreright.json",
+        "src/reference_data/subsystems/native_ts.json",
+        "src/reference_data/subsystems/outputStyles.json",
+        "src/reference_data/subsystems/plugins.json",
+        "src/reference_data/subsystems/remote.json",
+        "src/reference_data/subsystems/schemas.json",
+        "src/reference_data/subsystems/screens.json",
+        "src/reference_data/subsystems/server.json",
+        "src/reference_data/subsystems/services.json",
+        "src/reference_data/subsystems/skills.json",
+        "src/reference_data/subsystems/state.json",
+        "src/reference_data/subsystems/types.json",
+        "src/reference_data/subsystems/upstreamproxy.json",
+        "src/reference_data/subsystems/utils.json",
+        "src/reference_data/subsystems/vim.json",
+        "src/reference_data/subsystems/voice.json",
+        "src/reference_data/tools_snapshot.json",
+        "src/remote/__init__.py",
+        "src/remote_runtime.py",
+        "src/replLauncher.py",
+        "src/runtime.py",
+        "src/schemas/__init__.py",
+        "src/screens/__init__.py",
+        "src/server/__init__.py",
+        "src/services/__init__.py",
+        "src/session_store.py",
+        "src/setup.py",
+        "src/skills/__init__.py",
+        "src/state/__init__.py",
+        "src/system_init.py",
+        "src/task.py",
+        "src/tasks.py",
+        "src/tool_pool.py",
+        "src/tools.py",
+        "src/transcript.py",
+        "src/types/__init__.py",
+        "src/upstreamproxy/__init__.py",
+        "src/utils/__init__.py",
+        "src/vim/__init__.py",
+        "src/voice/__init__.py"
+      ],
+      "type": "system"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Assistant"
+      ],
+      "id": "src.assistant",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Assistant",
+      "parent_id": "src",
+      "related_files": [
+        "src/assistant/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Bootstrap"
+      ],
+      "id": "src.bootstrap",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Bootstrap",
+      "parent_id": "src",
+      "related_files": [
+        "src/bootstrap/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Bridge"
+      ],
+      "id": "src.bridge",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Bridge",
+      "parent_id": "src",
+      "related_files": [
+        "src/bridge/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Buddy"
+      ],
+      "id": "src.buddy",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Buddy",
+      "parent_id": "src",
+      "related_files": [
+        "src/buddy/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Cli"
+      ],
+      "id": "src.cli",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Cli",
+      "parent_id": "src",
+      "related_files": [
+        "src/cli/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Components"
+      ],
+      "id": "src.components",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Components",
+      "parent_id": "src",
+      "related_files": [
+        "src/components/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Constants"
+      ],
+      "id": "src.constants",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Constants",
+      "parent_id": "src",
+      "related_files": [
+        "src/constants/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Coordinator"
+      ],
+      "id": "src.coordinator",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Coordinator",
+      "parent_id": "src",
+      "related_files": [
+        "src/coordinator/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Entrypoints"
+      ],
+      "id": "src.entrypoints",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Entrypoints",
+      "parent_id": "src",
+      "related_files": [
+        "src/entrypoints/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Hooks"
+      ],
+      "id": "src.hooks",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Hooks",
+      "parent_id": "src",
+      "related_files": [
+        "src/hooks/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Keybindings"
+      ],
+      "id": "src.keybindings",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Keybindings",
+      "parent_id": "src",
+      "related_files": [
+        "src/keybindings/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Memdir"
+      ],
+      "id": "src.memdir",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Memdir",
+      "parent_id": "src",
+      "related_files": [
+        "src/memdir/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Migrations"
+      ],
+      "id": "src.migrations",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Migrations",
+      "parent_id": "src",
+      "related_files": [
+        "src/migrations/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Moreright"
+      ],
+      "id": "src.moreright",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Moreright",
+      "parent_id": "src",
+      "related_files": [
+        "src/moreright/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Native Ts"
+      ],
+      "id": "src.native.ts",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Native Ts",
+      "parent_id": "src",
+      "related_files": [
+        "src/native_ts/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Outputstyles"
+      ],
+      "id": "src.outputstyles",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Outputstyles",
+      "parent_id": "src",
+      "related_files": [
+        "src/outputStyles/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Plugins"
+      ],
+      "id": "src.plugins",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Plugins",
+      "parent_id": "src",
+      "related_files": [
+        "src/plugins/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 33 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure.",
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Reference Data"
+      ],
+      "id": "src.reference.data",
+      "layout": {
+        "group": "repository",
+        "importance": 0.675,
+        "suggested_radius": 0.36
+      },
+      "name": "Reference Data",
+      "parent_id": "src",
+      "related_files": [
+        "src/reference_data/__init__.py",
+        "src/reference_data/archive_surface_snapshot.json",
+        "src/reference_data/commands_snapshot.json",
+        "src/reference_data/subsystems/assistant.json",
+        "src/reference_data/subsystems/bootstrap.json",
+        "src/reference_data/subsystems/bridge.json",
+        "src/reference_data/subsystems/buddy.json",
+        "src/reference_data/subsystems/cli.json",
+        "src/reference_data/subsystems/components.json",
+        "src/reference_data/subsystems/constants.json",
+        "src/reference_data/subsystems/coordinator.json",
+        "src/reference_data/subsystems/entrypoints.json",
+        "src/reference_data/subsystems/hooks.json",
+        "src/reference_data/subsystems/keybindings.json",
+        "src/reference_data/subsystems/memdir.json",
+        "src/reference_data/subsystems/migrations.json",
+        "src/reference_data/subsystems/moreright.json",
+        "src/reference_data/subsystems/native_ts.json",
+        "src/reference_data/subsystems/outputStyles.json",
+        "src/reference_data/subsystems/plugins.json",
+        "src/reference_data/subsystems/remote.json",
+        "src/reference_data/subsystems/schemas.json",
+        "src/reference_data/subsystems/screens.json",
+        "src/reference_data/subsystems/server.json",
+        "src/reference_data/subsystems/services.json",
+        "src/reference_data/subsystems/skills.json",
+        "src/reference_data/subsystems/state.json",
+        "src/reference_data/subsystems/types.json",
+        "src/reference_data/subsystems/upstreamproxy.json",
+        "src/reference_data/subsystems/utils.json",
+        "src/reference_data/subsystems/vim.json",
+        "src/reference_data/subsystems/voice.json",
+        "src/reference_data/tools_snapshot.json"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Remote"
+      ],
+      "id": "src.remote",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Remote",
+      "parent_id": "src",
+      "related_files": [
+        "src/remote/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Schemas"
+      ],
+      "id": "src.schemas",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Schemas",
+      "parent_id": "src",
+      "related_files": [
+        "src/schemas/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Screens"
+      ],
+      "id": "src.screens",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Screens",
+      "parent_id": "src",
+      "related_files": [
+        "src/screens/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "backend",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Server"
+      ],
+      "id": "src.server",
+      "layout": {
+        "group": "backend",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Server",
+      "parent_id": "src",
+      "related_files": [
+        "src/server/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Services"
+      ],
+      "id": "src.services",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Services",
+      "parent_id": "src",
+      "related_files": [
+        "src/services/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Skills"
+      ],
+      "id": "src.skills",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Skills",
+      "parent_id": "src",
+      "related_files": [
+        "src/skills/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "State"
+      ],
+      "id": "src.state",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "State",
+      "parent_id": "src",
+      "related_files": [
+        "src/state/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Types"
+      ],
+      "id": "src.types",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Types",
+      "parent_id": "src",
+      "related_files": [
+        "src/types/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Upstreamproxy"
+      ],
+      "id": "src.upstreamproxy",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Upstreamproxy",
+      "parent_id": "src",
+      "related_files": [
+        "src/upstreamproxy/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Utils"
+      ],
+      "id": "src.utils",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Utils",
+      "parent_id": "src",
+      "related_files": [
+        "src/utils/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Vim"
+      ],
+      "id": "src.vim",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Vim",
+      "parent_id": "src",
+      "related_files": [
+        "src/vim/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "repository",
+      "confidence": 0.35,
+      "depth": 1,
+      "description": "Nested repository part containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by nested path structure."
+      ],
+      "hierarchy_path": [
+        "Src",
+        "Voice"
+      ],
+      "id": "src.voice",
+      "layout": {
+        "group": "repository",
+        "importance": 0.275,
+        "suggested_radius": 0.36
+      },
+      "name": "Voice",
+      "parent_id": "src",
+      "related_files": [
+        "src/voice/__init__.py"
+      ],
+      "type": "capability"
+    },
+    {
+      "category": "tests",
+      "confidence": 0.45,
+      "depth": 0,
+      "description": "Top-level repository area containing 1 file(s).",
+      "evidence_notes": [
+        "Grouped by top-level repository structure."
+      ],
+      "hierarchy_path": [
+        "Tests"
+      ],
+      "id": "tests",
+      "layout": {
+        "group": "tests",
+        "importance": 0.325,
+        "suggested_radius": 0.42
+      },
+      "name": "Tests",
+      "parent_id": null,
+      "related_files": [
+        "tests/test_porting_workspace.py"
+      ],
+      "type": "module"
+    }
+  ],
+  "repo": {
+    "branch": "main",
+    "commit_sha": "a389f8dff1d591d2eafc2f48747313cd556412ee",
+    "name": "claw-code",
+    "source_url": "https://github.com/ultraworkers/claw-code"
+  },
+  "schema_version": "visualizer-map-v1"
+}
