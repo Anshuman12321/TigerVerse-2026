@@ -1558,6 +1558,7 @@
   Enabled: true
   ScriptAsset: !<reference> ac727489-37f8-4c18-a1a8-abaea1531ef2
   ScriptInputsDefault:
+    connectionThickness: true
     nodeSize: true
     depthSpacingY: true
     rootRadius: true
@@ -1566,17 +1567,6 @@
     slabDepth: true
     tapMoveThreshold: true
     collapseSiblingsOnExpand: true
-    boxMesh: true
-    uiColor: true
-    frontendColor: true
-    backendColor: true
-    coreColor: true
-    dataColor: true
-    stateColor: true
-    repositoryColor: true
-    repositoryAltColor: true
-    defaultNodeColor: true
-    connectionColor: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
@@ -1584,7 +1574,7 @@
       nodePrefab: !<reference.ObjectPrefab> 7222604c-450d-46dd-95f7-eee8a5c2dc9e
       connectionPrefab: !<reference.ObjectPrefab> 997dabda-09b6-446a-b7e6-aec8c6b2f05b
       dataScale: 0.500000
-      connectionThickness: 0.050000
+      connectionThickness: 0.150000
       nodeSize: !<float> 1.000000
       depthSpacingY: !<float> 5.000000
       rootRadius: !<float> 10.000000
@@ -1593,25 +1583,6 @@
       slabDepth: 0.650000
       tapMoveThreshold: 0.150000
       collapseSiblingsOnExpand: false
-      sphereMesh: !<reference.RenderMesh> 9c7a0451-cd01-4d57-8716-31dba7bd4c77
-      cylinderMesh: !<reference.RenderMesh> 5c6abd4e-e9b3-4888-b0f7-aa30daf4bc74
-      boxMesh: !<reference.RenderMesh> 00000000-0000-0000-0000-000000000000
-      defaultNodeMaterial: !<reference.Material> aa8a1a5d-ba10-4d4a-aff8-e89e5fd1264f
-      componentNodeMaterial: !<reference.Material> 4cea7114-908b-42a7-b19e-fdca7ff7949e
-      moduleNodeMaterial: !<reference.Material> e01ca4ab-11ce-4f00-bf01-1c47c6f2fefd
-      slabNodeMaterial: !<reference.Material> aa8a1a5d-ba10-4d4a-aff8-e89e5fd1264f
-      repositoryNodeMaterial: !<reference.Material> 18af9622-9406-48a9-ae5a-814cf94e012e
-      connectionMaterial: !<reference.Material> d36c9c9c-e4ea-4597-a38d-a06e8d0cc3f5
-      uiColor: !<Vec4> {x: 0.960784, y: 0.815686, z: 0.788235, w: 1.000000}
-      frontendColor: !<Vec4> {x: 0.905882, y: 0.756863, z: 0.721569, w: 1.000000}
-      backendColor: !<Vec4> {x: 0.172549, y: 0.180392, z: 0.200000, w: 1.000000}
-      coreColor: !<Vec4> {x: 0.101961, y: 0.109804, z: 0.117647, w: 1.000000}
-      dataColor: !<Vec4> {x: 0.698039, y: 0.760784, z: 0.725490, w: 1.000000}
-      stateColor: !<Vec4> {x: 0.545098, y: 0.666667, z: 0.647059, w: 1.000000}
-      repositoryColor: !<Vec4> {x: 0.949020, y: 0.949020, z: 0.949020, w: 1.000000}
-      repositoryAltColor: !<Vec4> {x: 0.752941, y: 0.752941, z: 0.752941, w: 1.000000}
-      defaultNodeColor: !<Vec4> {x: 0.827451, y: 0.764706, z: 0.752941, w: 1.000000}
-      connectionColor: !<Vec4> {x: 0.878431, y: 0.878431, z: 0.878431, w: 1.000000}
   ScriptTypes:
     "":
       {}
