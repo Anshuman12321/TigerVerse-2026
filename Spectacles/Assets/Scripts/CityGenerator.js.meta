@@ -53,7 +53,7 @@
       dataScale: 0.100000
       connectionThickness: 0.150000
       nodeSize: !<float> 1.000000
-      depthSpacingY: !<float> 5.000000
+      depthSpacingY: !<float> 8.000000
       rootRadius: !<float> 10.000000
       childRadius: !<float> 5.000000
       slabHeight: 0.180000
