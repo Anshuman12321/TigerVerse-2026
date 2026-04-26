@@ -1,505 +1,579 @@
-//@input Component.RenderMeshVisual nodeMesh
-//@input Component.RenderMeshVisual connectionMesh
-//@input Component.RenderMeshVisual edgeMesh
-//@input Asset.JsonAsset cityDataJson
-//@input float dataScale = 0.1
-//@input float nodeHalfSize = 1
-//@input float nodeCornerRadius = 0.3
-//@input int cornerSegments = 3
-//@input float connectionRadius = 0.08
+//@input Asset.ObjectPrefab nodePrefab
+//@input Asset.ObjectPrefab connectionPrefab
+//@input float dataScale = 1.0
+//@input float connectionThickness = 0.15
+//@input float nodeSize = 1.0
+//@input float depthSpacingY = 5.0
+//@input float rootRadius = 10.0
+//@input float childRadius = 5.0
+//@input float slabHeight = 0.18
+//@input float slabDepth = 0.65
+//@input float tapMoveThreshold = 0.15
+//@input bool collapseSiblingsOnExpand = false
 
-// Builds a simple “graph city” from a JsonAsset with shape:
-// {
-//   nodes: [{ id:number, name:string, pos:[x,y,z], height:number, color:[r,g,b,a] }],
-//   connections: [{ from:number, to:number }]
-// }
+var visualizerData = require("./Data/VisualizerData");
+var InteractableManipulation = require("SpectaclesInteractionKit.lspkg/Components/Interaction/InteractableManipulation/InteractableManipulation").InteractableManipulation;
+var Interactable = require("SpectaclesInteractionKit.lspkg/Components/Interaction/Interactable/Interactable").Interactable;
 
-var nodeBuilder = new MeshBuilder([
-    { name: "position", components: 3 },
-    { name: "color", components: 4 }
-]);
-nodeBuilder.topology = MeshTopology.Triangles;
-nodeBuilder.indexType = MeshIndexType.UInt16;
+var ROOT_PATH = "__visualizer_root__";
+var spawnedNodes = {};
+var fixedNodeScales = {};
+var childPathsByParent = {};
+var expandedState = {};
+var connectionByChildPath = {};
+var tierConnectionsByParentPath = {};
+var rootPathByNodeId = {};
+var rootConnectionKeys = {};
+var activeConnections = [];
 
-// Standard cube indices (12 triangles, 36 indices), including a top cap.
-var CUBE_INDICES = [
-    0,1,2, 2,3,0, 4,5,6, 6,7,4, 0,4,7, 7,3,0,
-    1,5,6, 6,2,1, 0,1,5, 5,4,0, 3,2,6, 6,7,3
-];
+function configureNodeManipulation(sceneObject, rootTransform) {
+    var manipulation = sceneObject.getComponent(InteractableManipulation.getTypeName());
+    if (manipulation) {
+        manipulation.setManipulateRoot(rootTransform);
+        manipulation.setCanScale(false);
+        manipulation.setCanRotate(false);
+    }
 
-function appendDoubleSidedIndices(builder, triangleIndices) {
-    // Duplicate every triangle with reversed winding so faces render from both sides.
-    for (var i = 0; i < triangleIndices.length; i += 3) {
-        var a = triangleIndices[i];
-        var b = triangleIndices[i + 1];
-        var c = triangleIndices[i + 2];
-        builder.appendIndices([a, b, c, a, c, b]);
+    for (var i = 0; i < sceneObject.getChildrenCount(); i++) {
+        configureNodeManipulation(sceneObject.getChild(i), rootTransform);
     }
 }
 
-function getPositiveInput(value, fallback) {
-    return value && value > 0 ? value : fallback;
+function getNodeId(nodeData) {
+    return String(nodeData.id);
 }
 
-var DATA_SCALE = getPositiveInput(script.dataScale, 0.1);
-var NODE_HALF_SIZE = getPositiveInput(script.nodeHalfSize, 1);
-var NODE_CORNER_RADIUS = getPositiveInput(script.nodeCornerRadius, 0.3);
-var CORNER_SEGMENTS = Math.max(1, Math.floor(script.cornerSegments || 3));
-var CONNECTION_RADIUS = getPositiveInput(script.connectionRadius, 0.08);
-var EDGE_RADIUS = 0.04;
-var CYLINDER_SEGMENTS = 12;
-var EDGE_SEGMENTS = 6;
-var LABEL_SCALE = 0.2;
-var LABEL_TOP_OFFSET = 1;
-var CITY_OFFSET = new vec3(0, 0, 0);
-var NODE_XZ_SCALE = 2.0;
+function getNodeLabel(nodeData) {
+    return nodeData.title || nodeData.name || nodeData.label || getNodeId(nodeData);
+}
 
-// Holographic palette: translucent blue body + bright cyan edges/connections
-var HOLO_BODY = { r: 0.05, g: 0.25, b: 0.9,  a: 0.10 };
-var HOLO_EDGE = { r: 0.2,  g: 0.82, b: 1.0,  a: 1.0  };
-var HOLO_CONN = { r: 0.1,  g: 0.6,  b: 1.0,  a: 0.85 };
+function getNodeDescription(nodeData) {
+    return nodeData.description || "";
+}
 
-function makeColor(colorArray) {
-    if (!colorArray || colorArray.length < 4) {
-        return { r: 1, g: 1, b: 1, a: 1 };
+function getRootTier(data) {
+    if (data && data.tier && data.tier.nodes) {
+        return data.tier;
     }
 
+    if (data && data.root_layer && data.root_layer.nodes) {
+        return normalizeLayerAsTier(data.root_layer);
+    }
+
+    return null;
+}
+
+function getChildTier(nodeData) {
+    if (nodeData.tier && nodeData.tier.nodes) {
+        return nodeData.tier;
+    }
+
+    if (nodeData.child_layer && nodeData.child_layer.nodes) {
+        return normalizeLayerAsTier(nodeData.child_layer);
+    }
+
+    return null;
+}
+
+function normalizeLayerAsTier(layerData) {
     return {
-        r: colorArray[0],
-        g: colorArray[1],
-        b: colorArray[2],
-        a: colorArray[3]
+        id: layerData.id,
+        title: layerData.title,
+        description: layerData.description || "",
+        edges: layerData.edges,
+        nodes: layerData.nodes
     };
 }
 
-function averageColor(a, b) {
-    return {
-        r: (a.r + b.r) * 0.5,
-        g: (a.g + b.g) * 0.5,
-        b: (a.b + b.b) * 0.5,
-        a: (a.a + b.a) * 0.5
-    };
+function getDepthScale(depth) {
+    if (depth === 1) {
+        return 1.2;
+    }
+
+    return 1.0;
 }
 
-function appendColoredVertex(builder, point, color) {
-    builder.appendVerticesInterleaved([
-        point.x, point.y, point.z,
-        color.r, color.g, color.b, color.a
-    ]);
+function getYForDepth(depth) {
+    return (depth - 1) * script.depthSpacingY * script.dataScale;
 }
 
-function scaledNodePosition(node) {
+function sanitizeName(value) {
+    return String(value).replace(/[^A-Za-z0-9_]/g, "_");
+}
+
+function getNodeScale(nodeData, depth) {
+    var radius = 0.36;
+
+    if (nodeData.layout && nodeData.layout.suggested_radius) {
+        radius = nodeData.layout.suggested_radius;
+    }
+
+    var size = script.nodeSize * radius * 2.5 * getDepthScale(depth);
+    var slabHeight = script.slabHeight || 0.18;
+    var slabDepth = script.slabDepth || 0.65;
+
+    return new vec3(size * 1.7, size * slabHeight, size * slabDepth);
+}
+
+function setVisible(obj, visible) {
+    if (obj) {
+        obj.enabled = visible;
+    }
+}
+
+function setConnectionVisible(connectionObj, visible) {
+    if (connectionObj) {
+        connectionObj.enabled = visible;
+    }
+}
+
+function getCompensatedTextScale(fixedScale, baseScale) {
     return new vec3(
-        node.pos[0] * DATA_SCALE - CITY_OFFSET.x,
-        node.pos[1] * DATA_SCALE - CITY_OFFSET.y,
-        node.pos[2] * DATA_SCALE - CITY_OFFSET.z
+        baseScale.x / Math.max(fixedScale.x, 0.001),
+        baseScale.y / Math.max(fixedScale.y, 0.001),
+        baseScale.z / Math.max(fixedScale.z, 0.001)
     );
 }
 
-function nodeTopPosition(node) {
-    var base = scaledNodePosition(node);
-    return new vec3(base.x, base.y + node.height * DATA_SCALE, base.z);
+function createTextChild(parentObject, name, localPosition, localScale) {
+    var textObject = global.scene.createSceneObject(name);
+    textObject.layer = parentObject.layer;
+    textObject.setParent(parentObject);
+    textObject.createComponent("Component.ScreenTransform");
+
+    var textTransform = textObject.getTransform();
+    textTransform.setLocalPosition(localPosition);
+    textTransform.setLocalScale(localScale);
+
+    return textObject.createComponent("Component.Text");
 }
 
-function nodeCenterPosition(node) {
-    var base = scaledNodePosition(node);
-    return new vec3(base.x, base.y + node.height * DATA_SCALE * 0.5, base.z);
+function shortenText(value, maxLength) {
+    var text = String(value || "");
+
+    if (text.length <= maxLength) {
+        return text;
+    }
+
+    return text.substring(0, maxLength - 3) + "...";
 }
 
-function nodeSurfaceAnchorPosition(node, targetNode) {
-    // Finds the point where a ray from this node's center toward the target hits the node's box bounds.
-    // We then extend slightly by the connection radius so the cylinder visually reaches the cube face.
-    var center = nodeCenterPosition(node);
-    var targetCenter = nodeCenterPosition(targetNode);
+function formatNodeText(label, description) {
+    var title = shortenText(label, 32);
 
-    var dir = normalize(subtract(targetCenter, center));
-    if (length(dir) <= 0.0001) {
-        return nodeTopPosition(node);
+    if (!description) {
+        return title;
     }
 
-    var halfHeight = Math.max(node.height * DATA_SCALE * 0.5, 0.0001);
-    var halfWidth = Math.max(NODE_HALF_SIZE * DATA_SCALE * NODE_XZ_SCALE, 0.0001);
-
-    // Ray-box intersection (AABB) in parametric form; since we start at center, we can do the “slab” min.
-    var t = Number.MAX_VALUE;
-    if (Math.abs(dir.x) > 0.0001) {
-        t = Math.min(t, halfWidth / Math.abs(dir.x));
-    }
-    if (Math.abs(dir.y) > 0.0001) {
-        t = Math.min(t, halfHeight / Math.abs(dir.y));
-    }
-    if (Math.abs(dir.z) > 0.0001) {
-        t = Math.min(t, halfWidth / Math.abs(dir.z));
-    }
-
-    // Push out by the cylinder radius so the cap meets the cube face (avoids tiny visual gaps).
-    var radius = CONNECTION_RADIUS * DATA_SCALE;
-    return add(center, scale(dir, t + radius));
+    return title + "\n" + shortenText(description, 72);
 }
 
-function createNodeLabel(node) {
-    if (!node.name) {
+function setTextColor(textComponent, color) {
+    if (textComponent && textComponent.textFill) {
+        textComponent.textFill.color = color;
+    }
+}
+
+function configureText(textComponent, text, color) {
+    if (!textComponent) {
         return;
     }
 
-    var labelObject = global.scene.createSceneObject("Label_" + node.name);
-    labelObject.setParent(script.getSceneObject());
-
-    var top = nodeTopPosition(node);
-    var transform = labelObject.getTransform();
-    transform.setLocalPosition(new vec3(top.x, top.y + 0.01, top.z));
-    transform.setLocalScale(new vec3(LABEL_SCALE, LABEL_SCALE, LABEL_SCALE));
-    // Lay the label flat on top of the node.
-    transform.setLocalRotation(quat.fromEulerAngles(-90, 0, 0));
-
-    var labelText = labelObject.createComponent("Component.Text");
-    var supportsRichMarkup = false;
-    if (labelText.richText !== undefined) {
-        labelText.richText = true;
-        supportsRichMarkup = true;
-    }
-    if (labelText.enableMarkup !== undefined) {
-        labelText.enableMarkup = true;
-        supportsRichMarkup = true;
-    }
-    labelText.text = supportsRichMarkup ? "<b>" + node.name + "</b>" : String(node.name).toUpperCase();
-    labelText.fontSize = 56;
-    labelText.sizeToFit = true;
-    labelText.depthTest = false;
-    if (labelText.textFill && labelText.textFill.color) {
-        labelText.textFill.color = new vec4(0.0, 0.0, 0.0, 1.0);
-    }
-    if (typeof HorizontalAlignment !== "undefined") {
-        labelText.horizontalAlignment = HorizontalAlignment.Center;
-    }
-    if (typeof VerticalAlignment !== "undefined") {
-        labelText.verticalAlignment = VerticalAlignment.Center;
-    }
+    textComponent.text = text;
+    setTextColor(textComponent, color);
 }
 
-function addBuilding(node) {
-    var startIdx = nodeBuilder.getVerticesCount();
-    var base = scaledNodePosition(node);
-    var h = node.height * DATA_SCALE;
-    var s = NODE_HALF_SIZE * DATA_SCALE * NODE_XZ_SCALE;
-    var profile = getRoundedProfilePoints(s);
-    var pointCount = profile.length;
+function setNodeText(sceneObject, label, description, fixedScale) {
+    var labelTextComponent = null;
+    var fallbackTextComponent = null;
 
-    for (var i = 0; i < pointCount; i++) {
-        var p = profile[i];
-        appendColoredVertex(nodeBuilder, new vec3(base.x + p.x, base.y, base.z + p.z), HOLO_BODY);
-        appendColoredVertex(nodeBuilder, new vec3(base.x + p.x, base.y + h, base.z + p.z), HOLO_BODY);
+    for (var i = 0; i < sceneObject.getChildrenCount(); i++) {
+        var child = sceneObject.getChild(i);
+        var textComponent = child.getComponent("Component.Text");
+
+        if (textComponent) {
+            if (child.name === "NodeLabel" || child.name === "Title" || child.name === "Label") {
+                labelTextComponent = textComponent;
+            } else {
+                fallbackTextComponent = textComponent;
+            }
+        }
     }
 
-    var bottomCenterIndex = nodeBuilder.getVerticesCount();
-    appendColoredVertex(nodeBuilder, new vec3(base.x, base.y, base.z), HOLO_BODY);
-    var topCenterIndex = nodeBuilder.getVerticesCount();
-    appendColoredVertex(nodeBuilder, new vec3(base.x, base.y + h, base.z), HOLO_BODY);
-
-    for (var side = 0; side < pointCount; side++) {
-        var next = (side + 1) % pointCount;
-        var bottomA = startIdx + side * 2;
-        var topA = bottomA + 1;
-        var bottomB = startIdx + next * 2;
-        var topB = bottomB + 1;
-
-        // Side quads.
-        appendDoubleSidedIndices(nodeBuilder, [bottomA, topA, bottomB, bottomB, topA, topB]);
-        // Top and bottom caps.
-        appendDoubleSidedIndices(nodeBuilder, [topCenterIndex, topA, topB, bottomCenterIndex, bottomB, bottomA]);
+    if (!labelTextComponent) {
+        labelTextComponent = fallbackTextComponent || createTextChild(
+            sceneObject,
+            "NodeLabel",
+            new vec3(0, 0.58, 0),
+            getCompensatedTextScale(fixedScale, new vec3(0.22, 0.22, 0.22))
+        );
     }
+
+    configureText(labelTextComponent, formatNodeText(label, description), new vec4(1, 1, 1, 1));
 }
 
-// Connections are built as actual thin cylinders so they render on device.
-var connectionBuilder = new MeshBuilder([
-    { name: "position", components: 3 },
-    { name: "color", components: 4 }
-]);
-connectionBuilder.topology = MeshTopology.Triangles;
-connectionBuilder.indexType = MeshIndexType.UInt16;
+function bindNodeInteraction(sceneObject, nodePath, rootTransform) {
+    var interactable = sceneObject.getComponent(Interactable.getTypeName());
 
-// Edge outlines for the holographic cube borders.
-var edgeBuilder = new MeshBuilder([
-    { name: "position", components: 3 },
-    { name: "color", components: 4 }
-]);
-edgeBuilder.topology = MeshTopology.Triangles;
-edgeBuilder.indexType = MeshIndexType.UInt16;
-
-function subtract(a, b) {
-    return new vec3(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-
-function add(a, b) {
-    return new vec3(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-
-function scale(v, amount) {
-    return new vec3(v.x * amount, v.y * amount, v.z * amount);
-}
-
-function length(v) {
-    return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-}
-
-function normalize(v) {
-    var len = length(v);
-    if (len <= 0.0001) {
-        return new vec3(0, 0, 0);
+    if (!interactable) {
+        interactable = sceneObject.createComponent(Interactable.getTypeName());
     }
-    return scale(v, 1 / len);
-}
 
-function cross(a, b) {
-    return new vec3(
-        a.y * b.z - a.z * b.y,
-        a.z * b.x - a.x * b.z,
-        a.x * b.y - a.y * b.x
-    );
-}
-
-function addCylinder(builder, segments, radius, start, end, color) {
-    var axis = subtract(end, start);
-    var axisLength = length(axis);
-    if (axisLength <= 0.0001) {
+    if (!interactable) {
+        print("WARNING: Could not create Interactable for node: " + nodePath);
         return;
     }
 
-    var direction = scale(axis, 1 / axisLength);
-    var helper = Math.abs(direction.y) < 0.9 ? new vec3(0, 1, 0) : new vec3(1, 0, 0);
-    var right = normalize(cross(helper, direction));
-    var forward = normalize(cross(direction, right));
-    var startIndex = builder.getVerticesCount();
+    (function(path, transform) {
+        var triggerStartPosition = null;
 
-    for (var i = 0; i < segments; i++) {
-        var angle = (i / segments) * Math.PI * 2;
-        var radial = add(scale(right, Math.cos(angle) * radius), scale(forward, Math.sin(angle) * radius));
-        appendColoredVertex(builder, add(start, radial), color);
-        appendColoredVertex(builder, add(end, radial), color);
-    }
-
-    for (var side = 0; side < segments; side++) {
-        var next = (side + 1) % segments;
-        var startA = startIndex + side * 2;
-        var endA = startA + 1;
-        var startB = startIndex + next * 2;
-        var endB = startB + 1;
-        builder.appendIndices([startA, endA, startB, startB, endA, endB]);
-    }
-
-    var startCenterIndex = builder.getVerticesCount();
-    appendColoredVertex(builder, start, color);
-    var endCenterIndex = builder.getVerticesCount();
-    appendColoredVertex(builder, end, color);
-
-    for (var cap = 0; cap < segments; cap++) {
-        var capNext = (cap + 1) % segments;
-        builder.appendIndices([
-            startCenterIndex,
-            startIndex + capNext * 2,
-            startIndex + cap * 2,
-            endCenterIndex,
-            startIndex + cap * 2 + 1,
-            startIndex + capNext * 2 + 1
-        ]);
-    }
-}
-
-function addConnectionCylinder(start, end, color) {
-    addCylinder(connectionBuilder, CYLINDER_SEGMENTS, CONNECTION_RADIUS * DATA_SCALE, start, end, color);
-}
-
-function addEdgeCylinder(start, end, color) {
-    addCylinder(edgeBuilder, EDGE_SEGMENTS, EDGE_RADIUS * DATA_SCALE, start, end, color);
-}
-
-function addBuildingEdges(node) {
-    var base = scaledNodePosition(node);
-    var h = node.height * DATA_SCALE;
-    var s = NODE_HALF_SIZE * DATA_SCALE * NODE_XZ_SCALE;
-    var profile = getRoundedProfilePoints(s);
-    var vBottom = [];
-    var vTop = [];
-    var i;
-
-    for (i = 0; i < profile.length; i++) {
-        vBottom.push(new vec3(base.x + profile[i].x, base.y, base.z + profile[i].z));
-        vTop.push(new vec3(base.x + profile[i].x, base.y + h, base.z + profile[i].z));
-    }
-
-    var c = HOLO_EDGE;
-    for (i = 0; i < profile.length; i++) {
-        var next = (i + 1) % profile.length;
-        addEdgeCylinder(vBottom[i], vBottom[next], c);
-        addEdgeCylinder(vTop[i], vTop[next], c);
-        addEdgeCylinder(vBottom[i], vTop[i], c);
-    }
-}
-
-function appendArcPoints(points, centerX, centerZ, startAngle, endAngle, radius, segments, includeFirst) {
-    var stepStart = includeFirst ? 0 : 1;
-    for (var i = stepStart; i <= segments; i++) {
-        var t = i / segments;
-        var angle = startAngle + (endAngle - startAngle) * t;
-        points.push({
-            x: centerX + Math.cos(angle) * radius,
-            z: centerZ + Math.sin(angle) * radius
+        interactable.onTriggerStart.add(function() {
+            triggerStartPosition = transform.getWorldPosition();
         });
-    }
+
+        interactable.onTriggerEnd.add(function() {
+            var currentPosition = transform.getWorldPosition();
+            var movedDistance = triggerStartPosition ? triggerStartPosition.distance(currentPosition) : 0;
+
+            triggerStartPosition = null;
+
+            if (movedDistance <= (script.tapMoveThreshold || 0.15)) {
+                onNodeClicked(path);
+            }
+        });
+    })(nodePath, rootTransform);
 }
 
-function getRoundedProfilePoints(halfSize) {
-    var radius = Math.min(NODE_CORNER_RADIUS * DATA_SCALE, halfSize);
-    if (radius <= 0.0001) {
-        return [
-            { x: halfSize,  z: -halfSize },
-            { x: halfSize,  z: halfSize },
-            { x: -halfSize, z: halfSize },
-            { x: -halfSize, z: -halfSize }
-        ];
-    }
+function buildInteractiveCity() {
+    var data = visualizerData;
+    var rootTier = getRootTier(data);
 
-    var inner = halfSize - radius;
-    var points = [];
-
-    appendArcPoints(points, inner, -inner, -Math.PI * 0.5, 0, radius, CORNER_SEGMENTS, true);
-    appendArcPoints(points, inner, inner, 0, Math.PI * 0.5, radius, CORNER_SEGMENTS, false);
-    appendArcPoints(points, -inner, inner, Math.PI * 0.5, Math.PI, radius, CORNER_SEGMENTS, false);
-    appendArcPoints(points, -inner, -inner, Math.PI, Math.PI * 1.5, radius, CORNER_SEGMENTS, false);
-
-    return points;
-}
-
-function findNodeById(nodes, id) {
-    for (var i = 0; i < nodes.length; i++) {
-        if (nodes[i].id === id) {
-            return nodes[i];
-        }
-    }
-    return null;
-}
-
-function calculateCityOffset(nodes) {
-    if (!nodes || nodes.length === 0) {
-        return new vec3(0, 0, 0);
-    }
-
-    var minX = nodes[0].pos[0] * DATA_SCALE;
-    var minY = nodes[0].pos[1] * DATA_SCALE;
-    var minZ = nodes[0].pos[2] * DATA_SCALE;
-
-    for (var i = 1; i < nodes.length; i++) {
-        var x = nodes[i].pos[0] * DATA_SCALE;
-        var y = nodes[i].pos[1] * DATA_SCALE;
-        var z = nodes[i].pos[2] * DATA_SCALE;
-
-        minX = Math.min(minX, x);
-        minY = Math.min(minY, y);
-        minZ = Math.min(minZ, z);
-    }
-
-    // Anchor the city's first visible corner to placement origin.
-    return new vec3(minX, minY, minZ);
-}
-
-function getCityData() {
-    if (script.cityDataJson && script.cityDataJson.json) {
-        return script.cityDataJson.json;
-    }
-
-    var moduleData = require("Scripts/Data/CityData");
-    if (moduleData) {
-        return moduleData;
-    }
-
-    print("ERROR: No city data found. Assign Assets/data.json to CityGenerator.cityDataJson in the Inspector.");
-    return null;
-}
-
-function validateInputs() {
-    if (!script.nodeMesh) {
-        script.nodeMesh = script.getSceneObject().getComponent("Component.RenderMeshVisual");
-    }
-
-    if (!script.nodeMesh) {
-        print("ERROR: nodeMesh input is not assigned and no Render Mesh Visual exists on this SceneObject.");
-        return false;
-    }
-
-    if (!script.connectionMesh) {
-        script.connectionMesh = script.getSceneObject().createComponent("Component.RenderMeshVisual");
-        if (script.nodeMesh.getMaterial(0)) {
-            script.connectionMesh.addMaterial(script.nodeMesh.getMaterial(0));
-        }
-    }
-
-    if (!script.edgeMesh) {
-        script.edgeMesh = script.getSceneObject().createComponent("Component.RenderMeshVisual");
-        if (script.nodeMesh.getMaterial(0)) {
-            script.edgeMesh.addMaterial(script.nodeMesh.getMaterial(0));
-        }
-    }
-
-    return true;
-}
-
-// THE EXECUTION LOOP
-function buildCity() {
-    if (!validateInputs()) {
+    if (!rootTier) {
+        print("ERROR: visualizer_data.json does not contain a supported tier/root_layer graph.");
         return;
     }
 
-    var data = getCityData();
-    if (!data) {
+    childPathsByParent[ROOT_PATH] = [];
+    expandedState[ROOT_PATH] = true;
+    tierConnectionsByParentPath[ROOT_PATH] = [];
+
+    buildTier(rootTier, ROOT_PATH, 1, new vec3(0, 0, 0), true);
+    createRootConnectionsFromGlobalEdges(data.edges || []);
+
+    print(
+        "Visualizer nodes and connections generated from visualizer_data.json: nodes=" +
+        getSpawnedNodeCount() +
+        " connections=" +
+        activeConnections.length
+    );
+}
+
+function getSpawnedNodeCount() {
+    var count = 0;
+
+    for (var nodeId in spawnedNodes) {
+        if (spawnedNodes.hasOwnProperty(nodeId)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+function buildTier(tierData, parentPath, depth, centerPosition, visibleAtStart) {
+    var nodes = tierData.nodes || [];
+    var localPathById = {};
+    var count = nodes.length;
+    var radius = (depth === 1 ? script.rootRadius : script.childRadius) * script.dataScale;
+
+    if (!childPathsByParent[parentPath]) {
+        childPathsByParent[parentPath] = [];
+    }
+
+    if (!tierConnectionsByParentPath[parentPath]) {
+        tierConnectionsByParentPath[parentPath] = [];
+    }
+
+    if (count > 8) {
+        radius *= 1 + (count - 8) * 0.08;
+    }
+
+    for (var i = 0; i < count; i++) {
+        var nodeData = nodes[i];
+        var nodeId = getNodeId(nodeData);
+        var nodePath = parentPath + ">" + nodeId;
+        var angle = count === 1 ? 0 : (Math.PI * 2 * i) / count;
+        var position = new vec3(
+            centerPosition.x + Math.cos(angle) * radius,
+            getYForDepth(depth),
+            centerPosition.z + Math.sin(angle) * radius
+        );
+
+        spawnNode(nodeData, nodePath, position, depth, visibleAtStart);
+        childPathsByParent[parentPath].push(nodePath);
+        childPathsByParent[nodePath] = [];
+        expandedState[nodePath] = false;
+        localPathById[nodeId] = nodePath;
+        mapNodeIdToRootPath(nodeId, nodePath, parentPath);
+
+        if (parentPath !== ROOT_PATH) {
+            createConnection(parentPath, nodePath, "contains", false, connectionByChildPath);
+        }
+
+        var childTier = getChildTier(nodeData);
+        if (childTier) {
+            buildTier(childTier, nodePath, depth + 1, position, false);
+        }
+    }
+
+    createTierConnections(tierData.edges || [], parentPath, localPathById, visibleAtStart);
+}
+
+function spawnNode(nodeData, nodePath, position, depth, visibleAtStart) {
+    if (spawnedNodes[nodePath]) {
+        print("WARNING: Duplicate node path skipped: " + nodePath);
         return;
     }
 
-    if (!data.nodes || !data.connections) {
-        print("ERROR: JSON must contain 'nodes' and 'connections' arrays.");
+    if (!script.nodePrefab) {
         return;
     }
 
-    print("Success! Rendering " + data.nodes.length + " nodes.");
-    CITY_OFFSET = calculateCityOffset(data.nodes);
+    var nodeObject = script.nodePrefab.instantiate(script.getSceneObject());
+    var transform = nodeObject.getTransform();
+    var fixedScale = getNodeScale(nodeData, depth);
 
-    // 1. Build Nodes
-    data.nodes.forEach(function(node) {
-        addBuilding(node);
-        addBuildingEdges(node);
-        createNodeLabel(node);
+    nodeObject.name = "NODE__" + sanitizeName(nodePath);
+    transform.setLocalPosition(position);
+    transform.setLocalScale(fixedScale);
+
+    setNodeText(nodeObject, getNodeLabel(nodeData), getNodeDescription(nodeData), fixedScale);
+    setVisible(nodeObject, visibleAtStart);
+    configureNodeManipulation(nodeObject, transform);
+    bindNodeInteraction(nodeObject, nodePath, transform);
+
+    spawnedNodes[nodePath] = nodeObject;
+    fixedNodeScales[nodePath] = fixedScale;
+}
+
+function createTierConnections(edges, parentPath, localPathById, visibleAtStart) {
+    for (var i = 0; i < edges.length; i++) {
+        var edge = edges[i];
+        var fromPath = localPathById[String(edge.from)];
+        var toPath = localPathById[String(edge.to)];
+
+        if (fromPath && toPath) {
+            var connectionObject = createConnection(fromPath, toPath, edge.type || "edge", visibleAtStart, null);
+            if (connectionObject) {
+                tierConnectionsByParentPath[parentPath].push(connectionObject);
+            }
+        }
+    }
+}
+
+function mapNodeIdToRootPath(nodeId, nodePath, parentPath) {
+    if (parentPath === ROOT_PATH) {
+        rootPathByNodeId[nodeId] = nodePath;
+        return;
+    }
+
+    var parentRootPath = rootPathByNodeId[getNodeIdFromPath(parentPath)];
+    if (parentRootPath) {
+        rootPathByNodeId[nodeId] = parentRootPath;
+    }
+}
+
+function getNodeIdFromPath(nodePath) {
+    var separatorIndex = nodePath.lastIndexOf(">");
+
+    if (separatorIndex < 0) {
+        return nodePath;
+    }
+
+    return nodePath.substring(separatorIndex + 1);
+}
+
+function createRootConnectionsFromGlobalEdges(edges) {
+    for (var i = 0; i < edges.length; i++) {
+        var edge = edges[i];
+        var fromRootPath = rootPathByNodeId[String(edge.from)];
+        var toRootPath = rootPathByNodeId[String(edge.to)];
+
+        if (!fromRootPath || !toRootPath || fromRootPath === toRootPath) {
+            continue;
+        }
+
+        createRootConnection(fromRootPath, toRootPath, edge.type || "root_edge");
+    }
+}
+
+function createRootConnection(fromRootPath, toRootPath, connectionType) {
+    var keyParts = [fromRootPath, toRootPath].sort();
+    var key = keyParts[0] + "::" + keyParts[1];
+
+    if (rootConnectionKeys[key]) {
+        return;
+    }
+
+    rootConnectionKeys[key] = true;
+    createConnection(fromRootPath, toRootPath, connectionType, true, null);
+}
+
+function createConnection(fromPath, toPath, connectionType, visibleAtStart, childLookup) {
+    var nodeA = spawnedNodes[fromPath];
+    var nodeB = spawnedNodes[toPath];
+
+    if (!nodeA || !nodeB || !script.connectionPrefab) {
+        return null;
+    }
+
+    var connectionObject = script.connectionPrefab.instantiate(script.getSceneObject());
+    connectionObject.name = "CONNECTION__" + sanitizeName(connectionType + "__" + fromPath + "__" + toPath);
+    connectionObject.enabled = visibleAtStart;
+
+    if (childLookup) {
+        childLookup[toPath] = connectionObject;
+    }
+
+    activeConnections.push({
+        sceneObject: connectionObject,
+        transform: connectionObject.getTransform(),
+        nodeA_Transform: nodeA.getTransform(),
+        nodeB_Transform: nodeB.getTransform()
     });
 
-    // 2. Build Connections
-    data.connections.forEach(function(conn) {
-        var fromNode = findNodeById(data.nodes, conn.from);
-        var toNode = findNodeById(data.nodes, conn.to);
+    updateConnection(activeConnections[activeConnections.length - 1]);
+    return connectionObject;
+}
 
-        if (fromNode && toNode) {
-            var start = nodeSurfaceAnchorPosition(fromNode, toNode);
-            var end = nodeSurfaceAnchorPosition(toNode, fromNode);
-            addConnectionCylinder(start, end, HOLO_CONN);
-        } else {
-            print("WARNING: Connection skipped because a node id was not found: " + conn.from + " -> " + conn.to);
+function onNodeClicked(nodePath) {
+    var children = childPathsByParent[nodePath];
+
+    if (!children || children.length === 0) {
+        print("Leaf node clicked: " + nodePath);
+        return;
+    }
+
+    if (expandedState[nodePath]) {
+        collapseNode(nodePath);
+    } else {
+        if (script.collapseSiblingsOnExpand) {
+            collapseSiblingNodes(nodePath);
         }
-    });
 
-    finalizeCity();
-}
-
-function finalizeCity() {
-    if (nodeBuilder.isValid()) {
-        script.nodeMesh.mesh = nodeBuilder.getMesh();
-        nodeBuilder.updateMesh();
-    }
-    if (connectionBuilder.isValid()) {
-        script.connectionMesh.mesh = connectionBuilder.getMesh();
-        connectionBuilder.updateMesh();
-    }
-    if (edgeBuilder.isValid()) {
-        script.edgeMesh.mesh = edgeBuilder.getMesh();
-        edgeBuilder.updateMesh();
+        expandNode(nodePath);
     }
 }
 
-// Build on lens start. The object will become visible once placed by the surface placement script.
-buildCity();
+function collapseSiblingNodes(nodePath) {
+    var parentPath = nodePath.substring(0, nodePath.lastIndexOf(">"));
+    var siblings = childPathsByParent[parentPath];
+
+    if (!siblings) {
+        return;
+    }
+
+    for (var i = 0; i < siblings.length; i++) {
+        if (siblings[i] !== nodePath && expandedState[siblings[i]]) {
+            collapseNode(siblings[i]);
+        }
+    }
+}
+
+function expandNode(nodePath) {
+    var children = childPathsByParent[nodePath];
+
+    if (!children) {
+        return;
+    }
+
+    for (var i = 0; i < children.length; i++) {
+        var childPath = children[i];
+        setVisible(spawnedNodes[childPath], true);
+        setConnectionVisible(connectionByChildPath[childPath], true);
+    }
+
+    setTierConnectionsVisible(nodePath, true);
+    expandedState[nodePath] = true;
+    print("Expanded: " + nodePath);
+}
+
+function collapseNode(nodePath) {
+    var children = childPathsByParent[nodePath];
+
+    if (!children) {
+        return;
+    }
+
+    for (var i = 0; i < children.length; i++) {
+        hideSubtree(children[i]);
+    }
+
+    setTierConnectionsVisible(nodePath, false);
+    expandedState[nodePath] = false;
+    print("Collapsed: " + nodePath);
+}
+
+function hideSubtree(nodePath) {
+    setVisible(spawnedNodes[nodePath], false);
+    setConnectionVisible(connectionByChildPath[nodePath], false);
+    setTierConnectionsVisible(nodePath, false);
+
+    var children = childPathsByParent[nodePath];
+
+    if (children) {
+        for (var i = 0; i < children.length; i++) {
+            hideSubtree(children[i]);
+        }
+    }
+
+    expandedState[nodePath] = false;
+}
+
+function setTierConnectionsVisible(parentPath, visible) {
+    var connections = tierConnectionsByParentPath[parentPath];
+
+    if (!connections) {
+        return;
+    }
+
+    for (var i = 0; i < connections.length; i++) {
+        setConnectionVisible(connections[i], visible);
+    }
+}
+
+function updateConnections() {
+    for (var nodeId in spawnedNodes) {
+        if (spawnedNodes.hasOwnProperty(nodeId)) {
+            spawnedNodes[nodeId].getTransform().setLocalScale(fixedNodeScales[nodeId]);
+        }
+    }
+
+    for (var i = 0; i < activeConnections.length; i++) {
+        updateConnection(activeConnections[i]);
+    }
+}
+
+function updateConnection(conn) {
+    var posA = conn.nodeA_Transform.getWorldPosition();
+    var posB = conn.nodeB_Transform.getWorldPosition();
+    var midPoint = posA.add(posB).uniformScale(0.5);
+    var distance = posA.distance(posB);
+
+    conn.transform.setWorldPosition(midPoint);
+    conn.transform.setWorldScale(new vec3(script.connectionThickness, distance, script.connectionThickness));
+
+    if (distance > 0.001) {
+        var direction = posB.sub(posA).normalize();
+        conn.transform.setWorldRotation(quat.rotationFromTo(vec3.up(), direction));
+    }
+}
+
+if (script.nodePrefab && script.connectionPrefab) {
+    buildInteractiveCity();
+
+    var updateEvent = script.createEvent("UpdateEvent");
+    updateEvent.bind(updateConnections);
+} else {
+    print("ERROR: Please assign nodePrefab and connectionPrefab in the Inspector.");
+}

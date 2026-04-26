@@ -32,7 +32,7 @@ module.exports = {
     {
       "id": 4,
       "name": "function_5",
-      "pos": [0, 5, -10],
+      "pos": [0, 5, 0],
       "height": 1,
       "color": [0, 0, 1, 1]
     },

@@ -26,15 +26,18 @@
   ExportUid: 00000000-0000-0000-0000-000000000000
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
-    cityDataJson: false
-    connectionMesh: false
-    connectionRadius: false
-    cornerSegments: false
+    childRadius: false
+    collapseSiblingsOnExpand: false
+    connectionPrefab: false
+    connectionThickness: false
     dataScale: false
-    edgeMesh: false
-    nodeCornerRadius: false
-    nodeHalfSize: false
-    nodeMesh: false
+    depthSpacingY: false
+    nodePrefab: false
+    nodeSize: false
+    rootRadius: false
+    slabDepth: false
+    slabHeight: false
+    tapMoveThreshold: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -44,15 +47,18 @@
   Attachments:
     []
   DefaultScriptInputs:
-    - nodeMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
-      connectionMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
-      edgeMesh: !<reference.RenderMeshVisual> 00000000-0000-0000-0000-000000000000
-      cityDataJson: !<reference.JsonAsset> 00000000-0000-0000-0000-000000000000
-      dataScale: !<float> 1.000000
-      nodeHalfSize: !<float> 1.000000
-      nodeCornerRadius: 0.300000
-      cornerSegments: 3
-      connectionRadius: 0.250000
+    - nodePrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      connectionPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      dataScale: 0.100000
+      connectionThickness: 0.150000
+      nodeSize: !<float> 1.000000
+      depthSpacingY: !<float> 5.000000
+      rootRadius: !<float> 10.000000
+      childRadius: !<float> 5.000000
+      slabHeight: 0.180000
+      slabDepth: 0.650000
+      tapMoveThreshold: 0.150000
+      collapseSiblingsOnExpand: false
   ScriptTypes:
     -
       {}

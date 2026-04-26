@@ -1,0 +1,1965 @@
+// Generated from visualizer_data.json. Do not edit by hand.
+module.exports = {
+  "constraints": {
+    "max_depth": 3,
+    "max_nodes_per_layer": 20,
+    "target_user": "intermediate"
+  },
+  "edges": [
+    {
+      "from": "app-component",
+      "to": "auth-context",
+      "type": "uses"
+    },
+    {
+      "from": "app-component",
+      "to": "login-screen",
+      "type": "contains"
+    },
+    {
+      "from": "app-component",
+      "to": "transcript-panel",
+      "type": "contains"
+    },
+    {
+      "from": "app-component",
+      "to": "voice-orb",
+      "type": "contains"
+    },
+    {
+      "from": "app-component",
+      "to": "widget-component",
+      "type": "contains"
+    },
+    {
+      "from": "app-component",
+      "to": "widget-dock",
+      "type": "contains"
+    },
+    {
+      "from": "app-component",
+      "to": "widget-manager",
+      "type": "uses"
+    },
+    {
+      "from": "app-component",
+      "to": "widget-types",
+      "type": "uses"
+    },
+    {
+      "from": "audio-player",
+      "to": "web-api",
+      "type": "integrates_with"
+    },
+    {
+      "from": "backend",
+      "to": "voice-pipeline",
+      "type": "contains"
+    },
+    {
+      "from": "backend",
+      "to": "web-api",
+      "type": "contains"
+    },
+    {
+      "from": "frontend",
+      "to": "app-component",
+      "type": "contains"
+    },
+    {
+      "from": "frontend",
+      "to": "audio-player",
+      "type": "contains"
+    },
+    {
+      "from": "gemini-tools",
+      "to": "canvas-scraper",
+      "type": "uses"
+    },
+    {
+      "from": "gemini-tools",
+      "to": "course-search",
+      "type": "uses"
+    },
+    {
+      "from": "gemini-tools",
+      "to": "rmp-scraper",
+      "type": "uses"
+    },
+    {
+      "from": "gemini-tools",
+      "to": "theirstack-scraper",
+      "type": "uses"
+    },
+    {
+      "from": "path:backend",
+      "to": "path:backend/tests",
+      "type": "contains"
+    },
+    {
+      "from": "path:backend",
+      "to": "path:backend/tools",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end",
+      "to": "path:front-end/public",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end",
+      "to": "path:front-end/src",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/assets",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/components",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/components",
+      "type": "relative_import"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/context",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/context",
+      "type": "relative_import"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/hooks",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/hooks",
+      "type": "relative_import"
+    },
+    {
+      "from": "path:front-end/src",
+      "to": "path:front-end/src/lib",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end/src/components",
+      "to": "path:front-end/src/components/widgets",
+      "type": "contains"
+    },
+    {
+      "from": "path:front-end/src/components",
+      "to": "path:front-end/src/components/widgets",
+      "type": "relative_import"
+    },
+    {
+      "from": "root",
+      "to": "path:assets",
+      "type": "contains"
+    },
+    {
+      "from": "root",
+      "to": "path:backend",
+      "type": "contains"
+    },
+    {
+      "from": "root",
+      "to": "path:front-end",
+      "type": "contains"
+    },
+    {
+      "from": "voice-pipeline",
+      "to": "gemini-tools",
+      "type": "uses"
+    },
+    {
+      "from": "voice-pipeline",
+      "to": "web-api",
+      "type": "consumed_by"
+    },
+    {
+      "from": "widget-component",
+      "to": "academic-widget",
+      "type": "renders"
+    },
+    {
+      "from": "widget-component",
+      "to": "course-details-widget",
+      "type": "renders"
+    },
+    {
+      "from": "widget-component",
+      "to": "job-listings-widget",
+      "type": "renders"
+    },
+    {
+      "from": "widget-component",
+      "to": "professor-widget",
+      "type": "renders"
+    },
+    {
+      "from": "widget-component",
+      "to": "roadmap-widget",
+      "type": "renders"
+    },
+    {
+      "from": "widget-component",
+      "to": "schedule-widget",
+      "type": "renders"
+    }
+  ],
+  "repo": {
+    "branch": "main",
+    "commit_sha": "99f3eaaef88fee6ba16ea0b09c4bca58fb44d8c0",
+    "name": "TruHacks26",
+    "source_url": "https://github.com/JustinAlega/TruHacks26"
+  },
+  "root_layer": {
+    "depth": 1,
+    "edges": [],
+    "id": "layer:root",
+    "nodes": [
+      {
+        "analysis_node_ids": [
+          "backend"
+        ],
+        "category": "backend",
+        "child_layer": {
+          "depth": 2,
+          "edges": [
+            {
+              "confidence": 1.0,
+              "description": "Gemini tools wrap Canvas scraper for grade data",
+              "from": "gemini-tools",
+              "id": "r4",
+              "to": "canvas-scraper",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Gemini tools wrap course search for catalog queries",
+              "from": "gemini-tools",
+              "id": "r5",
+              "to": "course-search",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Gemini tools wrap Rate My Professor scraper",
+              "from": "gemini-tools",
+              "id": "r6",
+              "to": "rmp-scraper",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Gemini tools wrap TheirStack scraper for job listings",
+              "from": "gemini-tools",
+              "id": "r7",
+              "to": "theirstack-scraper",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Voice pipeline invokes Gemini tool functions for data retrieval",
+              "from": "voice-pipeline",
+              "id": "r3",
+              "to": "gemini-tools",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Voice pipeline receives messages via WebSocket API",
+              "from": "voice-pipeline",
+              "id": "r24",
+              "to": "web-api",
+              "type": "consumed_by"
+            }
+          ],
+          "id": "layer:2:backend",
+          "nodes": [
+            {
+              "analysis_node_ids": [
+                "gemini-tools"
+              ],
+              "category": "business_logic",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Tool functions callable by Gemini AI for data retrieval",
+              "evidence_notes": [],
+              "id": "gemini-tools",
+              "is_rollup": false,
+              "layout": {
+                "group": "business_logic",
+                "importance": 0.702,
+                "suggested_radius": 0.36
+              },
+              "name": "Gemini Tool Functions",
+              "related_files": [
+                "backend/tools/gemini_tools.py"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "course-search"
+              ],
+              "category": "data_access",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Semantic search over university course catalog using sentence-transformers embeddings",
+              "evidence_notes": [],
+              "id": "course-search",
+              "is_rollup": false,
+              "layout": {
+                "group": "data_access",
+                "importance": 0.679,
+                "suggested_radius": 0.36
+              },
+              "name": "Course Catalog Search",
+              "related_files": [
+                "backend/tools/course_scraper.py",
+                "backend/course_embeddings.npy",
+                "backend/course_metadata.pkl"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "voice-pipeline"
+              ],
+              "category": "business_logic",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Orchestration layer connecting STT, Gemini AI reasoning, tool execution, and TTS",
+              "evidence_notes": [],
+              "id": "voice-pipeline",
+              "is_rollup": false,
+              "layout": {
+                "group": "business_logic",
+                "importance": 0.678,
+                "suggested_radius": 0.36
+              },
+              "name": "Voice Pipeline",
+              "related_files": [
+                "backend/pipeline.py"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "web-api"
+              ],
+              "category": "api",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "FastAPI server with WebSocket endpoint for real-time voice communication",
+              "evidence_notes": [],
+              "id": "web-api",
+              "is_rollup": false,
+              "layout": {
+                "group": "api",
+                "importance": 0.678,
+                "suggested_radius": 0.36
+              },
+              "name": "Web API",
+              "related_files": [
+                "backend/main.py"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "canvas-scraper"
+              ],
+              "category": "data_access",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Extracts courses, grades, and assignment stats from Canvas LMS",
+              "evidence_notes": [],
+              "id": "canvas-scraper",
+              "is_rollup": false,
+              "layout": {
+                "group": "data_access",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Canvas LMS Scraper",
+              "related_files": [
+                "backend/tools/canvas_scraper.py"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "rmp-scraper"
+              ],
+              "category": "data_access",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Fetches professor ratings and school info from Rate My Professors GraphQL API",
+              "evidence_notes": [],
+              "id": "rmp-scraper",
+              "is_rollup": false,
+              "layout": {
+                "group": "data_access",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Rate My Professor Scraper",
+              "related_files": [
+                "backend/tools/rmp_scraper.py"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "theirstack-scraper"
+              ],
+              "category": "data_access",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Fetches internship and job listings from TheirStack API",
+              "evidence_notes": [],
+              "id": "theirstack-scraper",
+              "is_rollup": false,
+              "layout": {
+                "group": "data_access",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Job Listings Scraper",
+              "related_files": [
+                "backend/tools/theirstack_scraper.py"
+              ],
+              "type": "module"
+            }
+          ],
+          "parent_node_id": "backend",
+          "title": "Backend System"
+        },
+        "confidence": 1.0,
+        "description": "Python FastAPI backend handling voice pipeline, AI reasoning, and data scraping",
+        "evidence_notes": [],
+        "id": "backend",
+        "is_rollup": false,
+        "layout": {
+          "group": "backend",
+          "importance": 0.692,
+          "suggested_radius": 0.42
+        },
+        "name": "Backend System",
+        "related_files": [
+          "backend/main.py",
+          "backend/pipeline.py",
+          "backend/pyproject.toml"
+        ],
+        "type": "subsystem"
+      },
+      {
+        "analysis_node_ids": [
+          "frontend"
+        ],
+        "category": "frontend",
+        "child_layer": {
+          "depth": 2,
+          "edges": [
+            {
+              "confidence": 1.0,
+              "description": "App uses auth context for authentication",
+              "from": "app-component",
+              "id": "r11",
+              "to": "auth-context",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "App contains login screen component",
+              "from": "app-component",
+              "id": "r16",
+              "to": "login-screen",
+              "type": "contains"
+            },
+            {
+              "confidence": 1.0,
+              "description": "App contains transcript panel for display",
+              "from": "app-component",
+              "id": "r15",
+              "to": "transcript-panel",
+              "type": "contains"
+            },
+            {
+              "confidence": 1.0,
+              "description": "App contains voice orb for input",
+              "from": "app-component",
+              "id": "r14",
+              "to": "voice-orb",
+              "type": "contains"
+            },
+            {
+              "confidence": 1.0,
+              "description": "App contains widget component for rendering",
+              "from": "app-component",
+              "id": "r13",
+              "to": "widget-component",
+              "type": "contains"
+            },
+            {
+              "confidence": 1.0,
+              "description": "App contains widget dock for layout",
+              "from": "app-component",
+              "id": "r12",
+              "to": "widget-dock",
+              "type": "contains"
+            },
+            {
+              "confidence": 1.0,
+              "description": "App uses widget manager hook for state",
+              "from": "app-component",
+              "id": "r10",
+              "to": "widget-manager",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "App uses type definitions",
+              "from": "app-component",
+              "id": "r17",
+              "to": "widget-types",
+              "type": "uses"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Widget component renders academic overview widget",
+              "from": "widget-component",
+              "id": "r18",
+              "to": "academic-widget",
+              "type": "renders"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Widget component renders course details widget",
+              "from": "widget-component",
+              "id": "r19",
+              "to": "course-details-widget",
+              "type": "renders"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Widget component renders job listings widget",
+              "from": "widget-component",
+              "id": "r22",
+              "to": "job-listings-widget",
+              "type": "renders"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Widget component renders professor widget",
+              "from": "widget-component",
+              "id": "r20",
+              "to": "professor-widget",
+              "type": "renders"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Widget component renders roadmap widget",
+              "from": "widget-component",
+              "id": "r21",
+              "to": "roadmap-widget",
+              "type": "renders"
+            },
+            {
+              "confidence": 1.0,
+              "description": "Widget component renders schedule widget",
+              "from": "widget-component",
+              "id": "r23",
+              "to": "schedule-widget",
+              "type": "renders"
+            }
+          ],
+          "id": "layer:2:frontend",
+          "nodes": [
+            {
+              "analysis_node_ids": [
+                "app-component"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Main React application component managing global state and layout",
+              "evidence_notes": [],
+              "id": "app-component",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.75,
+                "suggested_radius": 0.36
+              },
+              "name": "App Component",
+              "related_files": [
+                "front-end/src/App.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "widget-component"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Dynamic widget renderer that displays different widget types",
+              "evidence_notes": [],
+              "id": "widget-component",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.726,
+                "suggested_radius": 0.36
+              },
+              "name": "Widget Component",
+              "related_files": [
+                "front-end/src/components/Widget.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "audio-player"
+              ],
+              "category": "integration",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Client-side audio playback for ElevenLabs TTS responses",
+              "evidence_notes": [],
+              "id": "audio-player",
+              "is_rollup": false,
+              "layout": {
+                "group": "integration",
+                "importance": 0.667,
+                "suggested_radius": 0.36
+              },
+              "name": "Audio Player",
+              "related_files": [
+                "front-end/src/audioPlayer.ts"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "widget-manager"
+              ],
+              "category": "state_management",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Hook for managing widget state and visibility",
+              "evidence_notes": [],
+              "id": "widget-manager",
+              "is_rollup": false,
+              "layout": {
+                "group": "state_management",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Widget Manager",
+              "related_files": [
+                "front-end/src/hooks/useWidgetManager.ts"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "auth-context"
+              ],
+              "category": "state_management",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "React context for user authentication state",
+              "evidence_notes": [],
+              "id": "auth-context",
+              "is_rollup": false,
+              "layout": {
+                "group": "state_management",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Authentication Context",
+              "related_files": [
+                "front-end/src/context/AuthContext.tsx"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "widget-dock"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Container for organizing and displaying widget cards",
+              "evidence_notes": [],
+              "id": "widget-dock",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Widget Dock",
+              "related_files": [
+                "front-end/src/components/WidgetDock.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "voice-orb"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Visual voice input indicator with recording state",
+              "evidence_notes": [],
+              "id": "voice-orb",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Voice Orb",
+              "related_files": [
+                "front-end/src/components/VoiceOrb.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "transcript-panel"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Display panel for conversation transcripts",
+              "evidence_notes": [],
+              "id": "transcript-panel",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Transcript Panel",
+              "related_files": [
+                "front-end/src/components/TranscriptPanel.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "login-screen"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "User authentication screen",
+              "evidence_notes": [],
+              "id": "login-screen",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Login Screen",
+              "related_files": [
+                "front-end/src/components/LoginScreen.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "widget-types"
+              ],
+              "category": "configuration",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "TypeScript type definitions for widgets and data structures",
+              "evidence_notes": [],
+              "id": "widget-types",
+              "is_rollup": false,
+              "layout": {
+                "group": "configuration",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Widget Types",
+              "related_files": [
+                "front-end/src/types.ts"
+              ],
+              "type": "module"
+            },
+            {
+              "analysis_node_ids": [
+                "academic-widget"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Displays GPA trends, current courses with grades, and late assignments from Canvas",
+              "evidence_notes": [],
+              "id": "academic-widget",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Academic Overview Widget",
+              "related_files": [
+                "front-end/src/components/widgets/AcademicOverviewWidget.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "course-details-widget"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Displays course information from semantic search",
+              "evidence_notes": [],
+              "id": "course-details-widget",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Course Details Widget",
+              "related_files": [
+                "front-end/src/components/widgets/CourseDetailsWidget.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "professor-widget"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Displays professor ratings from Rate My Professors",
+              "evidence_notes": [],
+              "id": "professor-widget",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Professor Widget",
+              "related_files": [
+                "front-end/src/components/widgets/ProfessorWidget.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "roadmap-widget"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Interactive degree prerequisite graph with clickable elective slots and PDF export",
+              "evidence_notes": [],
+              "id": "roadmap-widget",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Course Roadmap Widget",
+              "related_files": [
+                "front-end/src/components/widgets/CourseRoadmapWidget.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "job-listings-widget"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Displays internships and jobs from TheirStack API",
+              "evidence_notes": [],
+              "id": "job-listings-widget",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Job Listings Widget",
+              "related_files": [
+                "front-end/src/components/widgets/JobListingsWidget.tsx"
+              ],
+              "type": "component"
+            },
+            {
+              "analysis_node_ids": [
+                "schedule-widget"
+              ],
+              "category": "ui",
+              "child_layer": null,
+              "confidence": 1.0,
+              "description": "Displays student class schedule",
+              "evidence_notes": [],
+              "id": "schedule-widget",
+              "is_rollup": false,
+              "layout": {
+                "group": "ui",
+                "importance": 0.655,
+                "suggested_radius": 0.36
+              },
+              "name": "Schedule Widget",
+              "related_files": [
+                "front-end/src/components/widgets/ScheduleWidget.tsx"
+              ],
+              "type": "component"
+            }
+          ],
+          "parent_node_id": "frontend",
+          "title": "Frontend System"
+        },
+        "confidence": 1.0,
+        "description": "React/TypeScript frontend with voice input, widget management, and glassmorphic HUD",
+        "evidence_notes": [],
+        "id": "frontend",
+        "is_rollup": false,
+        "layout": {
+          "group": "frontend",
+          "importance": 0.679,
+          "suggested_radius": 0.42
+        },
+        "name": "Frontend System",
+        "related_files": [
+          "front-end/src/App.tsx",
+          "front-end/package.json"
+        ],
+        "type": "subsystem"
+      },
+      {
+        "analysis_node_ids": [
+          "path:backend"
+        ],
+        "category": "repository",
+        "child_layer": {
+          "depth": 2,
+          "edges": [],
+          "id": "layer:2:path:backend",
+          "nodes": [
+            {
+              "analysis_node_ids": [
+                "path:backend/tools"
+              ],
+              "category": "repository",
+              "child_layer": null,
+              "confidence": 0.85,
+              "description": "Architecture area represented by backend/tools.",
+              "evidence_notes": [
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree."
+              ],
+              "id": "path:backend/tools",
+              "is_rollup": false,
+              "layout": {
+                "group": "repository",
+                "importance": 0.495,
+                "suggested_radius": 0.36
+              },
+              "name": "tools",
+              "related_files": [
+                "backend/tools/__init__.py",
+                "backend/tools/build_embeddings.py",
+                "backend/tools/canvas_scraper.py",
+                "backend/tools/course_scraper.py",
+                "backend/tools/courses.json",
+                "backend/tools/gemini_tools.py",
+                "backend/tools/rmp_scraper.py",
+                "backend/tools/theirstack_scraper.py"
+              ],
+              "type": "directory"
+            },
+            {
+              "analysis_node_ids": [
+                "path:backend/tests"
+              ],
+              "category": "tests",
+              "child_layer": null,
+              "confidence": 0.85,
+              "description": "Architecture area represented by backend/tests.",
+              "evidence_notes": [
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree."
+              ],
+              "id": "path:backend/tests",
+              "is_rollup": false,
+              "layout": {
+                "group": "tests",
+                "importance": 0.445,
+                "suggested_radius": 0.36
+              },
+              "name": "tests",
+              "related_files": [
+                "backend/tests/__init__.py",
+                "backend/tests/test_course_search.py",
+                "backend/tests/test_course_tool_calling.py",
+                "backend/tests/test_widget_selection.py"
+              ],
+              "type": "directory"
+            }
+          ],
+          "parent_node_id": "path:backend",
+          "title": "backend"
+        },
+        "confidence": 0.85,
+        "description": "Architecture area represented by backend.",
+        "evidence_notes": [
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree."
+        ],
+        "id": "path:backend",
+        "is_rollup": false,
+        "layout": {
+          "group": "repository",
+          "importance": 0.669,
+          "suggested_radius": 0.42
+        },
+        "name": "backend",
+        "related_files": [
+          "backend/.env.example",
+          "backend/.gitignore",
+          "backend/.python-version",
+          "backend/README.md",
+          "backend/availablecourses.db",
+          "backend/availablecourses.json",
+          "backend/course_embeddings.npy",
+          "backend/course_metadata.pkl",
+          "backend/cs_degree_roadmap.json",
+          "backend/main.py",
+          "backend/pipeline.py",
+          "backend/pyproject.toml",
+          "backend/student_gpa.json",
+          "backend/tests/__init__.py",
+          "backend/tests/test_course_search.py",
+          "backend/tests/test_course_tool_calling.py",
+          "backend/tests/test_widget_selection.py",
+          "backend/tools/__init__.py",
+          "backend/tools/build_embeddings.py",
+          "backend/tools/canvas_scraper.py",
+          "backend/tools/course_scraper.py",
+          "backend/tools/courses.json",
+          "backend/tools/gemini_tools.py",
+          "backend/tools/rmp_scraper.py"
+        ],
+        "type": "directory"
+      },
+      {
+        "analysis_node_ids": [
+          "path:front-end"
+        ],
+        "category": "repository",
+        "child_layer": {
+          "depth": 2,
+          "edges": [],
+          "id": "layer:2:path:front-end",
+          "nodes": [
+            {
+              "analysis_node_ids": [
+                "path:front-end/src"
+              ],
+              "category": "repository",
+              "child_layer": {
+                "depth": 3,
+                "edges": [],
+                "id": "layer:3:path:front-end/src",
+                "nodes": [
+                  {
+                    "analysis_node_ids": [
+                      "path:front-end/src/components"
+                    ],
+                    "category": "frontend",
+                    "child_layer": null,
+                    "confidence": 0.85,
+                    "description": "Architecture area represented by front-end/src/components.",
+                    "evidence_notes": [
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree."
+                    ],
+                    "id": "path:front-end/src/components",
+                    "is_rollup": false,
+                    "layout": {
+                      "group": "frontend",
+                      "importance": 0.568,
+                      "suggested_radius": 0.3
+                    },
+                    "name": "components",
+                    "related_files": [
+                      "front-end/src/components/LoginScreen.tsx",
+                      "front-end/src/components/TranscriptPanel.tsx",
+                      "front-end/src/components/VoiceOrb.tsx",
+                      "front-end/src/components/Widget.tsx",
+                      "front-end/src/components/WidgetDock.tsx",
+                      "front-end/src/components/widgets/AcademicOverviewWidget.tsx",
+                      "front-end/src/components/widgets/CourseDetailsWidget.tsx",
+                      "front-end/src/components/widgets/CourseRoadmapWidget.tsx",
+                      "front-end/src/components/widgets/JobListingsWidget.tsx",
+                      "front-end/src/components/widgets/ProfessorWidget.tsx",
+                      "front-end/src/components/widgets/ScheduleWidget.tsx"
+                    ],
+                    "type": "directory"
+                  },
+                  {
+                    "analysis_node_ids": [
+                      "path:front-end/src/assets"
+                    ],
+                    "category": "repository",
+                    "child_layer": null,
+                    "confidence": 0.85,
+                    "description": "Architecture area represented by front-end/src/assets.",
+                    "evidence_notes": [
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree.",
+                      "Grouped into architecture rollup from repository file tree."
+                    ],
+                    "id": "path:front-end/src/assets",
+                    "is_rollup": false,
+                    "layout": {
+                      "group": "repository",
+                      "importance": 0.432,
+                      "suggested_radius": 0.3
+                    },
+                    "name": "assets",
+                    "related_files": [
+                      "front-end/src/assets/hero.png",
+                      "front-end/src/assets/react.svg",
+                      "front-end/src/assets/vite.svg"
+                    ],
+                    "type": "directory"
+                  },
+                  {
+                    "analysis_node_ids": [
+                      "path:front-end/src/context"
+                    ],
+                    "category": "repository",
+                    "child_layer": null,
+                    "confidence": 0.85,
+                    "description": "Architecture area represented by front-end/src/context.",
+                    "evidence_notes": [
+                      "Grouped into architecture rollup from repository file tree."
+                    ],
+                    "id": "path:front-end/src/context",
+                    "is_rollup": false,
+                    "layout": {
+                      "group": "repository",
+                      "importance": 0.419,
+                      "suggested_radius": 0.3
+                    },
+                    "name": "context",
+                    "related_files": [
+                      "front-end/src/context/AuthContext.tsx"
+                    ],
+                    "type": "directory"
+                  },
+                  {
+                    "analysis_node_ids": [
+                      "path:front-end/src/hooks"
+                    ],
+                    "category": "repository",
+                    "child_layer": null,
+                    "confidence": 0.85,
+                    "description": "Architecture area represented by front-end/src/hooks.",
+                    "evidence_notes": [
+                      "Grouped into architecture rollup from repository file tree."
+                    ],
+                    "id": "path:front-end/src/hooks",
+                    "is_rollup": false,
+                    "layout": {
+                      "group": "repository",
+                      "importance": 0.419,
+                      "suggested_radius": 0.3
+                    },
+                    "name": "hooks",
+                    "related_files": [
+                      "front-end/src/hooks/useWidgetManager.ts"
+                    ],
+                    "type": "directory"
+                  },
+                  {
+                    "analysis_node_ids": [
+                      "path:front-end/src/lib"
+                    ],
+                    "category": "repository",
+                    "child_layer": null,
+                    "confidence": 0.85,
+                    "description": "Architecture area represented by front-end/src/lib.",
+                    "evidence_notes": [
+                      "Grouped into architecture rollup from repository file tree."
+                    ],
+                    "id": "path:front-end/src/lib",
+                    "is_rollup": false,
+                    "layout": {
+                      "group": "repository",
+                      "importance": 0.407,
+                      "suggested_radius": 0.3
+                    },
+                    "name": "lib",
+                    "related_files": [
+                      "front-end/src/lib/supabase.ts"
+                    ],
+                    "type": "directory"
+                  }
+                ],
+                "parent_node_id": "path:front-end/src",
+                "title": "src"
+              },
+              "confidence": 0.85,
+              "description": "Architecture area represented by front-end/src.",
+              "evidence_notes": [
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree."
+              ],
+              "id": "path:front-end/src",
+              "is_rollup": false,
+              "layout": {
+                "group": "repository",
+                "importance": 0.741,
+                "suggested_radius": 0.36
+              },
+              "name": "src",
+              "related_files": [
+                "front-end/src/App.css",
+                "front-end/src/App.tsx",
+                "front-end/src/assets/hero.png",
+                "front-end/src/assets/react.svg",
+                "front-end/src/assets/vite.svg",
+                "front-end/src/audioPlayer.ts",
+                "front-end/src/components/LoginScreen.tsx",
+                "front-end/src/components/TranscriptPanel.tsx",
+                "front-end/src/components/VoiceOrb.tsx",
+                "front-end/src/components/Widget.tsx",
+                "front-end/src/components/WidgetDock.tsx",
+                "front-end/src/components/widgets/AcademicOverviewWidget.tsx",
+                "front-end/src/components/widgets/CourseDetailsWidget.tsx",
+                "front-end/src/components/widgets/CourseRoadmapWidget.tsx",
+                "front-end/src/components/widgets/JobListingsWidget.tsx",
+                "front-end/src/components/widgets/ProfessorWidget.tsx",
+                "front-end/src/components/widgets/ScheduleWidget.tsx",
+                "front-end/src/context/AuthContext.tsx",
+                "front-end/src/exampleData.ts",
+                "front-end/src/hooks/useWidgetManager.ts",
+                "front-end/src/index.css",
+                "front-end/src/lib/supabase.ts",
+                "front-end/src/main.tsx",
+                "front-end/src/types.ts"
+              ],
+              "type": "directory"
+            },
+            {
+              "analysis_node_ids": [
+                "path:front-end/public"
+              ],
+              "category": "repository",
+              "child_layer": null,
+              "confidence": 0.85,
+              "description": "Architecture area represented by front-end/public.",
+              "evidence_notes": [
+                "Grouped into architecture rollup from repository file tree.",
+                "Grouped into architecture rollup from repository file tree."
+              ],
+              "id": "path:front-end/public",
+              "is_rollup": false,
+              "layout": {
+                "group": "repository",
+                "importance": 0.42,
+                "suggested_radius": 0.36
+              },
+              "name": "public",
+              "related_files": [
+                "front-end/public/favicon.svg",
+                "front-end/public/icons.svg"
+              ],
+              "type": "directory"
+            }
+          ],
+          "parent_node_id": "path:front-end",
+          "title": "front-end"
+        },
+        "confidence": 0.85,
+        "description": "Architecture area represented by front-end.",
+        "evidence_notes": [
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree.",
+          "Grouped into architecture rollup from repository file tree."
+        ],
+        "id": "path:front-end",
+        "is_rollup": false,
+        "layout": {
+          "group": "repository",
+          "importance": 0.669,
+          "suggested_radius": 0.42
+        },
+        "name": "front-end",
+        "related_files": [
+          "front-end/.gitignore",
+          "front-end/README.md",
+          "front-end/eslint.config.js",
+          "front-end/index.html",
+          "front-end/package-lock.json",
+          "front-end/package.json",
+          "front-end/public/favicon.svg",
+          "front-end/public/icons.svg",
+          "front-end/src/App.css",
+          "front-end/src/App.tsx",
+          "front-end/src/assets/hero.png",
+          "front-end/src/assets/react.svg",
+          "front-end/src/assets/vite.svg",
+          "front-end/src/audioPlayer.ts",
+          "front-end/src/components/LoginScreen.tsx",
+          "front-end/src/components/TranscriptPanel.tsx",
+          "front-end/src/components/VoiceOrb.tsx",
+          "front-end/src/components/Widget.tsx",
+          "front-end/src/components/WidgetDock.tsx",
+          "front-end/src/components/widgets/AcademicOverviewWidget.tsx",
+          "front-end/src/components/widgets/CourseDetailsWidget.tsx",
+          "front-end/src/components/widgets/CourseRoadmapWidget.tsx",
+          "front-end/src/components/widgets/JobListingsWidget.tsx",
+          "front-end/src/components/widgets/ProfessorWidget.tsx"
+        ],
+        "type": "directory"
+      },
+      {
+        "analysis_node_ids": [
+          "path:assets"
+        ],
+        "category": "repository",
+        "child_layer": null,
+        "confidence": 0.85,
+        "description": "Architecture area represented by assets.",
+        "evidence_notes": [
+          "Grouped into architecture rollup from repository file tree."
+        ],
+        "id": "path:assets",
+        "is_rollup": false,
+        "layout": {
+          "group": "repository",
+          "importance": 0.407,
+          "suggested_radius": 0.42
+        },
+        "name": "assets",
+        "related_files": [
+          "assets/aria-banner.svg"
+        ],
+        "type": "directory"
+      }
+    ],
+    "parent_node_id": null,
+    "title": "Codebase Overview"
+  },
+  "schema_version": "nested-visualizer-map-v1",
+  "tier": {
+    "description": "Root tier (most simplified). Children tiers hold more detail. Only leaf tiers contain edges and relevant_files.",
+    "edges": null,
+    "id": "tier_1",
+    "nodes": [
+      {
+        "description": "Python FastAPI backend handling voice pipeline, AI reasoning, and data scraping",
+        "id": "backend",
+        "shape": "cube",
+        "tier": {
+          "description": "Leaf tier for backend details. Edges may point to nodes in other tiers.",
+          "edges": [
+            {
+              "from": "gemini-tools",
+              "to": "canvas-scraper",
+              "type": "uses"
+            },
+            {
+              "from": "gemini-tools",
+              "to": "course-search",
+              "type": "uses"
+            },
+            {
+              "from": "gemini-tools",
+              "to": "rmp-scraper",
+              "type": "uses"
+            },
+            {
+              "from": "gemini-tools",
+              "to": "theirstack-scraper",
+              "type": "uses"
+            },
+            {
+              "from": "voice-pipeline",
+              "to": "gemini-tools",
+              "type": "uses"
+            },
+            {
+              "from": "voice-pipeline",
+              "to": "web-api",
+              "type": "consumed_by"
+            }
+          ],
+          "id": "tier_2_backend",
+          "nodes": [
+            {
+              "description": "Tool functions callable by Gemini AI for data retrieval",
+              "id": "gemini-tools",
+              "image_url": null,
+              "relevant_files": [
+                "backend/tools/gemini_tools.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Gemini Tool Functions"
+            },
+            {
+              "description": "Semantic search over university course catalog using sentence-transformers embeddings",
+              "id": "course-search",
+              "image_url": null,
+              "relevant_files": [
+                "backend/tools/course_scraper.py",
+                "backend/course_embeddings.npy",
+                "backend/course_metadata.pkl"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Course Catalog Search"
+            },
+            {
+              "description": "Orchestration layer connecting STT, Gemini AI reasoning, tool execution, and TTS",
+              "id": "voice-pipeline",
+              "image_url": null,
+              "relevant_files": [
+                "backend/pipeline.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Voice Pipeline"
+            },
+            {
+              "description": "FastAPI server with WebSocket endpoint for real-time voice communication",
+              "id": "web-api",
+              "image_url": null,
+              "relevant_files": [
+                "backend/main.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Web API"
+            },
+            {
+              "description": "Extracts courses, grades, and assignment stats from Canvas LMS",
+              "id": "canvas-scraper",
+              "image_url": null,
+              "relevant_files": [
+                "backend/tools/canvas_scraper.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Canvas LMS Scraper"
+            },
+            {
+              "description": "Fetches professor ratings and school info from Rate My Professors GraphQL API",
+              "id": "rmp-scraper",
+              "image_url": null,
+              "relevant_files": [
+                "backend/tools/rmp_scraper.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Rate My Professor Scraper"
+            },
+            {
+              "description": "Fetches internship and job listings from TheirStack API",
+              "id": "theirstack-scraper",
+              "image_url": null,
+              "relevant_files": [
+                "backend/tools/theirstack_scraper.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Job Listings Scraper"
+            }
+          ]
+        },
+        "title": "Backend System"
+      },
+      {
+        "description": "React/TypeScript frontend with voice input, widget management, and glassmorphic HUD",
+        "id": "frontend",
+        "shape": "cube",
+        "tier": {
+          "description": "Leaf tier for frontend details. Edges may point to nodes in other tiers.",
+          "edges": [
+            {
+              "from": "app-component",
+              "to": "auth-context",
+              "type": "uses"
+            },
+            {
+              "from": "app-component",
+              "to": "login-screen",
+              "type": "contains"
+            },
+            {
+              "from": "app-component",
+              "to": "transcript-panel",
+              "type": "contains"
+            },
+            {
+              "from": "app-component",
+              "to": "voice-orb",
+              "type": "contains"
+            },
+            {
+              "from": "app-component",
+              "to": "widget-component",
+              "type": "contains"
+            },
+            {
+              "from": "app-component",
+              "to": "widget-dock",
+              "type": "contains"
+            },
+            {
+              "from": "app-component",
+              "to": "widget-manager",
+              "type": "uses"
+            },
+            {
+              "from": "app-component",
+              "to": "widget-types",
+              "type": "uses"
+            },
+            {
+              "from": "widget-component",
+              "to": "academic-widget",
+              "type": "renders"
+            },
+            {
+              "from": "widget-component",
+              "to": "course-details-widget",
+              "type": "renders"
+            },
+            {
+              "from": "widget-component",
+              "to": "job-listings-widget",
+              "type": "renders"
+            },
+            {
+              "from": "widget-component",
+              "to": "professor-widget",
+              "type": "renders"
+            },
+            {
+              "from": "widget-component",
+              "to": "roadmap-widget",
+              "type": "renders"
+            },
+            {
+              "from": "widget-component",
+              "to": "schedule-widget",
+              "type": "renders"
+            }
+          ],
+          "id": "tier_2_frontend",
+          "nodes": [
+            {
+              "description": "Main React application component managing global state and layout",
+              "id": "app-component",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/App.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "App Component"
+            },
+            {
+              "description": "Dynamic widget renderer that displays different widget types",
+              "id": "widget-component",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/Widget.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Widget Component"
+            },
+            {
+              "description": "Client-side audio playback for ElevenLabs TTS responses",
+              "id": "audio-player",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/audioPlayer.ts"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Audio Player"
+            },
+            {
+              "description": "Hook for managing widget state and visibility",
+              "id": "widget-manager",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/hooks/useWidgetManager.ts"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Widget Manager"
+            },
+            {
+              "description": "React context for user authentication state",
+              "id": "auth-context",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/context/AuthContext.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Authentication Context"
+            },
+            {
+              "description": "Container for organizing and displaying widget cards",
+              "id": "widget-dock",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/WidgetDock.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Widget Dock"
+            },
+            {
+              "description": "Visual voice input indicator with recording state",
+              "id": "voice-orb",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/VoiceOrb.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Voice Orb"
+            },
+            {
+              "description": "Display panel for conversation transcripts",
+              "id": "transcript-panel",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/TranscriptPanel.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Transcript Panel"
+            },
+            {
+              "description": "User authentication screen",
+              "id": "login-screen",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/LoginScreen.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Login Screen"
+            },
+            {
+              "description": "TypeScript type definitions for widgets and data structures",
+              "id": "widget-types",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/types.ts"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Widget Types"
+            },
+            {
+              "description": "Displays GPA trends, current courses with grades, and late assignments from Canvas",
+              "id": "academic-widget",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/widgets/AcademicOverviewWidget.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Academic Overview Widget"
+            },
+            {
+              "description": "Displays course information from semantic search",
+              "id": "course-details-widget",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/widgets/CourseDetailsWidget.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Course Details Widget"
+            },
+            {
+              "description": "Displays professor ratings from Rate My Professors",
+              "id": "professor-widget",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/widgets/ProfessorWidget.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Professor Widget"
+            },
+            {
+              "description": "Interactive degree prerequisite graph with clickable elective slots and PDF export",
+              "id": "roadmap-widget",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/widgets/CourseRoadmapWidget.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Course Roadmap Widget"
+            },
+            {
+              "description": "Displays internships and jobs from TheirStack API",
+              "id": "job-listings-widget",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/widgets/JobListingsWidget.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Job Listings Widget"
+            },
+            {
+              "description": "Displays student class schedule",
+              "id": "schedule-widget",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/src/components/widgets/ScheduleWidget.tsx"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "Schedule Widget"
+            }
+          ]
+        },
+        "title": "Frontend System"
+      },
+      {
+        "description": "Architecture area represented by backend.",
+        "id": "path:backend",
+        "shape": "cube",
+        "tier": {
+          "description": "Leaf tier for path:backend details. Edges may point to nodes in other tiers.",
+          "edges": null,
+          "id": "tier_2_path:backend",
+          "nodes": [
+            {
+              "description": "Architecture area represented by backend/tools.",
+              "id": "path:backend/tools",
+              "image_url": null,
+              "relevant_files": [
+                "backend/tools/__init__.py",
+                "backend/tools/build_embeddings.py",
+                "backend/tools/canvas_scraper.py",
+                "backend/tools/course_scraper.py",
+                "backend/tools/courses.json",
+                "backend/tools/gemini_tools.py",
+                "backend/tools/rmp_scraper.py",
+                "backend/tools/theirstack_scraper.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "tools"
+            },
+            {
+              "description": "Architecture area represented by backend/tests.",
+              "id": "path:backend/tests",
+              "image_url": null,
+              "relevant_files": [
+                "backend/tests/__init__.py",
+                "backend/tests/test_course_search.py",
+                "backend/tests/test_course_tool_calling.py",
+                "backend/tests/test_widget_selection.py"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "tests"
+            }
+          ]
+        },
+        "title": "backend"
+      },
+      {
+        "description": "Architecture area represented by front-end.",
+        "id": "path:front-end",
+        "shape": "cube",
+        "tier": {
+          "description": "Tier 2 for path:front-end details. Children tiers hold more detail.",
+          "edges": null,
+          "id": "tier_2_path:front-end",
+          "nodes": [
+            {
+              "description": "Architecture area represented by front-end/src.",
+              "id": "path:front-end/src",
+              "shape": "cube",
+              "tier": {
+                "description": "Leaf tier for path:front-end/src details. Edges may point to nodes in other tiers.",
+                "edges": null,
+                "id": "tier_3_path:front-end/src",
+                "nodes": [
+                  {
+                    "description": "Architecture area represented by front-end/src/components.",
+                    "id": "path:front-end/src/components",
+                    "image_url": null,
+                    "relevant_files": [
+                      "front-end/src/components/LoginScreen.tsx",
+                      "front-end/src/components/TranscriptPanel.tsx",
+                      "front-end/src/components/VoiceOrb.tsx",
+                      "front-end/src/components/Widget.tsx",
+                      "front-end/src/components/WidgetDock.tsx",
+                      "front-end/src/components/widgets/AcademicOverviewWidget.tsx",
+                      "front-end/src/components/widgets/CourseDetailsWidget.tsx",
+                      "front-end/src/components/widgets/CourseRoadmapWidget.tsx",
+                      "front-end/src/components/widgets/JobListingsWidget.tsx",
+                      "front-end/src/components/widgets/ProfessorWidget.tsx",
+                      "front-end/src/components/widgets/ScheduleWidget.tsx"
+                    ],
+                    "shape": "cube",
+                    "tier": null,
+                    "title": "components"
+                  },
+                  {
+                    "description": "Architecture area represented by front-end/src/assets.",
+                    "id": "path:front-end/src/assets",
+                    "image_url": null,
+                    "relevant_files": [
+                      "front-end/src/assets/hero.png",
+                      "front-end/src/assets/react.svg",
+                      "front-end/src/assets/vite.svg"
+                    ],
+                    "shape": "cube",
+                    "tier": null,
+                    "title": "assets"
+                  },
+                  {
+                    "description": "Architecture area represented by front-end/src/context.",
+                    "id": "path:front-end/src/context",
+                    "image_url": null,
+                    "relevant_files": [
+                      "front-end/src/context/AuthContext.tsx"
+                    ],
+                    "shape": "cube",
+                    "tier": null,
+                    "title": "context"
+                  },
+                  {
+                    "description": "Architecture area represented by front-end/src/hooks.",
+                    "id": "path:front-end/src/hooks",
+                    "image_url": null,
+                    "relevant_files": [
+                      "front-end/src/hooks/useWidgetManager.ts"
+                    ],
+                    "shape": "cube",
+                    "tier": null,
+                    "title": "hooks"
+                  },
+                  {
+                    "description": "Architecture area represented by front-end/src/lib.",
+                    "id": "path:front-end/src/lib",
+                    "image_url": null,
+                    "relevant_files": [
+                      "front-end/src/lib/supabase.ts"
+                    ],
+                    "shape": "cube",
+                    "tier": null,
+                    "title": "lib"
+                  }
+                ]
+              },
+              "title": "src"
+            },
+            {
+              "description": "Architecture area represented by front-end/public.",
+              "id": "path:front-end/public",
+              "image_url": null,
+              "relevant_files": [
+                "front-end/public/favicon.svg",
+                "front-end/public/icons.svg"
+              ],
+              "shape": "cube",
+              "tier": null,
+              "title": "public"
+            }
+          ]
+        },
+        "title": "front-end"
+      },
+      {
+        "description": "Architecture area represented by assets.",
+        "id": "path:assets",
+        "image_url": null,
+        "relevant_files": [
+          "assets/aria-banner.svg"
+        ],
+        "shape": "cube",
+        "tier": null,
+        "title": "assets"
+      }
+    ]
+  }
+};

@@ -304,7 +304,7 @@
       value: {x: 0.400000, y: 1.000000, z: 0.999207, w: 1.000000}
     thickLines:
       typeIdx: 1
-      value: 0.670000
+      value: 0.230000
     thicklinesColor:
       typeIdx: 5
       value: {x: 0.000107, y: 0.001755, z: 0.998215, w: 1.000000}
