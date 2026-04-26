@@ -9,6 +9,8 @@ from .validation import validate_full_analysis
 DEFAULT_MAX_DEPTH = 3
 DEFAULT_MAX_NODES_PER_LAYER = 20
 TARGET_USERS = {"beginner", "intermediate", "advanced"}
+INPUT_NODE_ID = "input"
+OUTPUT_NODE_ID = "output"
 
 
 def build_nested_visualizer_map(
@@ -65,7 +67,7 @@ def _build_layer(
     parent_node_id: str | None,
     title: str,
 ) -> dict[str, Any]:
-    visible, hidden = _select_visible_nodes(graph, candidates, max_nodes_per_layer)
+    visible, _hidden = _select_visible_nodes(graph, candidates, max_nodes_per_layer)
     layer_nodes = [
         _visual_node(
             graph,
@@ -76,17 +78,19 @@ def _build_layer(
         )
         for node in visible
     ]
-    if hidden:
-        layer_nodes.append(_rollup_node(graph, hidden, depth=depth))
 
-    layer_node_ids = {node["id"] for node in layer_nodes}
+    if depth == 1:
+        nodes = [_boundary_node("input", depth=depth), *layer_nodes, _boundary_node("output", depth=depth)]
+    else:
+        nodes = layer_nodes
+
     layer = {
         "id": _layer_id(parent_node_id, depth),
         "depth": depth,
         "parent_node_id": parent_node_id,
         "title": title,
-        "nodes": layer_nodes,
-        "edges": _visible_edges(graph, layer_node_ids),
+        "nodes": nodes,
+        "edges": _visible_edges(graph, layer_nodes, include_boundary=depth == 1),
     }
     return layer
 
@@ -99,8 +103,7 @@ def _select_visible_nodes(
     ordered = sorted(candidates, key=lambda node: graph.score(node), reverse=True)
     if len(ordered) <= max_nodes_per_layer:
         return ordered, []
-    keep_count = max_nodes_per_layer - 1
-    return ordered[:keep_count], ordered[keep_count:]
+    return ordered[:max_nodes_per_layer], ordered[max_nodes_per_layer:]
 
 
 def _visual_node(
@@ -170,29 +173,112 @@ def _rollup_node(graph: "_AnalysisGraph", nodes: list[dict[str, Any]], *, depth:
     }
 
 
-def _visible_edges(graph: "_AnalysisGraph", layer_node_ids: set[str]) -> list[dict[str, Any]]:
+def _boundary_node(boundary: str, *, depth: int) -> dict[str, Any]:
+    if boundary == "input":
+        node_id = INPUT_NODE_ID
+        name = "Input"
+        description = "Synthetic entry point showing where data enters this tier."
+    else:
+        node_id = OUTPUT_NODE_ID
+        name = "Output"
+        description = "Synthetic exit point showing where data leaves this tier."
+
+    return {
+        "id": node_id,
+        "analysis_node_ids": [],
+        "name": name,
+        "description": description,
+        "type": "boundary",
+        "category": "flow",
+        "confidence": 1.0,
+        "related_files": [],
+        "evidence_notes": [],
+        "layout": {
+            "importance": 1.0,
+            "suggested_radius": max(0.12, 0.42 - (depth - 1) * 0.06),
+            "group": "flow",
+        },
+        "child_layer": None,
+        "is_rollup": False,
+        "is_boundary": True,
+    }
+
+
+def _visible_edges(
+    graph: "_AnalysisGraph",
+    layer_nodes: list[dict[str, Any]],
+    *,
+    include_boundary: bool,
+) -> list[dict[str, Any]]:
     edges = []
+    seen: set[tuple[str, str, str]] = set()
+    inbound_ids: set[str] = set()
+    outbound_ids: set[str] = set()
     for relationship in graph.relationships:
-        from_id = relationship["from"]
-        to_id = relationship["to"]
-        if from_id not in layer_node_ids or to_id not in layer_node_ids:
+        if relationship.get("type") == "contains":
             continue
+        from_id = str(relationship["from"])
+        to_id = str(relationship["to"])
+        visible_from_id = _layer_representative_id(graph, from_id, layer_nodes)
+        visible_to_id = _layer_representative_id(graph, to_id, layer_nodes)
+        if visible_from_id is None and visible_to_id is None:
+            continue
+        edge_from_id = visible_from_id or from_id
+        edge_to_id = visible_to_id or to_id
+        if edge_from_id == edge_to_id:
+            continue
+        relationship_type = str(relationship["type"])
+        key = (edge_from_id, edge_to_id, relationship_type)
+        if key in seen:
+            continue
+        seen.add(key)
+        if visible_from_id is not None:
+            outbound_ids.add(visible_from_id)
+        if visible_to_id is not None:
+            inbound_ids.add(visible_to_id)
         edges.append(
             {
                 "id": relationship["id"],
-                "from": from_id,
-                "to": to_id,
-                "type": relationship["type"],
+                "from": edge_from_id,
+                "to": edge_to_id,
+                "type": relationship_type,
                 "description": relationship["description"],
                 "confidence": relationship["confidence"],
             }
         )
+    if include_boundary:
+        for node_id in sorted(outbound_ids - inbound_ids):
+            edges.append(_boundary_edge(INPUT_NODE_ID, node_id, "input"))
+        for node_id in sorted(inbound_ids - outbound_ids):
+            edges.append(_boundary_edge(node_id, OUTPUT_NODE_ID, "output"))
     return sorted(edges, key=lambda edge: (str(edge["from"]), str(edge["to"]), str(edge["type"])))
+
+
+def _boundary_edge(from_id: str, to_id: str, edge_type: str) -> dict[str, Any]:
+    return {
+        "id": f"flow-boundary:{from_id}:{to_id}:{edge_type}",
+        "from": from_id,
+        "to": to_id,
+        "type": edge_type,
+        "description": f"Synthetic {edge_type} boundary for tier data flow.",
+        "confidence": 1.0,
+    }
+
+
+def _layer_representative_id(graph: "_AnalysisGraph", endpoint_id: str, layer_nodes: list[dict[str, Any]]) -> str | None:
+    for node in layer_nodes:
+        analysis_node_ids = [str(node_id) for node_id in node.get("analysis_node_ids", [])]
+        for analysis_node_id in analysis_node_ids:
+            if endpoint_id == analysis_node_id or graph.is_descendant(endpoint_id, analysis_node_id):
+                return str(node["id"])
+    return None
 
 
 def _spec_edges(relationships: list[dict[str, Any]]) -> list[dict[str, str]]:
     edges = []
     for relationship in relationships:
+        if relationship.get("type") == "contains":
+            continue
         from_id = relationship.get("from")
         to_id = relationship.get("to")
         relationship_type = relationship.get("type")
@@ -209,7 +295,7 @@ def _spec_tier(layer: dict[str, Any]) -> dict[str, Any]:
         "id": tier_id,
         "description": _spec_tier_description(layer),
         "nodes": [_spec_node(node) for node in layer["nodes"]],
-        "edges": None if depth == 1 or not edges else edges,
+        "edges": edges or None,
     }
 
 
@@ -322,6 +408,16 @@ class _AnalysisGraph:
 
     def children(self, node_id: str) -> list[dict[str, Any]]:
         return self.children_by_parent.get(node_id, [])
+
+    def is_descendant(self, node_id: str, ancestor_id: str) -> bool:
+        parent_id = self.nodes_by_id.get(node_id, {}).get("parent_id")
+        seen: set[str] = set()
+        while isinstance(parent_id, str) and parent_id not in seen:
+            if parent_id == ancestor_id:
+                return True
+            seen.add(parent_id)
+            parent_id = self.nodes_by_id.get(parent_id, {}).get("parent_id")
+        return False
 
     def score(self, node: dict[str, Any]) -> float:
         node_id = str(node["id"])

@@ -96,8 +96,12 @@ def _analysis_prompt(target_user: str = "intermediate") -> str:
         "Use the attached deterministic evidence JSON file as your source of truth. Return only one JSON object.\n"
         "The JSON object must use schema_version analysis-full-v1 and contain repo, nodes, and relationships.\n"
         "The repo field must be an object, not a string. Nodes and relationships must be arrays.\n"
-        "Nodes must form a semantic hierarchy from broad systems down to atomic capabilities. Each node needs:\n"
+        "Nodes must form a semantic hierarchy from broad data-flow boundaries down to internal processing stages. "
+        "A parent node should mean data can enter that boundary, move through relevant children, and exit toward other systems. "
+        "Do not use parent/child hierarchy merely to mirror folders unless no semantic grouping is supported by evidence. Each node needs:\n"
         " id, parent_id, name, description, type, category, confidence, related_files, evidence, source_context.\n"
+        "Relationships must represent directed data flow through the architecture: from is the producer/source "
+        "and to is the consumer/destination for data, events, requests, control signals, or generated output. "
         "Relationships need: id, from, to, type, description, confidence, evidence.\n"
         "Relationship from/to values must reference node ids, not file paths.\n"
         "Before returning, verify every relationship from/to value exactly matches an id in nodes. "
@@ -286,6 +290,16 @@ def _next_nonspace(chars: list[str], start: int) -> str | None:
 def _expand_analysis_with_evidence(analysis: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     nodes = list(analysis.get("nodes", []))
     relationships = list(analysis.get("relationships", []))
+    for node in nodes:
+        if isinstance(node, dict):
+            node["confidence"] = _coerce_confidence(node.get("confidence"))
+            node["evidence"] = _coerce_list(node.get("evidence"))
+            node["source_context"] = _coerce_list(node.get("source_context"))
+            node["related_files"] = _coerce_list(node.get("related_files"))
+    for relationship in relationships:
+        if isinstance(relationship, dict):
+            relationship["confidence"] = _coerce_confidence(relationship.get("confidence"))
+            relationship["evidence"] = _coerce_list(relationship.get("evidence"))
     node_ids = {str(node.get("id")) for node in nodes if isinstance(node, dict)}
     relationship_ids = {str(relationship.get("id")) for relationship in relationships if isinstance(relationship, dict)}
     root_id = _root_node_id(nodes)
@@ -400,6 +414,36 @@ def _is_complete_model_relationship(relationship: Any) -> bool:
     if not REQUIRED_RELATIONSHIP_FIELDS <= set(relationship):
         return False
     return all(isinstance(relationship.get(field), str) and relationship[field] for field in ("id", "from", "to", "type"))
+
+
+def _coerce_confidence(value: Any) -> float:
+    if isinstance(value, bool):
+        return 1.0 if value else 0.0
+    if isinstance(value, int | float):
+        return round(max(0.0, min(float(value), 1.0)), 3)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        label_values = {
+            "very high": 0.95,
+            "high": 0.9,
+            "medium": 0.65,
+            "med": 0.65,
+            "moderate": 0.65,
+            "low": 0.35,
+            "very low": 0.15,
+            "unknown": 0.5,
+        }
+        if normalized in label_values:
+            return label_values[normalized]
+        try:
+            return round(max(0.0, min(float(normalized), 1.0)), 3)
+        except ValueError:
+            return 0.5
+    return 0.5
+
+
+def _coerce_list(value: Any) -> list[Any]:
+    return value if isinstance(value, list) else []
 
 
 def _root_node_id(nodes: list[dict[str, Any]]) -> str:

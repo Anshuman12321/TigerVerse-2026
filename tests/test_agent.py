@@ -204,6 +204,36 @@ def test_opencode_agent_runner_drops_model_relationships_missing_required_fields
     validate_full_analysis(analysis)
 
 
+def test_opencode_agent_runner_normalizes_string_confidence_values(monkeypatch) -> None:
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(
+            args=args[0],
+            returncode=0,
+            stdout=(
+                '{"type":"text","part":{"type":"text","text":"{\\"schema_version\\":\\"analysis-full-v1\\",'
+                '\\"repo\\":{\\"name\\":\\"demo\\"},'
+                '\\"nodes\\":[{\\"id\\":\\"root\\",\\"parent_id\\":null,\\"name\\":\\"demo\\",'
+                '\\"description\\":\\"Repository root.\\",\\"type\\":\\"repository\\",\\"category\\":\\"repository\\",'
+                '\\"confidence\\":\\"high\\",\\"related_files\\":[],\\"evidence\\":[],\\"source_context\\":[]},'
+                '{\\"id\\":\\"tools\\",\\"parent_id\\":\\"root\\",\\"name\\":\\"Tools\\",'
+                '\\"description\\":\\"Tooling.\\",\\"type\\":\\"component\\",\\"category\\":\\"tool\\",'
+                '\\"confidence\\":\\"medium\\",\\"related_files\\":[],\\"evidence\\":[],\\"source_context\\":[]}],'
+                '\\"relationships\\":[{\\"id\\":\\"rel-tools\\",\\"from\\":\\"root\\",\\"to\\":\\"tools\\",'
+                '\\"type\\":\\"uses\\",\\"description\\":\\"Root uses tools.\\",\\"confidence\\":\\"low\\",'
+                '\\"evidence\\":[]}]}"}}\n'
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    analysis = OpenCodeAgentRunner(command="opencode").analyze({"repo": {"name": "demo"}, "files": [], "dependency_hints": []})
+
+    assert {node["id"]: node["confidence"] for node in analysis["nodes"]} == {"root": 0.9, "tools": 0.65}
+    assert analysis["relationships"][0]["confidence"] == 0.35
+    validate_full_analysis(analysis)
+
+
 def test_opencode_agent_runner_attaches_evidence_from_working_directory(monkeypatch, tmp_path) -> None:
     monkeypatch.chdir(tmp_path)
 
