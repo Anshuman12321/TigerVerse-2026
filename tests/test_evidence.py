@@ -20,6 +20,8 @@ def test_build_evidence_pack_collects_metadata_files_manifests_and_snippets(tmp_
     (repo / "src").mkdir()
     (repo / "src" / "auth.ts").write_text("import { api } from './api'\nexport function login() { return api('/login') }\n")
     (repo / "src" / "api.ts").write_text("export function api(path: string) { return fetch(path) }\n")
+    (repo / ".analyzer-output").mkdir()
+    (repo / ".analyzer-output" / "visualizer-map.json").write_text("{}")
     init_git_repo(repo)
 
     evidence = build_evidence_pack(repo, source_url="https://example.com/demo.git")
@@ -30,6 +32,7 @@ def test_build_evidence_pack_collects_metadata_files_manifests_and_snippets(tmp_
     assert "package.json" in evidence["manifests"]
     paths = {entry["path"] for entry in evidence["files"]}
     assert {"package.json", "src/auth.ts", "src/api.ts"} <= paths
+    assert ".analyzer-output/visualizer-map.json" not in paths
     assert any(edge["from"] == "src/auth.ts" and edge["to"] == "src/api.ts" for edge in evidence["dependency_hints"])
     auth_context = next(item for item in evidence["source_context"] if item["path"] == "src/auth.ts")
     assert "login" in auth_context["content"]

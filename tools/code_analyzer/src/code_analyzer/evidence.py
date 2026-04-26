@@ -36,6 +36,7 @@ DEFAULT_EXCLUDE_DIRS = {
     "build",
     "target",
     "Cache",
+    ".analyzer-output",
     ".analyzer-workspace",
     ".codex",
 }

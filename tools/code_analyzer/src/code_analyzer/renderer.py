@@ -23,8 +23,13 @@ def write_visualizer_mermaid(source: Path, target: Path) -> None:
 
 
 def render_visualizer_map_to_mermaid(visualizer_map: dict[str, Any]) -> str:
-    nodes = _ordered_nodes(visualizer_map.get("nodes", []))
-    edges = _ordered_edges(visualizer_map.get("edges", []))
+    if visualizer_map.get("schema_version") == "nested-visualizer-map-v1":
+        nodes, edges = _flatten_nested_visualizer_map(visualizer_map)
+    else:
+        nodes = list(visualizer_map.get("nodes", []))
+        edges = list(visualizer_map.get("edges", []))
+    nodes = _ordered_nodes(nodes)
+    edges = _ordered_edges(edges)
     mermaid_ids = _mermaid_ids(nodes)
 
     lines = [
@@ -77,6 +82,45 @@ def _ordered_edges(edges: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(edges, key=lambda edge: (str(edge.get("from", "")), str(edge.get("to", "")), str(edge.get("type", ""))))
 
 
+def _flatten_nested_visualizer_map(visualizer_map: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    nodes: list[dict[str, Any]] = []
+    edges: list[dict[str, Any]] = []
+    seen_nodes: set[str] = set()
+    seen_edges: set[str] = set()
+
+    def visit_layer(layer: dict[str, Any], hierarchy_prefix: list[str]) -> None:
+        layer_depth = int(layer.get("depth", 1))
+        parent_node_id = layer.get("parent_node_id")
+        for node in layer.get("nodes", []):
+            node_id = str(node.get("id", ""))
+            if node_id and node_id not in seen_nodes:
+                seen_nodes.add(node_id)
+                child_layer = node.get("child_layer")
+                flattened = dict(node)
+                flattened["parent_id"] = parent_node_id
+                flattened["depth"] = layer_depth - 1
+                flattened["hierarchy_path"] = [*hierarchy_prefix, str(node.get("name", node_id))]
+                if isinstance(child_layer, dict):
+                    flattened["has_child_layer"] = True
+                    flattened["description"] = f"{flattened.get('description', '')} Opens {len(child_layer.get('nodes', []))} nested node(s).".strip()
+                flattened.pop("child_layer", None)
+                nodes.append(flattened)
+            child_layer = node.get("child_layer")
+            if isinstance(child_layer, dict):
+                visit_layer(child_layer, [*hierarchy_prefix, str(node.get("name", node_id))])
+
+        for edge in layer.get("edges", []):
+            edge_id = str(edge.get("id", ""))
+            if edge_id and edge_id not in seen_edges:
+                seen_edges.add(edge_id)
+                edges.append(edge)
+
+    root_layer = visualizer_map.get("root_layer")
+    if isinstance(root_layer, dict):
+        visit_layer(root_layer, [])
+    return nodes, edges
+
+
 def _mermaid_ids(nodes: list[dict[str, Any]]) -> dict[str, str]:
     used: set[str] = set()
     ids: dict[str, str] = {}
@@ -95,11 +139,13 @@ def _mermaid_ids(nodes: list[dict[str, Any]]) -> dict[str, str]:
 def _node_label(node: dict[str, Any]) -> str:
     files = [str(path) for path in node.get("related_files", [])[:2]]
     file_count = len(node.get("related_files", []))
+    expandable = "opens details" if node.get("child_layer") or node.get("has_child_layer") else ""
     details = [
         str(node.get("name", "")),
         f"{node.get('type', '')} / {node.get('category', '')}",
         f"confidence {float(node.get('confidence', 0)):.2f}",
         f"{file_count} files",
+        expandable,
     ]
     details.extend(files)
     if file_count > len(files):

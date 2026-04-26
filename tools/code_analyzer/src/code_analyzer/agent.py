@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, TextIO
 
 from .static_analysis import build_static_full_analysis
+from .validation import REQUIRED_RELATIONSHIP_FIELDS
 
 DEFAULT_OPENCODE_MODEL = "opencode/big-pickle"
 
@@ -30,16 +31,18 @@ class OpenCodeAgentRunner(AgentRunner):
         *,
         command: str = "opencode",
         model: str = DEFAULT_OPENCODE_MODEL,
+        target_user: str = "intermediate",
         timeout_seconds: int = 900,
         log_stream: TextIO | None = None,
     ) -> None:
         self.command = command
         self.model = model
+        self.target_user = target_user
         self.timeout_seconds = timeout_seconds
         self.log_stream = log_stream if log_stream is not None else sys.stderr
 
     def analyze(self, evidence: dict[str, Any]) -> dict[str, Any]:
-        prompt = _analysis_prompt()
+        prompt = _analysis_prompt(self.target_user)
         with tempfile.NamedTemporaryFile("w+", suffix=".json", dir=Path.cwd(), delete=True) as evidence_file:
             json.dump(evidence, evidence_file, indent=2, sort_keys=True)
             evidence_file.flush()
@@ -72,9 +75,24 @@ class OpenCodeAgentRunner(AgentRunner):
             return _expand_analysis_with_evidence(_extract_json_object(result.stdout), evidence)
 
 
-def _analysis_prompt() -> str:
+def _analysis_prompt(target_user: str = "intermediate") -> str:
+    audience = {
+        "beginner": (
+            "Target user: beginner. Use plain language, avoid intimidating jargon, "
+            "and describe what each area is for before naming implementation details.\n"
+        ),
+        "intermediate": (
+            "Target user: intermediate. Balance architecture terms with practical explanations "
+            "and include enough implementation detail to orient a developer.\n"
+        ),
+        "advanced": (
+            "Target user: advanced. Use precise architecture language, call out subsystem boundaries, "
+            "and include denser implementation detail and tradeoffs.\n"
+        ),
+    }.get(target_user, "Target user: intermediate. Balance architecture terms with practical explanations.\n")
     return (
         "You are producing a machine-readable architecture analysis for an AR codebase visualizer.\n"
+        f"{audience}"
         "Use the attached deterministic evidence JSON file as your source of truth. Return only one JSON object.\n"
         "The JSON object must use schema_version analysis-full-v1 and contain repo, nodes, and relationships.\n"
         "The repo field must be an object, not a string. Nodes and relationships must be arrays.\n"
@@ -288,7 +306,7 @@ def _expand_analysis_with_evidence(analysis: dict[str, Any], evidence: dict[str,
     relationships = [
         relationship
         for relationship in relationships
-        if isinstance(relationship, dict)
+        if _is_complete_model_relationship(relationship)
         and relationship.get("from") in node_ids
         and relationship.get("to") in node_ids
     ]
@@ -305,6 +323,14 @@ def _expand_analysis_with_evidence(analysis: dict[str, Any], evidence: dict[str,
         "expanded_relationship_count": len(relationships),
     }
     return expanded
+
+
+def _is_complete_model_relationship(relationship: Any) -> bool:
+    if not isinstance(relationship, dict):
+        return False
+    if not REQUIRED_RELATIONSHIP_FIELDS <= set(relationship):
+        return False
+    return all(isinstance(relationship.get(field), str) and relationship[field] for field in ("id", "from", "to", "type"))
 
 
 def _root_node_id(nodes: list[dict[str, Any]]) -> str:

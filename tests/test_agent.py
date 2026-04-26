@@ -3,7 +3,8 @@ import subprocess
 from io import StringIO
 from pathlib import Path
 
-from code_analyzer.agent import OpenCodeAgentRunner, StaticAgentRunner
+from code_analyzer.agent import OpenCodeAgentRunner, StaticAgentRunner, _analysis_prompt
+from code_analyzer.validation import validate_full_analysis
 
 
 def test_static_agent_runner_returns_valid_full_analysis() -> None:
@@ -72,6 +73,16 @@ def test_opencode_agent_runner_accepts_model_override(monkeypatch) -> None:
     analysis = OpenCodeAgentRunner(command="opencode", model="custom/model").analyze({"repo": {"name": "demo"}})
 
     assert analysis["schema_version"] == "analysis-full-v1"
+
+
+def test_analysis_prompt_includes_target_user_guidance() -> None:
+    beginner_prompt = _analysis_prompt("beginner")
+    advanced_prompt = _analysis_prompt("advanced")
+
+    assert "Target user: beginner" in beginner_prompt
+    assert "plain language" in beginner_prompt
+    assert "Target user: advanced" in advanced_prompt
+    assert "subsystem boundaries" in advanced_prompt
 
 
 def test_opencode_agent_runner_parses_json_split_across_text_events(monkeypatch) -> None:
@@ -163,6 +174,34 @@ def test_opencode_agent_runner_drops_model_relationships_with_missing_endpoints(
     analysis = OpenCodeAgentRunner(command="opencode").analyze({"repo": {"name": "demo"}, "files": [], "dependency_hints": []})
 
     assert all(relationship["id"] != "rel-missing" for relationship in analysis["relationships"])
+
+
+def test_opencode_agent_runner_drops_model_relationships_missing_required_fields(monkeypatch) -> None:
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(
+            args=args[0],
+            returncode=0,
+            stdout=(
+                '{"type":"text","part":{"type":"text","text":"{\\"schema_version\\":\\"analysis-full-v1\\",'
+                '\\"repo\\":{\\"name\\":\\"demo\\"},'
+                '\\"nodes\\":[{\\"id\\":\\"root\\",\\"parent_id\\":null,\\"name\\":\\"demo\\",'
+                '\\"description\\":\\"Repository root.\\",\\"type\\":\\"repository\\",\\"category\\":\\"repository\\",'
+                '\\"confidence\\":1,\\"related_files\\":[],\\"evidence\\":[],\\"source_context\\":[]},'
+                '{\\"id\\":\\"tools\\",\\"parent_id\\":\\"root\\",\\"name\\":\\"Tools\\",'
+                '\\"description\\":\\"Tooling.\\",\\"type\\":\\"component\\",\\"category\\":\\"tool\\",'
+                '\\"confidence\\":1,\\"related_files\\":[],\\"evidence\\":[],\\"source_context\\":[]}],'
+                '\\"relationships\\":[{\\"id\\":\\"rel-missing-type\\",\\"from\\":\\"tools\\",\\"to\\":\\"root\\",'
+                '\\"description\\":\\"Invalid relationship.\\",\\"confidence\\":1,\\"evidence\\":[]}]}"}}\n'
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    analysis = OpenCodeAgentRunner(command="opencode").analyze({"repo": {"name": "demo"}, "files": [], "dependency_hints": []})
+
+    assert all(relationship["id"] != "rel-missing-type" for relationship in analysis["relationships"])
+    validate_full_analysis(analysis)
 
 
 def test_opencode_agent_runner_attaches_evidence_from_working_directory(monkeypatch, tmp_path) -> None:

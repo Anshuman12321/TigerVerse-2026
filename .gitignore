@@ -223,3 +223,7 @@ AGENTS.md
 idea.md
 
 .analyzer-output/
+analyze-output/
+analysis-output/
+spec.json   
+docs/

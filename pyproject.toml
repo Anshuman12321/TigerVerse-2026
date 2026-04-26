@@ -13,6 +13,9 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.0",
 ]
+ui = [
+    "streamlit>=1.35",
+]
 
 [project.scripts]
 code-analyzer = "code_analyzer.cli:main"

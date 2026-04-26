@@ -12,12 +12,11 @@ from typing import TypeVar
 
 from .evidence import build_evidence_pack
 from .io import write_json
-from .projection import build_visualizer_map
+from .projection import DEFAULT_MAX_DEPTH, DEFAULT_MAX_NODES_PER_LAYER, TARGET_USERS, build_nested_visualizer_map
 from .renderer import write_visualizer_mermaid
 from .repository import cleanup_repository, prepare_repository
 from .static_analysis import build_static_full_analysis
 from .validation import validate_full_analysis
-from .views import build_analysis_views
 
 T = TypeVar("T")
 
@@ -31,6 +30,9 @@ def main(argv: list[str] | None = None) -> int:
     analyze.add_argument("--workspace", type=Path, default=Path(".analyzer-workspace"))
     analyze.add_argument("--ref", help="Optional branch, tag, or commit to check out after cloning.")
     analyze.add_argument("--agent", choices=["static", "opencode"], default="static")
+    analyze.add_argument("--target-user", choices=sorted(TARGET_USERS), default="intermediate")
+    analyze.add_argument("--max-layer-depth", type=int, default=DEFAULT_MAX_DEPTH)
+    analyze.add_argument("--max-nodes-per-layer", type=int, default=DEFAULT_MAX_NODES_PER_LAYER)
     analyze.add_argument(
         "--opencode-model",
         default=None,
@@ -38,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     analyze.add_argument("--max-file-bytes", type=int, default=80_000)
     render = subparsers.add_parser("render", help="Render visualizer-map.json into a Mermaid graph preview.")
-    render.add_argument("visualizer_map", type=Path, help="Path to visualizer-map.json or a directory of layered visualizer maps.")
+    render.add_argument("visualizer_map", type=Path, help="Path to visualizer-map.json or its containing visualizer directory.")
     render.add_argument("--out", required=True, type=Path, help="Path where visualizer-map.mmd will be written.")
 
     args = parser.parse_args(argv)
@@ -77,22 +79,22 @@ def _analyze(args: argparse.Namespace) -> int:
             _log_step(f"Running OpenCode semantic analysis with {model}; this can take a few minutes", started_at=started_at)
             full_analysis = _run_with_spinner(
                 "Running OpenCode semantic analysis",
-                lambda: OpenCodeAgentRunner(model=model).analyze(evidence),
+                lambda: OpenCodeAgentRunner(model=model, target_user=args.target_user).analyze(evidence),
                 stream=sys.stderr,
             )
 
         _log_step("Validating full analysis", started_at=started_at)
         validate_full_analysis(full_analysis)
-        _log_step("Building layered analysis views", started_at=started_at)
-        analysis_views = build_analysis_views(full_analysis)
-        _log_step("Building visualizer maps", started_at=started_at)
-        visualizer_views = {
-            level: build_visualizer_map(analysis)
-            for level, analysis in analysis_views.items()
-        }
+        _log_step("Building nested visualizer map", started_at=started_at)
+        visualizer_map = build_nested_visualizer_map(
+            full_analysis,
+            max_depth=args.max_layer_depth,
+            max_nodes_per_layer=args.max_nodes_per_layer,
+            target_user=args.target_user,
+        )
 
         _log_step("Writing analyzer artifacts", started_at=started_at)
-        artifact_paths = _write_artifact_bundle(args.out, evidence, analysis_views, visualizer_views)
+        artifact_paths = _write_artifact_bundle(args.out, evidence, full_analysis, visualizer_map)
     finally:
         _log_step("Cleaning analyzer workspace", started_at=started_at)
         cleanup_repository(checkout, args.workspace)
@@ -114,71 +116,64 @@ def _render(args: argparse.Namespace) -> int:
 def _write_artifact_bundle(
     out_dir: Path,
     evidence: dict,
-    analysis_views: dict[str, dict],
-    visualizer_views: dict[str, dict],
+    full_analysis: dict,
+    visualizer_map: dict,
 ) -> list[Path]:
     written: list[Path] = []
     evidence_path = out_dir / "evidence" / "analysis-evidence.json"
     write_json(evidence_path, evidence)
     written.append(evidence_path)
 
-    for level in ("overview", "architecture", "detailed"):
-        analysis_path = out_dir / "analysis" / level / "analysis-full.json"
-        visualizer_json_path = out_dir / "visualizer" / level / "visualizer-map.json"
-        visualizer_mmd_path = out_dir / "visualizer" / level / "visualizer-map.mmd"
-        write_json(analysis_path, analysis_views[level])
-        write_json(visualizer_json_path, visualizer_views[level])
-        write_visualizer_mermaid(visualizer_json_path, visualizer_mmd_path)
-        written.extend([analysis_path, visualizer_json_path, visualizer_mmd_path])
+    analysis_path = out_dir / "analysis" / "analysis-full.json"
+    visualizer_json_path = out_dir / "visualizer" / "visualizer-map.json"
+    visualizer_mmd_path = out_dir / "visualizer" / "visualizer-map.mmd"
+    write_json(analysis_path, full_analysis)
+    write_json(visualizer_json_path, visualizer_map)
+    write_visualizer_mermaid(visualizer_json_path, visualizer_mmd_path)
+    written.extend([analysis_path, visualizer_json_path, visualizer_mmd_path])
 
     manifest_path = out_dir / "manifest.json"
-    write_json(manifest_path, _artifact_manifest(out_dir, evidence_path, analysis_views))
+    write_json(
+        manifest_path,
+        _artifact_manifest(out_dir, evidence_path, analysis_path, visualizer_json_path, visualizer_mmd_path, visualizer_map),
+    )
     written.insert(0, manifest_path)
     return written
 
 
-def _artifact_manifest(out_dir: Path, evidence_path: Path, analysis_views: dict[str, dict]) -> dict[str, object]:
+def _artifact_manifest(
+    out_dir: Path,
+    evidence_path: Path,
+    analysis_path: Path,
+    visualizer_json_path: Path,
+    visualizer_mmd_path: Path,
+    visualizer_map: dict,
+) -> dict[str, object]:
+    root_layer = visualizer_map.get("root_layer", {})
     return {
         "schema_version": "analysis-artifacts-v1",
-        "levels": {
-            "primary": "overview",
-            "available": ["overview", "architecture", "detailed"],
-        },
         "artifacts": {
             "evidence": str(evidence_path.relative_to(out_dir)),
-            "analysis": {
-                level: str((Path("analysis") / level / "analysis-full.json"))
-                for level in ("overview", "architecture", "detailed")
-            },
+            "analysis": str(analysis_path.relative_to(out_dir)),
             "visualizer": {
-                level: {
-                    "json": str(Path("visualizer") / level / "visualizer-map.json"),
-                    "mermaid": str(Path("visualizer") / level / "visualizer-map.mmd"),
-                }
-                for level in ("overview", "architecture", "detailed")
+                "json": str(visualizer_json_path.relative_to(out_dir)),
+                "mermaid": str(visualizer_mmd_path.relative_to(out_dir)),
             },
         },
+        "constraints": visualizer_map.get("constraints", {}),
         "counts": {
-            level: {
-                "nodes": len(analysis_views[level].get("nodes", [])),
-                "relationships": len(analysis_views[level].get("relationships", [])),
-            }
-            for level in ("overview", "architecture", "detailed")
+            "root_nodes": len(root_layer.get("nodes", [])) if isinstance(root_layer, dict) else 0,
+            "root_edges": len(root_layer.get("edges", [])) if isinstance(root_layer, dict) else 0,
         },
     }
 
 
 def _render_visualizer_target(source: Path, target: Path) -> list[Path]:
     if source.is_dir():
-        written: list[Path] = []
-        for json_path in sorted(source.glob("*/visualizer-map.json")):
-            level = json_path.parent.name
-            target_path = target / level / "visualizer-map.mmd"
-            write_visualizer_mermaid(json_path, target_path)
-            written.append(target_path)
-        if not written:
-            raise ValueError(f"no visualizer-map.json files found under {source}")
-        return written
+        source = source / "visualizer-map.json"
+        if not source.exists():
+            raise ValueError(f"no visualizer-map.json found under {source.parent}")
+        target = target / "visualizer-map.mmd"
 
     write_visualizer_mermaid(source, target)
     return [target]

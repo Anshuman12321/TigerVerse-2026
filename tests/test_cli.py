@@ -47,32 +47,27 @@ def test_cli_project_static_writes_full_and_visualizer_artifacts(tmp_path: Path)
     )
 
     assert "manifest.json" in result.stdout
-    assert "analysis/overview/analysis-full.json" in result.stdout
-    assert "visualizer/overview/visualizer-map.mmd" in result.stdout
+    assert "analysis/analysis-full.json" in result.stdout
+    assert "visualizer/visualizer-map.mmd" in result.stdout
     assert "Preparing repository" in result.stderr
     assert re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] \+\d+\.\d+s", result.stderr)
     assert "Collecting repository evidence" in result.stderr
     assert "Running static analysis" in result.stderr
+    assert "Building nested visualizer map" in result.stderr
     assert "Writing analyzer artifacts" in result.stderr
     assert "Cleaning analyzer workspace" in result.stderr
     manifest = json.loads((out / "manifest.json").read_text())
-    overview = json.loads((out / "analysis" / "overview" / "analysis-full.json").read_text())
-    architecture = json.loads((out / "analysis" / "architecture" / "analysis-full.json").read_text())
-    detailed = json.loads((out / "analysis" / "detailed" / "analysis-full.json").read_text())
-    visualizer = json.loads((out / "visualizer" / "overview" / "visualizer-map.json").read_text())
+    analysis = json.loads((out / "analysis" / "analysis-full.json").read_text())
+    visualizer = json.loads((out / "visualizer" / "visualizer-map.json").read_text())
     assert manifest["schema_version"] == "analysis-artifacts-v1"
-    assert overview["schema_version"] == "analysis-full-v1"
-    assert architecture["schema_version"] == "analysis-full-v1"
-    assert detailed["schema_version"] == "analysis-full-v1"
-    assert visualizer["schema_version"] == "visualizer-map-v1"
+    assert analysis["schema_version"] == "analysis-full-v1"
+    assert visualizer["schema_version"] == "nested-visualizer-map-v1"
     assert (out / "evidence" / "analysis-evidence.json").exists()
-    assert (out / "visualizer" / "overview" / "visualizer-map.mmd").exists()
-    assert (out / "visualizer" / "architecture" / "visualizer-map.mmd").exists()
-    assert (out / "visualizer" / "detailed" / "visualizer-map.mmd").exists()
-    assert any(node["related_files"] for node in visualizer["nodes"])
-    assert len(overview["nodes"]) <= len(architecture["nodes"]) <= len(detailed["nodes"])
-    assert manifest["levels"]["primary"] == "overview"
-    assert set(manifest["levels"]["available"]) == {"overview", "architecture", "detailed"}
+    assert (out / "visualizer" / "visualizer-map.mmd").exists()
+    assert any(node["related_files"] for node in visualizer["root_layer"]["nodes"])
+    assert manifest["artifacts"]["analysis"] == "analysis/analysis-full.json"
+    assert manifest["artifacts"]["visualizer"]["json"] == "visualizer/visualizer-map.json"
+    assert manifest["constraints"]["target_user"] == "intermediate"
 
 
 def test_cli_analyze_cleans_remote_clone_after_success(tmp_path: Path) -> None:
@@ -110,7 +105,7 @@ def test_cli_analyze_cleans_remote_clone_after_success(tmp_path: Path) -> None:
         env=env,
     )
 
-    assert (out / "visualizer" / "overview" / "visualizer-map.mmd").exists()
+    assert (out / "visualizer" / "visualizer-map.mmd").exists()
     assert not (workspace / "repo").exists()
     assert not workspace.exists()
 
@@ -140,6 +135,9 @@ def test_cli_analyze_cleans_remote_clone_when_analysis_fails(tmp_path: Path, mon
                 max_file_bytes=80_000,
                 agent="static",
                 opencode_model=None,
+                target_user="intermediate",
+                max_layer_depth=3,
+                max_nodes_per_layer=20,
                 out=tmp_path / "out",
             )
         )
@@ -166,6 +164,9 @@ def test_cli_analyze_keeps_local_repo_after_success(tmp_path: Path) -> None:
             max_file_bytes=80_000,
             agent="static",
             opencode_model=None,
+            target_user="intermediate",
+            max_layer_depth=3,
+            max_nodes_per_layer=20,
             out=tmp_path / "out",
         )
     )
@@ -189,9 +190,10 @@ def test_cli_analyze_passes_opencode_model_override(monkeypatch: pytest.MonkeyPa
     captured_model = None
 
     class FakeOpenCodeAgentRunner:
-        def __init__(self, *, model: str) -> None:
+        def __init__(self, *, model: str, target_user: str) -> None:
             nonlocal captured_model
             captured_model = model
+            assert target_user == "advanced"
 
         def analyze(self, evidence: dict) -> dict:
             return {
@@ -227,6 +229,9 @@ def test_cli_analyze_passes_opencode_model_override(monkeypatch: pytest.MonkeyPa
             max_file_bytes=80_000,
             agent="opencode",
             opencode_model="custom/model",
+            target_user="advanced",
+            max_layer_depth=3,
+            max_nodes_per_layer=20,
             out=tmp_path / "out",
         )
     )
@@ -286,12 +291,9 @@ def test_cli_render_writes_mermaid_from_visualizer_map(tmp_path: Path) -> None:
     assert "Root" in target.read_text()
 
 
-def test_cli_render_directory_writes_missing_mermaid_levels(tmp_path: Path) -> None:
+def test_cli_render_directory_writes_mermaid_from_visualizer_directory(tmp_path: Path) -> None:
     visualizer_root = tmp_path / "visualizer"
-    overview_dir = visualizer_root / "overview"
-    architecture_dir = visualizer_root / "architecture"
-    overview_dir.mkdir(parents=True)
-    architecture_dir.mkdir(parents=True)
+    visualizer_root.mkdir(parents=True)
 
     payload = {
         "schema_version": "visualizer-map-v1",
@@ -314,8 +316,7 @@ def test_cli_render_directory_writes_missing_mermaid_levels(tmp_path: Path) -> N
         ],
         "edges": [],
     }
-    (overview_dir / "visualizer-map.json").write_text(json.dumps(payload))
-    (architecture_dir / "visualizer-map.json").write_text(json.dumps(payload))
+    (visualizer_root / "visualizer-map.json").write_text(json.dumps(payload))
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(Path.cwd() / "tools" / "code_analyzer" / "src")
@@ -335,10 +336,8 @@ def test_cli_render_directory_writes_missing_mermaid_levels(tmp_path: Path) -> N
         env=env,
     )
 
-    assert "overview/visualizer-map.mmd" in result.stdout
-    assert "architecture/visualizer-map.mmd" in result.stdout
-    assert (tmp_path / "rendered" / "overview" / "visualizer-map.mmd").exists()
-    assert (tmp_path / "rendered" / "architecture" / "visualizer-map.mmd").exists()
+    assert "rendered/visualizer-map.mmd" in result.stdout
+    assert (tmp_path / "rendered" / "visualizer-map.mmd").exists()
 
 
 def test_cli_main_prints_clear_error_when_analysis_fails(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
