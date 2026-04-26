@@ -38,6 +38,11 @@
     flowTokenPulseAmount: false
     flowTokenPulseSpeed: false
     flowTokenScale: false
+    holoBlueMaterial: false
+    holoGreenMaterial: false
+    holoGreyMaterial: false
+    holoPurpleMaterial: false
+    holoSalmonMaterial: false
     nodePrefab: false
     nodeSize: false
     rootRadius: false
@@ -57,6 +62,11 @@
     - nodePrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
       connectionPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
       flowTokenPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      holoGreyMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      holoSalmonMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      holoBlueMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      holoPurpleMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
+      holoGreenMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
       dataScale: 0.100000
       connectionThickness: 0.150000
       flowSpeed: !<float> 1.000000

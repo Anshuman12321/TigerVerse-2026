@@ -2028,6 +2028,11 @@
       nodePrefab: !<reference.ObjectPrefab> 7222604c-450d-46dd-95f7-eee8a5c2dc9e
       connectionPrefab: !<reference.ObjectPrefab> 997dabda-09b6-446a-b7e6-aec8c6b2f05b
       flowTokenPrefab: !<reference.ObjectPrefab> fddc5445-6e26-4a5a-b51d-a5ff4b35708d
+      holoGreyMaterial: !<reference.Material> 7114f875-bd07-40b2-914c-0ab5f0c774d1
+      holoSalmonMaterial: !<reference.Material> 81dd075c-f395-4778-b2e9-fd5799f2f3aa
+      holoBlueMaterial: !<reference.Material> 9ce770d5-f116-4782-a999-00f995fd391a
+      holoPurpleMaterial: !<reference.Material> b6fdb4cf-0a92-4a4d-854f-349ceef2a1d3
+      holoGreenMaterial: !<reference.Material> 4b9159d0-578f-43e0-8ea0-fb037294c157
       dataScale: 0.500000
       connectionThickness: 0.150000
       flowSpeed: !<float> 20.000000

@@ -1,6 +1,11 @@
 //@input Asset.ObjectPrefab nodePrefab
 //@input Asset.ObjectPrefab connectionPrefab
 //@input Asset.ObjectPrefab flowTokenPrefab
+//@input Asset.Material holoGreyMaterial
+//@input Asset.Material holoSalmonMaterial
+//@input Asset.Material holoBlueMaterial
+//@input Asset.Material holoPurpleMaterial
+//@input Asset.Material holoGreenMaterial
 //@input float dataScale = 1.0
 //@input float connectionThickness = 0.15
 //@input float flowSpeed = 5.0
@@ -40,6 +45,8 @@ var nodePathById = {};
 var nodePathsById = {};
 var connectionByNodePair = {};
 var routeConnectionByKey = {};
+var rootTintMaterialByPath = {};
+var rootTintMaterialDeck = [];
 var activeFlow = null;
 
 function callIfAvailable(target, methodName, args) {
@@ -171,6 +178,111 @@ function sanitizeName(value) {
 
 function cloneVec3(value) {
     return new vec3(value.x, value.y, value.z);
+}
+
+function hasChildNodes(nodeData) {
+    var childTier = getChildTier(nodeData);
+
+    return childTier && childTier.nodes && childTier.nodes.length > 0;
+}
+
+function getNodeTextColor(nodeData) {
+    if (hasChildNodes(nodeData)) {
+        return new vec4(1, 1, 1, 1);
+    }
+
+    return new vec4(1.0, 0.48, 0.42, 1.0);
+}
+
+function getHoloTintMaterials() {
+    var materials = [];
+
+    if (script.holoGreyMaterial) {
+        materials.push(script.holoGreyMaterial);
+    }
+
+    if (script.holoSalmonMaterial) {
+        materials.push(script.holoSalmonMaterial);
+    }
+
+    if (script.holoBlueMaterial) {
+        materials.push(script.holoBlueMaterial);
+    }
+
+    if (script.holoPurpleMaterial) {
+        materials.push(script.holoPurpleMaterial);
+    }
+
+    if (script.holoGreenMaterial) {
+        materials.push(script.holoGreenMaterial);
+    }
+
+    return materials;
+}
+
+function shuffleMaterialDeck(materials) {
+    var shuffled = materials.slice();
+
+    for (var i = shuffled.length - 1; i > 0; i--) {
+        var swapIndex = Math.floor(Math.random() * (i + 1));
+        var temp = shuffled[i];
+        shuffled[i] = shuffled[swapIndex];
+        shuffled[swapIndex] = temp;
+    }
+
+    return shuffled;
+}
+
+function takeNextRootTintMaterial() {
+    if (rootTintMaterialDeck.length === 0) {
+        rootTintMaterialDeck = shuffleMaterialDeck(getHoloTintMaterials());
+    }
+
+    if (rootTintMaterialDeck.length === 0) {
+        return null;
+    }
+
+    return rootTintMaterialDeck.shift();
+}
+
+function getRootPathForNodePath(nodePath) {
+    var parts = nodePath.split(">");
+
+    if (parts.length < 2) {
+        return nodePath;
+    }
+
+    return ROOT_PATH + ">" + parts[1];
+}
+
+function getBoxTintMaterialForNodePath(nodePath) {
+    var parentPath = getParentPath(nodePath);
+
+    if (parentPath === ROOT_PATH) {
+        if (!rootTintMaterialByPath[nodePath]) {
+            rootTintMaterialByPath[nodePath] = takeNextRootTintMaterial();
+        }
+
+        return rootTintMaterialByPath[nodePath];
+    }
+
+    return rootTintMaterialByPath[getRootPathForNodePath(nodePath)] || null;
+}
+
+function applyTintMaterial(sceneObject, material) {
+    if (!sceneObject || !material) {
+        return;
+    }
+
+    var meshVisual = sceneObject.getComponent("Component.RenderMeshVisual");
+
+    if (meshVisual) {
+        meshVisual.mainMaterial = material;
+    }
+
+    for (var i = 0; i < sceneObject.getChildrenCount(); i++) {
+        applyTintMaterial(sceneObject.getChild(i), material);
+    }
 }
 
 function getNodeScale(nodeData, depth) {
@@ -353,7 +465,7 @@ function configureText(textComponent, text, color) {
     setTextColor(textComponent, color);
 }
 
-function setNodeText(sceneObject, label, description, fixedScale) {
+function setNodeText(sceneObject, label, description, fixedScale, textColor) {
     var labelTextComponent = null;
     var fallbackTextComponent = null;
 
@@ -379,7 +491,7 @@ function setNodeText(sceneObject, label, description, fixedScale) {
         );
     }
 
-    configureText(labelTextComponent, formatNodeText(label, description), new vec4(1, 1, 1, 1));
+    configureText(labelTextComponent, formatNodeText(label, description), textColor || new vec4(1, 1, 1, 1));
 }
 
 function bindNodeInteraction(sceneObject, nodePath, rootTransform, manipulation) {
@@ -613,12 +725,15 @@ function spawnNode(nodeData, nodePath, position, depth, visibleAtStart) {
     var nodeObject = script.nodePrefab.instantiate(script.getSceneObject());
     var transform = nodeObject.getTransform();
     var fixedScale = getNodeScale(nodeData, depth);
+    var boxTintMaterial = getBoxTintMaterialForNodePath(nodePath);
+    var textColor = getNodeTextColor(nodeData);
 
     nodeObject.name = "NODE__" + sanitizeName(nodePath);
     transform.setLocalPosition(position);
     transform.setLocalScale(fixedScale);
 
-    setNodeText(nodeObject, getNodeLabel(nodeData), getNodeDescription(nodeData), fixedScale);
+    applyTintMaterial(nodeObject, boxTintMaterial);
+    setNodeText(nodeObject, getNodeLabel(nodeData), getNodeDescription(nodeData), fixedScale, textColor);
     setVisible(nodeObject, visibleAtStart);
     var manipulation = configureNodeManipulation(nodeObject, transform);
     bindNodeInteraction(nodeObject, nodePath, transform, manipulation);
