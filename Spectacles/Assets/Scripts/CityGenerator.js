@@ -34,6 +34,7 @@ var nodeInteractionStates = [];
 var childOffsetByPath = {};
 var lastNodePositions = {};
 var nodePathById = {};
+var nodePathsById = {};
 var connectionByNodePair = {};
 var flowButtonObjects = [];
 var activeFlow = null;
@@ -86,6 +87,12 @@ function getConnectionKey(fromPath, toPath) {
 }
 
 function registerNodePath(nodeId, nodePath) {
+    if (!nodePathsById[nodeId]) {
+        nodePathsById[nodeId] = [];
+    }
+
+    nodePathsById[nodeId].push(nodePath);
+
     if (!nodePathById[nodeId]) {
         nodePathById[nodeId] = nodePath;
     }
@@ -714,22 +721,149 @@ function createConnection(fromPath, toPath, connectionType, visibleAtStart, chil
     return connectionObject;
 }
 
+function getRouteEntries(scenario) {
+    return scenario.travelPath || scenario.steps || [];
+}
+
+function shouldVisitRouteChildren(scenario) {
+    return scenario.visitChildren === true || (!scenario.travelPath && scenario.visitChildren !== false);
+}
+
+function getRouteEntryLabel(entry) {
+    if (typeof entry === "string") {
+        return entry;
+    }
+
+    if (entry && entry.path) {
+        return entry.path;
+    }
+
+    if (entry && entry.id) {
+        return entry.id;
+    }
+
+    return String(entry);
+}
+
+function buildNodePathFromParentIds(nodeId, parentIds) {
+    var candidatePath = ROOT_PATH;
+
+    for (var i = 0; i < parentIds.length; i++) {
+        candidatePath += ">" + String(parentIds[i]);
+    }
+
+    return candidatePath + ">" + nodeId;
+}
+
+function resolveRouteEntry(entry, scenarioName) {
+    if (typeof entry === "string") {
+        if (spawnedNodes[entry]) {
+            return entry;
+        }
+
+        return resolveRouteEntry({ id: entry }, scenarioName);
+    }
+
+    if (!entry) {
+        print("WARNING: Flow scenario '" + scenarioName + "' has an empty route entry.");
+        return null;
+    }
+
+    if (entry.path) {
+        var explicitPath = String(entry.path);
+        if (spawnedNodes[explicitPath]) {
+            return explicitPath;
+        }
+
+        print("WARNING: Flow scenario '" + scenarioName + "' references missing node path: " + explicitPath);
+        return null;
+    }
+
+    if (!entry.id) {
+        print("WARNING: Flow scenario '" + scenarioName + "' route entry is missing id or path.");
+        return null;
+    }
+
+    var nodeId = String(entry.id);
+
+    if (entry.parentIds && entry.parentIds.length !== undefined) {
+        var nestedPath = buildNodePathFromParentIds(nodeId, entry.parentIds);
+        if (spawnedNodes[nestedPath]) {
+            return nestedPath;
+        }
+
+        print("WARNING: Flow scenario '" + scenarioName + "' references missing nested node: " + nestedPath);
+        return null;
+    }
+
+    var matches = nodePathsById[nodeId];
+
+    if (!matches || matches.length === 0) {
+        print("WARNING: Flow scenario '" + scenarioName + "' references missing node id: " + nodeId);
+        return null;
+    }
+
+    if (matches.length > 1) {
+        print("WARNING: Flow scenario '" + scenarioName + "' references ambiguous node id: " + nodeId + ". Add parentIds or path.");
+        return null;
+    }
+
+    return matches[0];
+}
+
 function resolveScenarioPaths(scenario) {
+    var routeEntries = getRouteEntries(scenario);
     var resolvedPaths = [];
 
-    for (var i = 0; i < scenario.steps.length; i++) {
-        var nodeId = String(scenario.steps[i]);
-        var nodePath = nodePathById[nodeId];
+    for (var i = 0; i < routeEntries.length; i++) {
+        var nodePath = resolveRouteEntry(routeEntries[i], scenario.name);
 
         if (!nodePath) {
-            print("WARNING: Flow scenario '" + scenario.name + "' references missing node id: " + nodeId);
+            print("WARNING: Flow scenario '" + scenario.name + "' could not resolve route entry: " + getRouteEntryLabel(routeEntries[i]));
             return null;
         }
 
         resolvedPaths.push(nodePath);
     }
 
+    if (shouldVisitRouteChildren(scenario)) {
+        resolvedPaths = expandRouteWithDescendants(resolvedPaths);
+    }
+
     return resolvedPaths;
+}
+
+function appendPathIfMissing(paths, seenPaths, nodePath) {
+    if (!seenPaths[nodePath]) {
+        paths.push(nodePath);
+        seenPaths[nodePath] = true;
+    }
+}
+
+function appendDescendants(paths, seenPaths, parentPath) {
+    var children = childPathsByParent[parentPath];
+
+    if (!children) {
+        return;
+    }
+
+    for (var i = 0; i < children.length; i++) {
+        var childPath = children[i];
+        appendPathIfMissing(paths, seenPaths, childPath);
+        appendDescendants(paths, seenPaths, childPath);
+    }
+}
+
+function expandRouteWithDescendants(resolvedPaths) {
+    var expandedPaths = [];
+    var seenPaths = {};
+
+    for (var i = 0; i < resolvedPaths.length; i++) {
+        appendPathIfMissing(expandedPaths, seenPaths, resolvedPaths[i]);
+        appendDescendants(expandedPaths, seenPaths, resolvedPaths[i]);
+    }
+
+    return expandedPaths;
 }
 
 function ensureNodePathVisible(nodePath) {
@@ -751,9 +885,30 @@ function ensureNodePathVisible(nodePath) {
 }
 
 function ensureFlowRouteVisible(resolvedPaths) {
-    for (var i = 0; i < resolvedPaths.length; i++) {
-        ensureNodePathVisible(resolvedPaths[i]);
+    if (resolvedPaths.length > 0) {
+        ensureNodePathVisible(resolvedPaths[0]);
     }
+}
+
+function expandFlowArrivalNode(nodePath) {
+    var children = childPathsByParent[nodePath];
+
+    if (children && children.length > 0 && !expandedState[nodePath]) {
+        expandNode(nodePath);
+    }
+}
+
+function orientFlowTokenAlongSegment(tokenTransform, fromPosition, toPosition) {
+    var segment = toPosition.sub(fromPosition);
+    var segmentLength = Math.sqrt(segment.x * segment.x + segment.y * segment.y + segment.z * segment.z);
+
+    if (segmentLength < 0.001) {
+        return;
+    }
+
+    // Align the token's local X axis to the route; this is the 90-degree correction
+    // from the vertical/up-axis alignment used by connection cylinders.
+    tokenTransform.setWorldRotation(quat.rotationFromTo(new vec3(1, 0, 0), segment.uniformScale(1 / segmentLength)));
 }
 
 function getFlowConnectionForSegment(fromPath, toPath) {
@@ -873,6 +1028,8 @@ function updateFlowAnimation() {
         return;
     }
 
+    ensureNodePathVisible(fromPath);
+    ensureNodePathVisible(toPath);
     updateActiveFlowSegmentHighlight(fromPath, toPath);
 
     var fromPosition = fromObject.getTransform().getWorldPosition();
@@ -886,8 +1043,10 @@ function updateFlowAnimation() {
     var tokenPosition = fromPosition.add(toPosition.sub(fromPosition).uniformScale(t));
 
     activeFlow.tokenTransform.setWorldPosition(tokenPosition);
+    orientFlowTokenAlongSegment(activeFlow.tokenTransform, fromPosition, toPosition);
 
     if (elapsed >= segmentDuration + pauseSeconds) {
+        expandFlowArrivalNode(toPath);
         activeFlow.segmentIndex++;
         activeFlow.segmentStartTime = getTime();
         activeFlow.pausedElapsed = 0;
