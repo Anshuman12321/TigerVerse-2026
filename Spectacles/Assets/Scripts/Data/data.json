@@ -1,0 +1,92 @@
+{
+    "id": "root",
+    "label": "Project",
+    "children": [
+        {
+            "id": "frontend",
+            "label": "Frontend",
+            "children": [
+                {
+                    "id": "components",
+                    "label": "Components",
+                    "children": [
+                        { "id": "button", "label": "Button" },
+                        { "id": "navbar", "label": "Navbar" },
+                        { "id": "card", "label": "Card" }
+                    ]
+                },
+                {
+                    "id": "pages",
+                    "label": "Pages",
+                    "children": [
+                        { "id": "home", "label": "Home Page" },
+                        { "id": "login", "label": "Login Page" },
+                        { "id": "dashboard", "label": "Dashboard Page" }
+                    ]
+                },
+                {
+                    "id": "styles",
+                    "label": "Styles",
+                    "children": [
+                        { "id": "css", "label": "CSS" },
+                        { "id": "tailwind", "label": "Tailwind" }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "backend",
+            "label": "Backend",
+            "children": [
+                {
+                    "id": "routes",
+                    "label": "Routes",
+                    "children": [
+                        { "id": "authRoutes", "label": "Auth Routes" },
+                        { "id": "userRoutes", "label": "User Routes" },
+                        { "id": "postRoutes", "label": "Post Routes" }
+                    ]
+                },
+                {
+                    "id": "controllers",
+                    "label": "Controllers",
+                    "children": [
+                        { "id": "authController", "label": "Auth Controller" },
+                        { "id": "userController", "label": "User Controller" },
+                        { "id": "postController", "label": "Post Controller" }
+                    ]
+                },
+                {
+                    "id": "middleware",
+                    "label": "Middleware",
+                    "children": [
+                        { "id": "authMiddleware", "label": "Auth Middleware" },
+                        { "id": "errorMiddleware", "label": "Error Middleware" }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "database",
+            "label": "Database",
+            "children": [
+                {
+                    "id": "models",
+                    "label": "Models",
+                    "children": [
+                        { "id": "userModel", "label": "User Model" },
+                        { "id": "postModel", "label": "Post Model" }
+                    ]
+                },
+                {
+                    "id": "tables",
+                    "label": "Tables",
+                    "children": [
+                        { "id": "usersTable", "label": "Users Table" },
+                        { "id": "postsTable", "label": "Posts Table" }
+                    ]
+                }
+            ]
+        }
+    ]
+}

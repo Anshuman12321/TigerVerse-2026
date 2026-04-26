@@ -1,0 +1,76 @@
+- !<ObjectPrefab/7222604c-450d-46dd-95f7-eee8a5c2dc9e>
+  PackagePath: ""
+  objects:
+    - !<own> fc813d5c-9ddb-4242-b998-7cde79a3654a
+  LazyLoading: false
+  RetainAssets: true
+- !<ManipulateComponent/340315db-2b90-40e6-b541-ef07ad88717a>
+  PrefabRemaps:
+    []
+  Name: Manipulate
+  Enabled: true
+  Scale: true
+  Drag: true
+  Rotate: true
+  MinDistance: 0.000000
+  MaxDistance: 1000.000000
+  MinScale: 0.010000
+  MaxScale: 20.000000
+- !<RenderMeshVisual/99bca7c9-4cfe-483f-9b52-f0ac4672d606>
+  PrefabRemaps:
+    []
+  Name: Render Mesh Visual
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> 8ac9b1f8-0e05-4aea-9311-4f4cf267e017
+  Mesh: !<reference> e542623c-1432-4bfa-881d-a28905bd9e57
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
+- !<ColliderComponent/9bd054ad-0f4d-4506-a436-06f0dd4b39cc>
+  PrefabRemaps:
+    []
+  Name: Physics Collider
+  Enabled: true
+  Shape: !<Box>
+    FitVisual: true
+    Size: {x: 15.000000, y: 15.000000, z: 15.000000}
+  Matter: !<reference> 00000000-0000-0000-0000-000000000000
+  Filter: !<reference> 00000000-0000-0000-0000-000000000000
+  OverlapFilter: !<reference> 00000000-0000-0000-0000-000000000000
+  WorldSettings: !<reference> 00000000-0000-0000-0000-000000000000
+  EnableSmoothing: false
+  PositionTension: 30.000000
+  RotationTension: 30.000000
+  ForceCompound: false
+  Intangible: false
+  ShowCollider: false
+- !<SceneObject/fc813d5c-9ddb-4242-b998-7cde79a3654a>
+  PrefabRemaps:
+    - 340315db-2b90-40e6-b541-ef07ad88717a: 340315db-2b90-40e6-4abe-10f852778e85
+    - 99bca7c9-4cfe-483f-9b52-f0ac4672d606: 99bca7c9-4cfe-483f-64ad-0f53b98d29f9
+    - 9bd054ad-0f4d-4506-a436-06f0dd4b39cc: 9bd054ad-0f4d-4506-5bc9-f90f22b4c633
+    - fc813d5c-9ddb-4242-b998-7cde79a3654a: fc813d5c-9ddb-4242-4667-8321865c9ab5
+  Name: NodePrefab
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 10.000000, y: 10.000000, z: 10.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 99bca7c9-4cfe-483f-9b52-f0ac4672d606
+    - !<own> 9bd054ad-0f4d-4506-a436-06f0dd4b39cc
+    - !<own> 340315db-2b90-40e6-b541-ef07ad88717a

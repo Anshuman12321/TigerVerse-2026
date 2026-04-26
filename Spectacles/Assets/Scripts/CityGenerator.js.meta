@@ -1,0 +1,64 @@
+- !<AssetImportMetadata/23a6003d-2fdc-47fe-a498-3f7a7941504c>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> ac727489-37f8-4c18-a1a8-abaea1531ef2
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> ac727489-37f8-4c18-a1a8-abaea1531ef2
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> 65a2bf48-2d0c-48df-9549-c2ecd5585f33
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/65a2bf48-2d0c-48df-9549-c2ecd5585f33>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 683281be-df2c-4f6e-b305-f0841148201c
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    childRadius: false
+    collapseSiblingsOnExpand: false
+    connectionPrefab: false
+    connectionThickness: false
+    dataScale: false
+    depthSpacingY: false
+    nodePrefab: false
+    nodeSize: false
+    rootRadius: false
+    slabDepth: false
+    slabHeight: false
+    tapMoveThreshold: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - nodePrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      connectionPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      dataScale: 0.100000
+      connectionThickness: 0.150000
+      nodeSize: !<float> 1.000000
+      depthSpacingY: !<float> 5.000000
+      rootRadius: !<float> 10.000000
+      childRadius: !<float> 5.000000
+      slabHeight: 0.180000
+      slabDepth: 0.650000
+      tapMoveThreshold: 0.150000
+      collapseSiblingsOnExpand: false
+  ScriptTypes:
+    -
+      {}
