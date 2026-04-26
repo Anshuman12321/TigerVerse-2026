@@ -102,6 +102,7 @@ def test_build_nested_visualizer_map_includes_spec_json_compatible_tier_shape() 
 
     first_node = visualizer["tier"]["nodes"][0]
     assert first_node["id"] == "area-1"
+    assert first_node["name"] == "Area 1"
     assert first_node["title"] == "Area 1"
     assert first_node["description"] == "Area 1 description."
     assert first_node["shape"] == "cube"
@@ -114,6 +115,7 @@ def test_build_nested_visualizer_map_includes_spec_json_compatible_tier_shape() 
     leaf_node = child_tier["nodes"][0]
     assert leaf_node == {
         "id": "area-1-child-1",
+        "name": "Area 1",
         "title": "Area 1 Child 1",
         "description": "Area 1 Child 1 description.",
         "shape": "cube",

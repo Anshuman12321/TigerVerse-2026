@@ -217,12 +217,21 @@ def _spec_node(node: dict[str, Any]) -> dict[str, Any]:
     child_layer = node.get("child_layer")
     spec_node = {
         "id": node["id"],
+        "name": _short_node_name(node["name"]),
         "title": node["name"],
         "description": node["description"],
         "shape": "cube",
         "tier": _spec_tier(child_layer) if child_layer else None,
     }
     return spec_node
+
+
+def _short_node_name(value: Any, *, max_words: int = 2) -> str:
+    text = str(value or "").replace("_", " ").replace("-", " ")
+    words = re.findall(r"[A-Za-z0-9]+", text)
+    meaningful = [word for word in words if word.lower() not in {"and", "or", "the", "a", "an", "of", "for", "to"}]
+    selected = meaningful[:max_words] or words[:max_words]
+    return " ".join(selected)
 
 
 def _spec_tier_description(layer: dict[str, Any]) -> str:

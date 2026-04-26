@@ -568,7 +568,7 @@ def export_positioned_scene(positioned_graph: Dict[str, Any]) -> Dict[str, Any]:
     Output shape:
     {
       "nodes": [
-        { "id", "title", "description", "shape", "pos": {x,y,z} }
+        { "id", "name", "title", "description", "shape", "pos": {x,y,z} }
       ],
       "arrows": [
         { "start": {x,y,z}, "end": {x,y,z} }
@@ -591,8 +591,9 @@ def export_positioned_scene(positioned_graph: Dict[str, Any]) -> Dict[str, Any]:
         nodes_out.append(
             {
                 "id": nid,
+                "name": _short_node_name(node.get("name", node.get("title", nid))),
                 "title": node.get("title", ""),
-                "description": node.get("description", ""),
+                "description": str(node.get("description", "")),
                 "shape": node.get("shape", "cube"),
                 "pos": {"x": float(pos.get("x", 0)), "y": float(pos.get("y", 0)), "z": float(pos.get("z", 0))},
             }
@@ -633,6 +634,15 @@ def export_positioned_scene(positioned_graph: Dict[str, Any]) -> Dict[str, Any]:
     arrows_out.sort(key=lambda e: (str(e.get("from", "")), str(e.get("to", "")), str(e.get("type", ""))))
 
     return {"schema_version": "positioned-scene-v1", "nodes": nodes_out, "arrows": arrows_out}
+
+
+def _short_node_name(value: Any, *, max_words: int = 2) -> str:
+    text = str(value or "").replace("_", " ").replace("-", " ")
+    words = [part.strip(".,:;()[]{}") for part in text.split()]
+    words = [word for word in words if word]
+    meaningful = [word for word in words if word.lower() not in {"and", "or", "the", "a", "an", "of", "for", "to"}]
+    selected = meaningful[:max_words] or words[:max_words]
+    return " ".join(selected)
 
 
 def write_positioned_scene_json(

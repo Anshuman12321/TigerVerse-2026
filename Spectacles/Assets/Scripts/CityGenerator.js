@@ -60,7 +60,7 @@ function getNodeId(nodeData) {
 }
 
 function getNodeLabel(nodeData) {
-    return nodeData.title || nodeData.name || nodeData.label || getNodeId(nodeData);
+    return nodeData.name || nodeData.label || nodeData.title || getNodeId(nodeData);
 }
 
 function getNodeDescription(nodeData) {

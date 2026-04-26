@@ -163,3 +163,53 @@ def test_scene_layout_applies_independent_axis_scales(tmp_path: Path) -> None:
     ) == 0
     written = json.loads(target.read_text(encoding="utf-8"))
     assert {node["id"]: node for node in written["nodes"]}["target"]["pos"]["x"] == 10.0
+
+
+def test_scene_layout_exports_short_node_names_and_descriptive_descriptions() -> None:
+    graph = {
+        "edges": [],
+        "tier": {
+            "id": "tier_1",
+            "description": "Root tier.",
+            "edges": None,
+            "nodes": [
+                {
+                    "id": "voice-pipeline",
+                    "name": "Voice",
+                    "title": "Voice Pipeline",
+                    "description": "Orchestration layer connecting STT, Gemini AI reasoning, tool execution, and TTS",
+                    "shape": "cube",
+                    "tier": None,
+                }
+            ],
+        },
+    }
+
+    scene = export_positioned_scene(build_positioned_scene_graph(graph))
+
+    assert scene["nodes"][0]["name"] == "Voice"
+    assert scene["nodes"][0]["description"] == "Orchestration layer connecting STT, Gemini AI reasoning, tool execution, and TTS"
+
+
+def test_scene_layout_derives_short_node_name_from_title() -> None:
+    graph = {
+        "edges": [],
+        "tier": {
+            "id": "tier_1",
+            "description": "Root tier.",
+            "edges": None,
+            "nodes": [
+                {
+                    "id": "http-websocket-api",
+                    "title": "HTTP and WebSocket API",
+                    "description": "Network boundary.",
+                    "shape": "cube",
+                    "tier": None,
+                }
+            ],
+        },
+    }
+
+    scene = export_positioned_scene(build_positioned_scene_graph(graph))
+
+    assert scene["nodes"][0]["name"] == "HTTP WebSocket"
