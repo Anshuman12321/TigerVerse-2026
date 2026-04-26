@@ -3,123 +3,134 @@
   "nodes": [
     {
       "id": "backend_http_ws_api",
+      "name": "HTTP WebSocket",
       "title": "HTTP and WebSocket API",
       "description": "Exposes /scribe-token for ElevenLabs realtime STT authorization and /ws for multiplexed transcript, text, audio, tool, widget, and done messages.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": -0.6134,
+        "y": 5.0,
+        "z": 3.2285
       }
     },
     {
       "id": "backend_llm_pipeline",
+      "name": "Gemini Reasoning",
       "title": "Gemini Reasoning and Tool Loop",
       "description": "Maintains conversation history, streams Gemini 2.5 Flash responses, executes manual function calls for up to five rounds, and feeds tool responses back into the model.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 10.0
+        "x": -1.5552,
+        "y": 10.0,
+        "z": 7.2189
       }
     },
     {
       "id": "backend_streaming_text_tts",
+      "name": "Text Streaming",
       "title": "Text Streaming and ElevenLabs TTS",
       "description": "Streams Gemini text chunks to the frontend, chunks complete sentences to ElevenLabs TTS over WebSocket, and forwards base64 audio chunks back to the client.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
+        "x": -14.9427,
         "y": 5.0,
-        "z": 5.0
+        "z": 3.179
       }
     },
     {
       "id": "backend_transcript_filter",
+      "name": "Transcript Noise",
       "title": "Transcript Noise Filtering",
       "description": "Rejects empty, very short, and parenthetical STT noise transcripts before invoking the voice pipeline.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
-        "y": 5.0,
-        "z": 10.0
+        "x": 3.5082,
+        "y": 10.0,
+        "z": 8.2697
       }
     },
     {
       "id": "backend_widget_resolver",
+      "name": "Widget Resolver",
       "title": "Widget Resolver and Formatter",
       "description": "Chooses one tool result to visualize and converts tool outputs into frontend widget payload schemas.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
-        "y": 10.0,
-        "z": 5.0
+        "x": -13.6676,
+        "y": 5.0,
+        "z": 9.3913
       }
     },
     {
       "id": "frontend_entry_auth_shell",
+      "name": "Application Entry",
       "title": "Application Entry and Auth Shell",
       "description": "Initializes the React app under AuthProvider and gates the main HUD behind Supabase authentication state.",
       "shape": "cube",
       "pos": {
-        "x": 5.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": 12.3351,
+        "y": 5.0,
+        "z": -10.9853
       }
     },
     {
       "id": "frontend_stt_capture",
+      "name": "ElevenLabs Scribe",
       "title": "ElevenLabs Scribe STT Capture",
       "description": "Captures microphone input using ElevenLabs Scribe realtime STT with VAD auto-commit, sends committed transcripts to the backend, and displays partial transcript previews.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": 4.7932,
+        "y": 5.0,
+        "z": -1.5525
       }
     },
     {
       "id": "frontend_supabase_client",
+      "name": "Supabase Client",
       "title": "Supabase Client Configuration",
       "description": "Creates the Supabase client from Vite environment variables and fails fast if required values are missing.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
+        "x": 9.4777,
         "y": 5.0,
-        "z": 5.0
+        "z": -13.1229
       }
     },
     {
       "id": "frontend_voice_session",
+      "name": "Voice Session",
       "title": "Voice Session Client",
       "description": "Manages browser-side speech input, WebSocket transport to the backend, streamed assistant text, streamed audio chunks, reconnection behavior, and voice session state.",
       "shape": "cube",
       "pos": {
-        "x": 5.0,
+        "x": 2.4447,
         "y": 5.0,
-        "z": 5.0
+        "z": -3.2543
       }
     },
     {
       "id": "system_backend",
+      "name": "FastAPI Voice",
       "title": "FastAPI Voice Pipeline Backend",
       "description": "Python 3.12 backend serving STT token and WebSocket endpoints, orchestrating Gemini reasoning, tool execution, streaming TTS, and widget payload resolution.",
       "shape": "cube",
       "pos": {
-        "x": 5.0,
+        "x": -9.223,
         "y": 0.0,
-        "z": 0.0
+        "z": 5.1441
       }
     },
     {
       "id": "system_frontend",
+      "name": "React HUD",
       "title": "React HUD Frontend",
       "description": "Browser-based React 19 and TypeScript frontend that hosts the glassmorphic HUD, voice interaction controls, streamed audio playback, transcript panel, authentication gate, and draggable widgets.",
       "shape": "cube",
       "pos": {
-        "x": 0.0,
+        "x": 7.4431,
         "y": 0.0,
-        "z": 0.0
+        "z": -7.5166
       }
     }
   ],
@@ -127,16 +138,31 @@
     {
       "from": "backend_http_ws_api",
       "to": "backend_llm_pipeline",
-      "type": "invokes",
+      "type": "contains",
       "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": -1.0728,
+        "y": 5.0,
+        "z": 5.175
       },
       "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 10.0
+        "x": -1.0958,
+        "y": 10.0,
+        "z": 5.2724
+      }
+    },
+    {
+      "from": "backend_http_ws_api",
+      "to": "backend_llm_pipeline",
+      "type": "invokes",
+      "start": {
+        "x": -1.0728,
+        "y": 5.0,
+        "z": 5.175
+      },
+      "end": {
+        "x": -1.0958,
+        "y": 10.0,
+        "z": 5.2724
       }
     },
     {
@@ -144,44 +170,14 @@
       "to": "backend_transcript_filter",
       "type": "contains",
       "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
+        "x": 0.6525,
         "y": 5.0,
-        "z": 10.0
-      }
-    },
-    {
-      "from": "backend_http_ws_api",
-      "to": "system_backend",
-      "type": "contains",
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
+        "z": 4.7769
       },
       "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    },
-    {
-      "from": "backend_http_ws_api",
-      "to": "system_backend",
-      "type": "invokes",
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 2.2423,
+        "y": 10.0,
+        "z": 6.7213
       }
     },
     {
@@ -189,29 +185,14 @@
       "to": "frontend_supabase_client",
       "type": "uses",
       "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
+        "x": 10.7336,
         "y": 5.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "frontend_entry_auth_shell",
-      "to": "system_frontend",
-      "type": "uses",
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 5.0
+        "z": -12.1833
       },
       "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 11.0792,
+        "y": 5.0,
+        "z": -11.9249
       }
     },
     {
@@ -219,29 +200,14 @@
       "to": "backend_http_ws_api",
       "type": "calls_http",
       "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": 3.295,
+        "y": 5.0,
+        "z": -0.2276
       },
       "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "frontend_stt_capture",
-      "to": "system_backend",
-      "type": "calls_http",
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0.8848,
+        "y": 5.0,
+        "z": 1.9036
       }
     },
     {
@@ -249,14 +215,14 @@
       "to": "backend_http_ws_api",
       "type": "websocket_transport",
       "start": {
-        "x": 7.0,
+        "x": 1.5914,
         "y": 5.0,
-        "z": 5.0
+        "z": -1.4455
       },
       "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": 0.2399,
+        "y": 5.0,
+        "z": 1.4197
       }
     },
     {
@@ -264,44 +230,14 @@
       "to": "frontend_stt_capture",
       "type": "contains",
       "start": {
-        "x": 7.0,
+        "x": 4.0642,
         "y": 5.0,
-        "z": 5.0
+        "z": -2.0808
       },
       "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "frontend_voice_session",
-      "to": "system_backend",
-      "type": "websocket_transport",
-      "start": {
-        "x": 7.0,
+        "x": 3.1737,
         "y": 5.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    },
-    {
-      "from": "frontend_voice_session",
-      "to": "system_frontend",
-      "type": "contains",
-      "start": {
-        "x": 7.0,
-        "y": 5.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 0.0
+        "z": -2.726
       }
     },
     {
@@ -309,44 +245,14 @@
       "to": "backend_http_ws_api",
       "type": "contains",
       "start": {
-        "x": 7.0,
+        "x": -7.2707,
         "y": 0.0,
-        "z": 0.0
+        "z": 4.7097
       },
       "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "system_backend",
-      "to": "backend_http_ws_api",
-      "type": "invokes",
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "system_backend",
-      "to": "backend_llm_pipeline",
-      "type": "invokes",
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 10.0
+        "x": -2.5657,
+        "y": 5.0,
+        "z": 3.6629
       }
     },
     {
@@ -354,29 +260,14 @@
       "to": "backend_streaming_text_tts",
       "type": "contains",
       "start": {
-        "x": 7.0,
+        "x": -11.1145,
         "y": 0.0,
-        "z": 0.0
+        "z": 4.4943
       },
       "end": {
-        "x": -2.0,
+        "x": -13.0512,
         "y": 5.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "system_backend",
-      "to": "backend_transcript_filter",
-      "type": "contains",
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 5.0,
-        "z": 10.0
+        "z": 3.8288
       }
     },
     {
@@ -384,44 +275,14 @@
       "to": "backend_widget_resolver",
       "type": "contains",
       "start": {
-        "x": 7.0,
+        "x": -10.669,
         "y": 0.0,
-        "z": 0.0
+        "z": 6.5258
       },
       "end": {
-        "x": -2.0,
-        "y": 10.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "system_frontend",
-      "to": "backend_http_ws_api",
-      "type": "calls_http",
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "system_frontend",
-      "to": "backend_http_ws_api",
-      "type": "websocket_transport",
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": -12.2216,
+        "y": 5.0,
+        "z": 8.0096
       }
     },
     {
@@ -429,14 +290,14 @@
       "to": "frontend_entry_auth_shell",
       "type": "contains",
       "start": {
-        "x": 2.0,
+        "x": 9.0746,
         "y": 0.0,
-        "z": 0.0
+        "z": -8.6734
       },
       "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": 10.7036,
+        "y": 5.0,
+        "z": -9.8285
       }
     },
     {
@@ -444,29 +305,29 @@
       "to": "frontend_stt_capture",
       "type": "contains",
       "start": {
-        "x": 2.0,
+        "x": 6.631,
         "y": 0.0,
-        "z": 0.0
+        "z": -5.6889
       },
       "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
+        "x": 5.6053,
+        "y": 5.0,
+        "z": -3.3802
       }
     },
     {
       "from": "system_frontend",
       "to": "frontend_supabase_client",
-      "type": "uses",
+      "type": "contains",
       "start": {
-        "x": 2.0,
+        "x": 8.1254,
         "y": 0.0,
-        "z": 0.0
+        "z": -9.3966
       },
       "end": {
-        "x": -2.0,
+        "x": 8.7954,
         "y": 5.0,
-        "z": 5.0
+        "z": -11.2429
       }
     },
     {
@@ -474,44 +335,14 @@
       "to": "frontend_voice_session",
       "type": "contains",
       "start": {
-        "x": 2.0,
+        "x": 5.9213,
         "y": 0.0,
-        "z": 0.0
+        "z": -6.2189
       },
       "end": {
-        "x": 3.0,
+        "x": 3.9665,
         "y": 5.0,
-        "z": 5.0
-      }
-    },
-    {
-      "from": "system_frontend",
-      "to": "system_backend",
-      "type": "calls_http",
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    },
-    {
-      "from": "system_frontend",
-      "to": "system_backend",
-      "type": "websocket_transport",
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
+        "z": -4.552
       }
     }
   ]

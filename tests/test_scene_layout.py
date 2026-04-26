@@ -49,15 +49,10 @@ def test_scene_layout_positions_current_visualizer_shape() -> None:
     assert scene["schema_version"] == "positioned-scene-v1"
     assert {node["id"] for node in scene["nodes"]} == {"frontend", "backend", "voice-ui"}
     assert all(set(node["pos"]) == {"x", "y", "z"} for node in scene["nodes"])
-    assert scene["arrows"] == [
-        {
-            "from": "frontend",
-            "to": "backend",
-            "type": "calls",
-            "start": {"x": 2.0, "y": 0.0, "z": 0.0},
-            "end": {"x": 3.0, "y": 0.0, "z": 0.0},
-        }
-    ]
+    assert {(arrow["from"], arrow["to"], arrow["type"]) for arrow in scene["arrows"]} == {
+        ("frontend", "backend", "calls"),
+        ("frontend", "voice-ui", "contains"),
+    }
 
 
 def test_scene_layout_cli_accepts_visualizer_input_and_output_path(tmp_path: Path) -> None:
@@ -140,11 +135,11 @@ def test_scene_layout_applies_independent_axis_scales(tmp_path: Path) -> None:
     scene = export_positioned_scene(positioned)
     by_id = {node["id"]: node for node in scene["nodes"]}
 
-    assert by_id["source"]["pos"] == {"x": 0.0, "y": 0.0, "z": 0.0}
-    assert by_id["target"]["pos"] == {"x": 10.0, "y": 0.0, "z": 0.0}
-    assert by_id["child"]["pos"] == {"x": 0.0, "y": 0.0, "z": 7.0}
-    assert scene["arrows"][0]["start"] == {"x": 1.5, "y": 0.0, "z": 0.0}
-    assert scene["arrows"][0]["end"] == {"x": 8.5, "y": 0.0, "z": 0.0}
+    assert by_id["source"]["pos"]["y"] == 0.0
+    assert by_id["target"]["pos"]["y"] == 0.0
+    assert by_id["child"]["pos"]["y"] == 3.0
+    assert by_id["source"]["pos"]["x"] != by_id["target"]["pos"]["x"]
+    assert scene["arrows"]
 
     assert main(
         [
@@ -162,7 +157,76 @@ def test_scene_layout_applies_independent_axis_scales(tmp_path: Path) -> None:
         ]
     ) == 0
     written = json.loads(target.read_text(encoding="utf-8"))
-    assert {node["id"]: node for node in written["nodes"]}["target"]["pos"]["x"] == 10.0
+    assert {node["id"]: node for node in written["nodes"]}["child"]["pos"]["y"] == 3.0
+
+
+def test_scene_layout_spreads_disconnected_nodes_across_x_and_z() -> None:
+    graph = {
+        "edges": [],
+        "tier": {
+            "id": "tier_1",
+            "description": "Root tier.",
+            "edges": None,
+            "nodes": [
+                {"id": f"node-{idx}", "title": f"Node {idx}", "description": "Node.", "shape": "cube", "tier": None}
+                for idx in range(6)
+            ],
+        },
+    }
+
+    scene = export_positioned_scene(build_positioned_scene_graph(graph))
+    xs = {node["pos"]["x"] for node in scene["nodes"]}
+    zs = {node["pos"]["z"] for node in scene["nodes"]}
+
+    assert len(xs) > 2
+    assert len(zs) > 2
+
+
+def test_scene_layout_does_not_fabricate_ancestor_cross_edges() -> None:
+    graph = {
+        "edges": [{"from": "child-a", "to": "child-b", "type": "uses"}],
+        "tier": {
+            "id": "tier_1",
+            "description": "Root tier.",
+            "edges": None,
+            "nodes": [
+                {
+                    "id": "parent-a",
+                    "title": "Parent A",
+                    "description": "Parent.",
+                    "shape": "cube",
+                    "tier": {
+                        "id": "tier_2_parent-a",
+                        "description": "Children.",
+                        "edges": None,
+                        "nodes": [
+                            {"id": "child-a", "title": "Child A", "description": "Child.", "shape": "cube", "tier": None}
+                        ],
+                    },
+                },
+                {
+                    "id": "parent-b",
+                    "title": "Parent B",
+                    "description": "Parent.",
+                    "shape": "cube",
+                    "tier": {
+                        "id": "tier_2_parent-b",
+                        "description": "Children.",
+                        "edges": None,
+                        "nodes": [
+                            {"id": "child-b", "title": "Child B", "description": "Child.", "shape": "cube", "tier": None}
+                        ],
+                    },
+                },
+            ],
+        },
+    }
+
+    scene = export_positioned_scene(build_positioned_scene_graph(graph))
+    arrows = {(arrow["from"], arrow["to"], arrow["type"]) for arrow in scene["arrows"]}
+
+    assert ("child-a", "child-b", "uses") in arrows
+    assert ("parent-a", "parent-b", "uses") not in arrows
 
 
 def test_scene_layout_exports_short_node_names_and_descriptive_descriptions() -> None:

@@ -8,7 +8,7 @@ Offline analyzer for turning a Git repository into artifacts the Spectacles visu
 - `analysis/analysis-full.json`: richest semantic architecture graph with evidence and source context.
 - `visualizer/visualizer-map.json`: nested render projection capped for the Spectacles UI. It uses `nested-visualizer-map-v1`, includes a `root_layer`, and precomputes child layers for tap-through navigation.
 - `visualizer/visualizer-map.mmd`: Mermaid preview of the nested render projection.
-- `visualizer/positioned-scene.json`: deterministic Spectacles scene payload with node coordinates and arrow endpoints derived from `visualizer-map.json`.
+- `visualizer/positioned-scene.json`: deterministic Spectacles scene payload with short node names, descriptive node text, force-directed node coordinates, and arrow endpoints derived from `visualizer-map.json`.
 - `manifest.json`: machine-readable index describing the artifact paths, render constraints, and root-layer counts.
 
 ## Usage

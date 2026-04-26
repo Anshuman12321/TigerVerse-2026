@@ -4,6 +4,7 @@ import json
 import copy
 import argparse
 import hashlib
+import math
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Tuple
 
@@ -65,6 +66,26 @@ def iter_tiers(root_tier: Dict[str, Any], depth: int = 0) -> Iterable[tuple[int,
         child_tier = node.get("tier")
         if isinstance(child_tier, dict):
             yield from iter_tiers(child_tier, depth + 1)
+
+
+def iter_nodes_with_depth_and_parent(
+    tier: Dict[str, Any],
+    depth: int = 0,
+    parent_id: str | None = None,
+) -> Iterable[tuple[Dict[str, Any], int, str | None]]:
+    """Yield every node with its hierarchy depth and direct parent node id."""
+    nodes = tier.get("nodes", [])
+    if not isinstance(nodes, list):
+        return
+
+    for node in nodes:
+        if not isinstance(node, dict):
+            continue
+        yield node, depth, parent_id
+        node_id = node.get("id")
+        child_tier = node.get("tier")
+        if isinstance(node_id, str) and isinstance(child_tier, dict):
+            yield from iter_nodes_with_depth_and_parent(child_tier, depth + 1, node_id)
 
 
 def build_parent_and_ancestors_maps(
@@ -163,6 +184,270 @@ def expand_edges_to_ancestor_pairs(graph: Dict[str, Any]) -> Dict[str, Any]:
     graph["base_edges"] = base_edges
     graph["edges"] = expanded
     return graph
+
+
+def collect_positioned_scene_edges(graph: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Return the real scene edge list:
+    - explicit graph/tier edges whose endpoints exist
+    - direct hierarchy containment edges from parent node to child node
+
+    This intentionally avoids ancestor cross-product expansion so the exported
+    arrows stay faithful to the visualizer graph.
+    """
+    root_tier = graph.get("tier")
+    if not isinstance(root_tier, dict):
+        raise ValueError('graph["tier"] must be an object')
+
+    nodes_by_id = index_nodes_by_id(root_tier)
+    node_ids = set(nodes_by_id)
+    edges: List[Dict[str, Any]] = []
+    seen: Set[tuple[str, str, str]] = set()
+
+    def append_edge(from_id: Any, to_id: Any, edge_type: Any) -> None:
+        if not isinstance(from_id, str) or not isinstance(to_id, str):
+            return
+        if from_id not in node_ids or to_id not in node_ids or from_id == to_id:
+            return
+        normalized_type = str(edge_type or "edge")
+        key = (from_id, to_id, normalized_type)
+        if key in seen:
+            return
+        seen.add(key)
+        edges.append({"from": from_id, "to": to_id, "type": normalized_type})
+
+    def append_edges(edge_list: Any) -> None:
+        if not isinstance(edge_list, list):
+            return
+        for edge in edge_list:
+            if isinstance(edge, dict):
+                append_edge(edge.get("from"), edge.get("to"), edge.get("type", "edge"))
+
+    append_edges(graph.get("edges", []))
+    for _depth, tier in iter_tiers(root_tier):
+        append_edges(tier.get("edges", []))
+
+    for node, _depth, parent_id in iter_nodes_with_depth_and_parent(root_tier):
+        node_id = node.get("id")
+        if isinstance(parent_id, str) and isinstance(node_id, str):
+            append_edge(parent_id, node_id, "contains")
+
+    return sorted(edges, key=lambda edge: (edge["from"], edge["to"], edge["type"]))
+
+
+def assign_force_directed_layout(
+    graph: Dict[str, Any],
+    *,
+    scale: int = 5,
+    x_scale: int | None = None,
+    y_scale: int | None = None,
+    z_scale: int | None = None,
+    half_width: float = 2.0,
+    iterations: int = 120,
+) -> Dict[str, Any]:
+    """
+    Precompute a deterministic force-directed scene layout.
+
+    Nodes spread across the horizontal x/z plane. Hierarchy depth uses y so
+    nested tiers remain visually separated without collapsing x into columns.
+    """
+    root_tier = graph.get("tier")
+    if not isinstance(root_tier, dict):
+        raise ValueError('graph["tier"] must be an object')
+
+    if x_scale is None:
+        x_scale = scale
+    if y_scale is None:
+        y_scale = scale
+    if z_scale is None:
+        z_scale = scale
+
+    nodes_with_depth = list(iter_nodes_with_depth_and_parent(root_tier))
+    nodes_by_id = index_nodes_by_id(root_tier)
+    ordered_ids = sorted(nodes_by_id)
+    if not ordered_ids:
+        graph["edges"] = []
+        graph["geometry"] = {
+            "layout": "force-directed-v1",
+            "scale": scale,
+            "x_scale": x_scale,
+            "y_scale": y_scale,
+            "z_scale": z_scale,
+            "node_half_width": half_width,
+        }
+        return graph
+
+    depth_by_id: Dict[str, int] = {}
+    for node, depth, _parent_id in nodes_with_depth:
+        node_id = node.get("id")
+        if isinstance(node_id, str):
+            depth_by_id[node_id] = depth
+
+    graph["edges"] = collect_positioned_scene_edges(graph)
+    positions = _initial_force_positions(ordered_ids)
+    _run_force_iterations(positions, graph["edges"], iterations=iterations)
+    _normalize_force_positions(positions, target_radius=max(1.0, math.sqrt(len(ordered_ids))))
+
+    for node_id in ordered_ids:
+        node = nodes_by_id[node_id]
+        x_unit, z_unit = positions[node_id]
+        x = float(x_unit) * float(x_scale)
+        y = float(depth_by_id.get(node_id, 0)) * float(y_scale)
+        z = float(z_unit) * float(z_scale)
+        node["pos"] = {"x": round(x, 4), "y": round(y, 4), "z": round(z, 4)}
+        node["bounds"] = {
+            "min": {"x": round(x - half_width, 4), "y": round(y, 4), "z": round(z, 4)},
+            "max": {"x": round(x + half_width, 4), "y": round(y, 4), "z": round(z, 4)},
+            "half_width": half_width,
+        }
+
+    for edge in graph["edges"]:
+        from_id = edge.get("from")
+        to_id = edge.get("to")
+        if not isinstance(from_id, str) or not isinstance(to_id, str):
+            continue
+        if from_id not in nodes_by_id or to_id not in nodes_by_id:
+            continue
+
+        start = nodes_by_id[from_id]["pos"]
+        end = nodes_by_id[to_id]["pos"]
+        edge["start"] = _offset_endpoint(start, end, half_width)
+        edge["end"] = _offset_endpoint(end, start, half_width)
+
+    graph["geometry"] = {
+        "layout": "force-directed-v1",
+        "scale": scale,
+        "x_scale": x_scale,
+        "y_scale": y_scale,
+        "z_scale": z_scale,
+        "node_half_width": half_width,
+        "node_width": half_width * 2,
+        "edge_rule": "offset endpoints from node centers along the x/z direction",
+    }
+    return graph
+
+
+def _initial_force_positions(node_ids: List[str]) -> Dict[str, tuple[float, float]]:
+    count = len(node_ids)
+    positions: Dict[str, tuple[float, float]] = {}
+    golden_angle = math.pi * (3.0 - math.sqrt(5.0))
+    for index, node_id in enumerate(node_ids):
+        radius = math.sqrt((index + 1) / max(count, 1))
+        angle = index * golden_angle
+        jitter = _stable_unit(node_id) * 0.18
+        positions[node_id] = (
+            math.cos(angle + jitter) * radius,
+            math.sin(angle + jitter) * radius,
+        )
+    return positions
+
+
+def _run_force_iterations(
+    positions: Dict[str, tuple[float, float]],
+    edges: List[Dict[str, Any]],
+    *,
+    iterations: int,
+) -> None:
+    node_ids = sorted(positions)
+    count = max(len(node_ids), 1)
+    area = float(count * count)
+    ideal_distance = math.sqrt(area / count)
+    temperature = max(0.1, math.sqrt(count))
+    edge_pairs = [
+        (edge["from"], edge["to"])
+        for edge in edges
+        if isinstance(edge.get("from"), str)
+        and isinstance(edge.get("to"), str)
+        and edge.get("from") in positions
+        and edge.get("to") in positions
+    ]
+
+    for step in range(iterations):
+        displacement = {node_id: [0.0, 0.0] for node_id in node_ids}
+
+        for index, node_a in enumerate(node_ids):
+            ax, az = positions[node_a]
+            for node_b in node_ids[index + 1 :]:
+                bx, bz = positions[node_b]
+                dx = ax - bx
+                dz = az - bz
+                distance = math.hypot(dx, dz) or 0.001
+                force = (ideal_distance * ideal_distance) / distance
+                fx = (dx / distance) * force
+                fz = (dz / distance) * force
+                displacement[node_a][0] += fx
+                displacement[node_a][1] += fz
+                displacement[node_b][0] -= fx
+                displacement[node_b][1] -= fz
+
+        for node_a, node_b in edge_pairs:
+            ax, az = positions[node_a]
+            bx, bz = positions[node_b]
+            dx = ax - bx
+            dz = az - bz
+            distance = math.hypot(dx, dz) or 0.001
+            force = (distance * distance) / ideal_distance
+            fx = (dx / distance) * force
+            fz = (dz / distance) * force
+            displacement[node_a][0] -= fx
+            displacement[node_a][1] -= fz
+            displacement[node_b][0] += fx
+            displacement[node_b][1] += fz
+
+        cooling = 1.0 - (step / max(iterations, 1))
+        step_temperature = temperature * cooling
+        for node_id in node_ids:
+            dx, dz = displacement[node_id]
+            distance = math.hypot(dx, dz) or 0.001
+            limited = min(distance, step_temperature)
+            x, z = positions[node_id]
+            positions[node_id] = (
+                x + (dx / distance) * limited,
+                z + (dz / distance) * limited,
+            )
+
+
+def _normalize_force_positions(
+    positions: Dict[str, tuple[float, float]],
+    *,
+    target_radius: float,
+) -> None:
+    xs = [pos[0] for pos in positions.values()]
+    zs = [pos[1] for pos in positions.values()]
+    center_x = sum(xs) / len(xs)
+    center_z = sum(zs) / len(zs)
+    max_distance = max(
+        (math.hypot(x - center_x, z - center_z) for x, z in positions.values()),
+        default=1.0,
+    ) or 1.0
+
+    for node_id, (x, z) in positions.items():
+        positions[node_id] = (
+            ((x - center_x) / max_distance) * target_radius,
+            ((z - center_z) / max_distance) * target_radius,
+        )
+
+
+def _stable_unit(value: str) -> float:
+    digest = hashlib.sha256(value.encode("utf-8")).hexdigest()
+    return (int(digest[:8], 16) / 0xFFFFFFFF) - 0.5
+
+
+def _offset_endpoint(
+    origin: Dict[str, float],
+    target: Dict[str, float],
+    half_width: float,
+) -> Dict[str, float]:
+    dx = float(target["x"]) - float(origin["x"])
+    dz = float(target["z"]) - float(origin["z"])
+    distance = math.hypot(dx, dz)
+    if distance <= 0.001:
+        return dict(origin)
+    return {
+        "x": round(float(origin["x"]) + (dx / distance) * half_width, 4),
+        "y": float(origin["y"]),
+        "z": round(float(origin["z"]) + (dz / distance) * half_width, 4),
+    }
 
 
 def compute_x_pos(
@@ -546,11 +831,10 @@ def build_positioned_scene_graph(
     half_width: float = 2.0,
 ) -> Dict[str, Any]:
     """
-    End-to-end: copy input graph, lift edges, assign x/y/z, then assign world geometry.
+    End-to-end: copy input graph and precompute deterministic force-directed geometry.
     """
     g = copy.deepcopy(visualizer_graph)
-    assign_relative_layout(g)
-    assign_world_geometry(
+    assign_force_directed_layout(
         g,
         scale=scale,
         x_scale=x_scale,
@@ -688,13 +972,22 @@ def main(argv: list[str] | None = None) -> int:
     write_positioned_scene_json(graph, args.out)
     tier_id = graph.get("tier", {}).get("id")
     nodes_by_id = index_nodes_by_id(graph["tier"])
-    max_x = max((n.get("x_pos", 0) for n in nodes_by_id.values()), default=0)
-    max_y = max((n.get("y_pos", 0) for n in nodes_by_id.values()), default=0)
-    max_z = max((n.get("z_pos", 0) for n in nodes_by_id.values()), default=0)
+    positions = [node.get("pos", {}) for node in nodes_by_id.values()]
+    x_values = [float(pos.get("x", 0)) for pos in positions if isinstance(pos, dict)]
+    y_values = [float(pos.get("y", 0)) for pos in positions if isinstance(pos, dict)]
+    z_values = [float(pos.get("z", 0)) for pos in positions if isinstance(pos, dict)]
     print(
-        f"Wrote {args.out}. root tier id={tier_id!r}, edges={len(graph.get('edges', []))}, nodes={len(nodes_by_id)}, max_x_pos={max_x}, max_y_pos={max_y}, max_z_pos={max_z}"
+        f"Wrote {args.out}. root tier id={tier_id!r}, edges={len(graph.get('edges', []))}, "
+        f"nodes={len(nodes_by_id)}, "
+        f"x_range={_range_text(x_values)}, y_range={_range_text(y_values)}, z_range={_range_text(z_values)}"
     )
     return 0
+
+
+def _range_text(values: List[float]) -> str:
+    if not values:
+        return "0..0"
+    return f"{min(values):.2f}..{max(values):.2f}"
 
 
 if __name__ == "__main__":
