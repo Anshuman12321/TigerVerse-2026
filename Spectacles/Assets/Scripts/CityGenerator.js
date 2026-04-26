@@ -1,7 +1,10 @@
 //@input Asset.ObjectPrefab nodePrefab
 //@input Asset.ObjectPrefab connectionPrefab
+//@input Asset.ObjectPrefab flowTokenPrefab
 //@input float dataScale = 1.0
 //@input float connectionThickness = 0.15
+//@input float flowSpeed = 5.0
+//@input float segmentPauseSeconds = 0.15
 //@input float nodeSize = 1.0
 //@input float depthSpacingY = 8.0
 //@input float rootRadius = 10.0
@@ -13,6 +16,7 @@
 //@input bool collapseSiblingsOnExpand = false
 
 var visualizerData = require("./Data/claude_vizualizer_data");
+var flowScenarios = require("./Data/FlowScenarios");
 var InteractableManipulation = require("SpectaclesInteractionKit.lspkg/Components/Interaction/InteractableManipulation/InteractableManipulation").InteractableManipulation;
 var Interactable = require("SpectaclesInteractionKit.lspkg/Components/Interaction/Interactable/Interactable").Interactable;
 
@@ -29,6 +33,10 @@ var activeConnections = [];
 var nodeInteractionStates = [];
 var childOffsetByPath = {};
 var lastNodePositions = {};
+var nodePathById = {};
+var connectionByNodePair = {};
+var flowButtonObjects = [];
+var activeFlow = null;
 
 function callIfAvailable(target, methodName, args) {
     if (target && target[methodName]) {
@@ -71,6 +79,26 @@ function configureNodeManipulation(sceneObject, rootTransform) {
 
 function getNodeId(nodeData) {
     return String(nodeData.id);
+}
+
+function getConnectionKey(fromPath, toPath) {
+    return fromPath + "::" + toPath;
+}
+
+function registerNodePath(nodeId, nodePath) {
+    if (!nodePathById[nodeId]) {
+        nodePathById[nodeId] = nodePath;
+    }
+}
+
+function getParentPath(nodePath) {
+    var separatorIndex = nodePath.lastIndexOf(">");
+
+    if (separatorIndex < 0) {
+        return null;
+    }
+
+    return nodePath.substring(0, separatorIndex);
 }
 
 function getNodeLabel(nodeData) {
@@ -135,22 +163,6 @@ function cloneVec3(value) {
     return new vec3(value.x, value.y, value.z);
 }
 
-function getStableHash(value) {
-    var text = String(value);
-    var hash = 2166136261;
-
-    for (var i = 0; i < text.length; i++) {
-        hash ^= text.charCodeAt(i);
-        hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
-    }
-
-    return Math.abs(hash);
-}
-
-function getStableUnit(value) {
-    return (getStableHash(value) % 10000) / 10000;
-}
-
 function getNodeScale(nodeData, depth) {
     var radius = 0.36;
 
@@ -165,15 +177,19 @@ function getNodeScale(nodeData, depth) {
     return new vec3(size * 1.7, size * slabHeight, size * slabDepth);
 }
 
+function getNodeFootprint(nodeData, depth) {
+    var nodeScale = getNodeScale(nodeData, depth);
+
+    return Math.max(nodeScale.x, nodeScale.z);
+}
+
 function getTierRadius(nodes, depth) {
     var count = nodes.length;
     var baseRadius = (depth === 1 ? script.rootRadius : script.childRadius) * script.dataScale;
     var maxNodeFootprint = 0;
 
     for (var i = 0; i < count; i++) {
-        var nodeScale = getNodeScale(nodes[i], depth);
-        var nodeFootprint = Math.max(nodeScale.x, nodeScale.z);
-        maxNodeFootprint = Math.max(maxNodeFootprint, nodeFootprint);
+        maxNodeFootprint = Math.max(maxNodeFootprint, getNodeFootprint(nodes[i], depth));
     }
 
     if (count <= 1) {
@@ -186,25 +202,72 @@ function getTierRadius(nodes, depth) {
     return Math.max(baseRadius, requiredRadius);
 }
 
-function getTierNodeOffset(nodePath, index, count, radius, yOffset) {
-    var countForAngle = Math.max(count, 2);
-    var baseAngle = (Math.PI * 2 * index) / countForAngle;
-    var angleStep = (Math.PI * 2) / countForAngle;
-    var angleJitter = (getStableUnit(nodePath + ":angle") - 0.5) * angleStep * 0.65;
-    var distanceJitter = 0.72 + getStableUnit(nodePath + ":distance") * 0.48;
-    var distance = radius * distanceJitter;
+function createFibonacciTierOffset(index, count, radius, yOffset) {
+    var goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    var normalizedIndex = (index + 0.5) / Math.max(count, 1);
+    var angleJitter = (Math.random() - 0.5) * goldenAngle * 0.55;
+    var distanceJitter = 0.82 + Math.random() * 0.36;
+    var angle = index * goldenAngle + angleJitter;
+    var distance = Math.sqrt(normalizedIndex) * radius * distanceJitter;
 
     if (count === 1) {
-        distance = radius * 0.55;
+        distance = radius * (0.25 + Math.random() * 0.35);
     }
-
-    var angle = baseAngle + angleJitter;
 
     return new vec3(
         Math.cos(angle) * distance,
         yOffset,
         Math.sin(angle) * distance
     );
+}
+
+function getOffsetDistanceXZ(offsetA, offsetB) {
+    var dx = offsetA.x - offsetB.x;
+    var dz = offsetA.z - offsetB.z;
+
+    return Math.sqrt(dx * dx + dz * dz);
+}
+
+function doesOffsetOverlap(offset, footprint, placedOffsets, placedFootprints) {
+    for (var i = 0; i < placedOffsets.length; i++) {
+        var minDistance = (footprint + placedFootprints[i]) * 0.55 + 0.2;
+
+        if (getOffsetDistanceXZ(offset, placedOffsets[i]) < minDistance) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function getTierNodeOffsets(nodes, depth, radius, yOffset) {
+    var offsets = [];
+    var footprints = [];
+    var layoutRadius = radius * 1.35;
+    var count = nodes.length;
+
+    for (var i = 0; i < count; i++) {
+        var footprint = getNodeFootprint(nodes[i], depth);
+        var bestOffset = null;
+
+        for (var attempt = 0; attempt < 24; attempt++) {
+            var candidate = createFibonacciTierOffset(i, count, layoutRadius, yOffset);
+
+            if (!doesOffsetOverlap(candidate, footprint, offsets, footprints)) {
+                bestOffset = candidate;
+                break;
+            }
+
+            if (!bestOffset || getOffsetDistanceXZ(candidate, new vec3(0, yOffset, 0)) > getOffsetDistanceXZ(bestOffset, new vec3(0, yOffset, 0))) {
+                bestOffset = candidate;
+            }
+        }
+
+        offsets.push(bestOffset || createFibonacciTierOffset(i, count, layoutRadius, yOffset));
+        footprints.push(footprint);
+    }
+
+    return offsets;
 }
 
 function setVisible(obj, visible) {
@@ -372,6 +435,7 @@ function buildInteractiveCity() {
 
     buildTier(rootTier, ROOT_PATH, 1, new vec3(0, 0, 0), true);
     createRootConnectionsFromGlobalEdges(data.edges || []);
+    buildFlowSelector();
 
     print(
         "Visualizer nodes and connections generated from claude_vizualizer_data.js: nodes=" +
@@ -485,6 +549,7 @@ function buildTier(tierData, parentPath, depth, centerPosition, visibleAtStart) 
     var count = nodes.length;
     var radius = getTierRadius(nodes, depth);
     var yOffset = parentPath === ROOT_PATH ? 0 : getChildLayerYOffset();
+    var offsets = getTierNodeOffsets(nodes, depth, radius, yOffset);
 
     if (!childPathsByParent[parentPath]) {
         childPathsByParent[parentPath] = [];
@@ -498,7 +563,7 @@ function buildTier(tierData, parentPath, depth, centerPosition, visibleAtStart) 
         var nodeData = nodes[i];
         var nodeId = getNodeId(nodeData);
         var nodePath = parentPath + ">" + nodeId;
-        var offset = getTierNodeOffset(nodePath, i, count, radius, yOffset);
+        var offset = offsets[i];
         var position = centerPosition.add(offset);
 
         if (parentPath !== ROOT_PATH) {
@@ -551,6 +616,7 @@ function spawnNode(nodeData, nodePath, position, depth, visibleAtStart) {
     spawnedNodes[nodePath] = nodeObject;
     fixedNodeScales[nodePath] = fixedScale;
     lastNodePositions[nodePath] = cloneVec3(position);
+    registerNodePath(getNodeId(nodeData), nodePath);
 }
 
 function createTierConnections(edges, parentPath, localPathById, visibleAtStart) {
@@ -636,11 +702,279 @@ function createConnection(fromPath, toPath, connectionType, visibleAtStart, chil
         sceneObject: connectionObject,
         transform: connectionObject.getTransform(),
         nodeA_Transform: nodeA.getTransform(),
-        nodeB_Transform: nodeB.getTransform()
+        nodeB_Transform: nodeB.getTransform(),
+        fromPath: fromPath,
+        toPath: toPath,
+        key: getConnectionKey(fromPath, toPath)
     });
 
-    updateConnection(activeConnections[activeConnections.length - 1]);
+    var activeConnection = activeConnections[activeConnections.length - 1];
+    connectionByNodePair[activeConnection.key] = activeConnection;
+    updateConnection(activeConnection);
     return connectionObject;
+}
+
+function resolveScenarioPaths(scenario) {
+    var resolvedPaths = [];
+
+    for (var i = 0; i < scenario.steps.length; i++) {
+        var nodeId = String(scenario.steps[i]);
+        var nodePath = nodePathById[nodeId];
+
+        if (!nodePath) {
+            print("WARNING: Flow scenario '" + scenario.name + "' references missing node id: " + nodeId);
+            return null;
+        }
+
+        resolvedPaths.push(nodePath);
+    }
+
+    return resolvedPaths;
+}
+
+function ensureNodePathVisible(nodePath) {
+    var ancestors = [];
+    var parentPath = getParentPath(nodePath);
+
+    while (parentPath && parentPath !== ROOT_PATH) {
+        ancestors.unshift(parentPath);
+        parentPath = getParentPath(parentPath);
+    }
+
+    for (var i = 0; i < ancestors.length; i++) {
+        if (!expandedState[ancestors[i]]) {
+            expandNode(ancestors[i]);
+        }
+    }
+
+    setVisible(spawnedNodes[nodePath], true);
+}
+
+function ensureFlowRouteVisible(resolvedPaths) {
+    for (var i = 0; i < resolvedPaths.length; i++) {
+        ensureNodePathVisible(resolvedPaths[i]);
+    }
+}
+
+function getFlowConnectionForSegment(fromPath, toPath) {
+    return connectionByNodePair[getConnectionKey(fromPath, toPath)] ||
+        connectionByNodePair[getConnectionKey(toPath, fromPath)] ||
+        null;
+}
+
+function getFlowTokenPrefab() {
+    return script.flowTokenPrefab || script.nodePrefab;
+}
+
+function createFlowToken(scenario) {
+    var prefab = getFlowTokenPrefab();
+
+    if (!prefab) {
+        return null;
+    }
+
+    var tokenObject = prefab.instantiate(script.getSceneObject());
+    tokenObject.name = "FLOW_TOKEN__" + sanitizeName(scenario.id);
+    tokenObject.getTransform().setLocalScale(new vec3(0.18, 0.18, 0.18));
+    setNodeText(tokenObject, scenario.tokenLabel || scenario.name, "", new vec3(1, 1, 1));
+    setVisible(tokenObject, true);
+
+    return tokenObject;
+}
+
+function startFlowScenario(scenario) {
+    var resolvedPaths = resolveScenarioPaths(scenario);
+
+    if (!resolvedPaths || resolvedPaths.length < 2) {
+        print("WARNING: Flow scenario could not start: " + scenario.name);
+        return;
+    }
+
+    if (activeFlow && activeFlow.tokenObject) {
+        setVisible(activeFlow.tokenObject, false);
+    }
+
+    ensureFlowRouteVisible(resolvedPaths);
+
+    var tokenObject = createFlowToken(scenario);
+
+    if (!tokenObject) {
+        print("WARNING: No flow token prefab or node prefab available for scenario: " + scenario.name);
+        return;
+    }
+
+    activeFlow = {
+        scenario: scenario,
+        paths: resolvedPaths,
+        tokenObject: tokenObject,
+        tokenTransform: tokenObject.getTransform(),
+        segmentIndex: 0,
+        segmentStartTime: getTime(),
+        isPlaying: true,
+        activeFromPath: null,
+        activeToPath: null,
+        activeConnectionKey: null,
+        pausedElapsed: 0
+    };
+
+    updateFlowAnimation();
+    print("Started flow: " + scenario.name);
+}
+
+function restartActiveFlow() {
+    if (activeFlow && activeFlow.scenario) {
+        startFlowScenario(activeFlow.scenario);
+    }
+}
+
+function setActiveFlowPlaying(isPlaying) {
+    if (activeFlow) {
+        if (isPlaying) {
+            activeFlow.segmentStartTime = getTime() - (activeFlow.pausedElapsed || 0);
+        } else {
+            activeFlow.pausedElapsed = getTime() - activeFlow.segmentStartTime;
+        }
+
+        activeFlow.isPlaying = isPlaying;
+    }
+}
+
+function updateActiveFlowSegmentHighlight(fromPath, toPath) {
+    var connection = getFlowConnectionForSegment(fromPath, toPath);
+
+    activeFlow.activeFromPath = fromPath;
+    activeFlow.activeToPath = toPath;
+    activeFlow.activeConnectionKey = connection ? connection.key : null;
+}
+
+function updateFlowAnimation() {
+    if (!activeFlow || !activeFlow.isPlaying) {
+        return;
+    }
+
+    if (activeFlow.segmentIndex >= activeFlow.paths.length - 1) {
+        activeFlow.isPlaying = false;
+        activeFlow.activeFromPath = null;
+        activeFlow.activeToPath = null;
+        activeFlow.activeConnectionKey = null;
+        return;
+    }
+
+    var fromPath = activeFlow.paths[activeFlow.segmentIndex];
+    var toPath = activeFlow.paths[activeFlow.segmentIndex + 1];
+    var fromObject = spawnedNodes[fromPath];
+    var toObject = spawnedNodes[toPath];
+
+    if (!fromObject || !toObject) {
+        activeFlow.isPlaying = false;
+        activeFlow.activeFromPath = null;
+        activeFlow.activeToPath = null;
+        activeFlow.activeConnectionKey = null;
+        return;
+    }
+
+    updateActiveFlowSegmentHighlight(fromPath, toPath);
+
+    var fromPosition = fromObject.getTransform().getWorldPosition();
+    var toPosition = toObject.getTransform().getWorldPosition();
+    var distance = fromPosition.distance(toPosition);
+    var speed = Math.max(script.flowSpeed || 1.0, 0.01);
+    var segmentDuration = Math.max(distance / speed, 0.2);
+    var elapsed = getTime() - activeFlow.segmentStartTime;
+    var pauseSeconds = script.segmentPauseSeconds || 0;
+    var t = Math.min(elapsed / segmentDuration, 1);
+    var tokenPosition = fromPosition.add(toPosition.sub(fromPosition).uniformScale(t));
+
+    activeFlow.tokenTransform.setWorldPosition(tokenPosition);
+
+    if (elapsed >= segmentDuration + pauseSeconds) {
+        activeFlow.segmentIndex++;
+        activeFlow.segmentStartTime = getTime();
+        activeFlow.pausedElapsed = 0;
+    }
+}
+
+function isFlowHighlightedNode(nodePath) {
+    return activeFlow &&
+        (activeFlow.activeFromPath === nodePath || activeFlow.activeToPath === nodePath);
+}
+
+function updateFlowNodeHighlights() {
+    for (var nodePath in spawnedNodes) {
+        if (spawnedNodes.hasOwnProperty(nodePath)) {
+            var baseScale = fixedNodeScales[nodePath];
+
+            if (isFlowHighlightedNode(nodePath)) {
+                spawnedNodes[nodePath].getTransform().setLocalScale(baseScale.uniformScale(1.25));
+            }
+        }
+    }
+}
+
+function bindFlowButton(buttonObject, callback) {
+    var interactable = buttonObject.getComponent(Interactable.getTypeName());
+
+    if (!interactable) {
+        interactable = buttonObject.createComponent(Interactable.getTypeName());
+    }
+
+    if (interactable) {
+        interactable.onTriggerEnd.add(callback);
+    }
+}
+
+function createFlowButton(name, localPosition, callback) {
+    if (!script.nodePrefab) {
+        return null;
+    }
+
+    var buttonObject = script.nodePrefab.instantiate(script.getSceneObject());
+    var buttonScale = new vec3(0.34, 0.06, 0.16);
+
+    buttonObject.name = "FLOW_BUTTON__" + sanitizeName(name);
+    buttonObject.getTransform().setLocalPosition(localPosition);
+    buttonObject.getTransform().setLocalScale(buttonScale);
+    setNodeText(buttonObject, name, "", buttonScale);
+    setVisible(buttonObject, true);
+    bindFlowButton(buttonObject, callback);
+    flowButtonObjects.push(buttonObject);
+
+    return buttonObject;
+}
+
+function buildFlowSelector() {
+    var panelX = -2.2;
+    var panelY = 1.2;
+    var panelZ = -1.2;
+    var rowSpacing = 0.32;
+
+    createFlowButton("Flow: Play", new vec3(panelX, panelY, panelZ), function() {
+        if (activeFlow) {
+            setActiveFlowPlaying(true);
+        } else if (flowScenarios.length > 0) {
+            startFlowScenario(flowScenarios[0]);
+        }
+    });
+
+    createFlowButton("Flow: Pause", new vec3(panelX, panelY - rowSpacing, panelZ), function() {
+        setActiveFlowPlaying(false);
+    });
+
+    createFlowButton("Flow: Restart", new vec3(panelX, panelY - rowSpacing * 2, panelZ), function() {
+        restartActiveFlow();
+    });
+
+    for (var i = 0; i < flowScenarios.length; i++) {
+        (function(scenario, index) {
+            createFlowButton(
+                scenario.name,
+                new vec3(panelX, panelY - rowSpacing * (index + 4), panelZ),
+                function() {
+                    startFlowScenario(scenario);
+                }
+            );
+        })(flowScenarios[i], i);
+    }
 }
 
 function onNodeClicked(nodePath) {
@@ -744,12 +1078,15 @@ function setTierConnectionsVisible(parentPath, visible) {
 function updateConnections() {
     updateNodeInteractionStates();
     updateExpandedNodeMovement();
+    updateFlowAnimation();
 
     for (var nodeId in spawnedNodes) {
         if (spawnedNodes.hasOwnProperty(nodeId)) {
             spawnedNodes[nodeId].getTransform().setLocalScale(fixedNodeScales[nodeId]);
         }
     }
+
+    updateFlowNodeHighlights();
 
     for (var i = 0; i < activeConnections.length; i++) {
         updateConnection(activeConnections[i]);
@@ -763,7 +1100,13 @@ function updateConnection(conn) {
     var distance = posA.distance(posB);
 
     conn.transform.setWorldPosition(midPoint);
-    conn.transform.setWorldScale(new vec3(script.connectionThickness, distance, script.connectionThickness));
+    var thickness = script.connectionThickness;
+
+    if (activeFlow && activeFlow.activeConnectionKey === conn.key) {
+        thickness *= 2.5;
+    }
+
+    conn.transform.setWorldScale(new vec3(thickness, distance, thickness));
 
     if (distance > 0.001) {
         var direction = posB.sub(posA).normalize();

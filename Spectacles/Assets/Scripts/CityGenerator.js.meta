@@ -33,9 +33,12 @@
     dataScale: false
     depthSpacingY: false
     dragHoldDelaySeconds: false
+    flowSpeed: false
+    flowTokenPrefab: false
     nodePrefab: false
     nodeSize: false
     rootRadius: false
+    segmentPauseSeconds: false
     slabDepth: false
     slabHeight: false
     tapMoveThreshold: false
@@ -50,8 +53,11 @@
   DefaultScriptInputs:
     - nodePrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
       connectionPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      flowTokenPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
       dataScale: 0.100000
       connectionThickness: 0.150000
+      flowSpeed: !<float> 1.000000
+      segmentPauseSeconds: 0.150000
       nodeSize: !<float> 1.000000
       depthSpacingY: !<float> 8.000000
       rootRadius: !<float> 10.000000
