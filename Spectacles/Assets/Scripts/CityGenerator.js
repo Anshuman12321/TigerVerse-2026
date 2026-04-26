@@ -27,6 +27,8 @@ var rootPathByNodeId = {};
 var rootConnectionKeys = {};
 var activeConnections = [];
 var nodeInteractionStates = [];
+var childOffsetByPath = {};
+var lastNodePositions = {};
 
 function callIfAvailable(target, methodName, args) {
     if (target && target[methodName]) {
@@ -121,12 +123,32 @@ function getDepthScale(depth) {
     return 1.0;
 }
 
-function getYForDepth(depth) {
-    return (depth - 1) * script.depthSpacingY * script.dataScale;
+function getChildLayerYOffset() {
+    return script.depthSpacingY * script.dataScale;
 }
 
 function sanitizeName(value) {
     return String(value).replace(/[^A-Za-z0-9_]/g, "_");
+}
+
+function cloneVec3(value) {
+    return new vec3(value.x, value.y, value.z);
+}
+
+function getStableHash(value) {
+    var text = String(value);
+    var hash = 2166136261;
+
+    for (var i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    }
+
+    return Math.abs(hash);
+}
+
+function getStableUnit(value) {
+    return (getStableHash(value) % 10000) / 10000;
 }
 
 function getNodeScale(nodeData, depth) {
@@ -158,10 +180,31 @@ function getTierRadius(nodes, depth) {
         return baseRadius;
     }
 
-    var minChordSpacing = maxNodeFootprint * 1.55 + 0.55;
+    var minChordSpacing = maxNodeFootprint * 1.35 + 0.35;
     var requiredRadius = minChordSpacing / (2 * Math.sin(Math.PI / count));
 
     return Math.max(baseRadius, requiredRadius);
+}
+
+function getTierNodeOffset(nodePath, index, count, radius, yOffset) {
+    var countForAngle = Math.max(count, 2);
+    var baseAngle = (Math.PI * 2 * index) / countForAngle;
+    var angleStep = (Math.PI * 2) / countForAngle;
+    var angleJitter = (getStableUnit(nodePath + ":angle") - 0.5) * angleStep * 0.65;
+    var distanceJitter = 0.72 + getStableUnit(nodePath + ":distance") * 0.48;
+    var distance = radius * distanceJitter;
+
+    if (count === 1) {
+        distance = radius * 0.55;
+    }
+
+    var angle = baseAngle + angleJitter;
+
+    return new vec3(
+        Math.cos(angle) * distance,
+        yOffset,
+        Math.sin(angle) * distance
+    );
 }
 
 function setVisible(obj, visible) {
@@ -174,6 +217,15 @@ function setConnectionVisible(connectionObj, visible) {
     if (connectionObj) {
         connectionObj.enabled = visible;
     }
+}
+
+function getNodeLocalPosition(nodePath) {
+    return spawnedNodes[nodePath].getTransform().getLocalPosition();
+}
+
+function setNodeLocalPosition(nodePath, position) {
+    spawnedNodes[nodePath].getTransform().setLocalPosition(position);
+    lastNodePositions[nodePath] = cloneVec3(position);
 }
 
 function getCompensatedTextScale(fixedScale, baseScale) {
@@ -355,11 +407,84 @@ function updateNodeInteractionStates() {
     }
 }
 
+function repositionChildrenAroundParent(parentPath) {
+    var children = childPathsByParent[parentPath];
+    var parentObject = spawnedNodes[parentPath];
+
+    if (!children || !parentObject) {
+        return;
+    }
+
+    var parentPosition = parentObject.getTransform().getLocalPosition();
+
+    for (var i = 0; i < children.length; i++) {
+        var childPath = children[i];
+        var offset = childOffsetByPath[childPath];
+
+        if (offset && spawnedNodes[childPath]) {
+            setNodeLocalPosition(childPath, parentPosition.add(offset));
+        }
+    }
+}
+
+function applyDeltaToExpandedDescendants(parentPath, delta) {
+    if (!expandedState[parentPath]) {
+        return;
+    }
+
+    var children = childPathsByParent[parentPath];
+
+    if (!children) {
+        return;
+    }
+
+    for (var i = 0; i < children.length; i++) {
+        var childPath = children[i];
+        var childObject = spawnedNodes[childPath];
+
+        if (!childObject || !childObject.enabled) {
+            continue;
+        }
+
+        setNodeLocalPosition(childPath, getNodeLocalPosition(childPath).add(delta));
+        applyDeltaToExpandedDescendants(childPath, delta);
+    }
+}
+
+function updateExpandedNodeMovement() {
+    var movedNodes = [];
+
+    for (var nodePath in spawnedNodes) {
+        if (spawnedNodes.hasOwnProperty(nodePath)) {
+            var currentPosition = getNodeLocalPosition(nodePath);
+            var previousPosition = lastNodePositions[nodePath];
+
+            if (previousPosition && previousPosition.distance(currentPosition) > 0.0001) {
+                movedNodes.push({
+                    path: nodePath,
+                    delta: currentPosition.sub(previousPosition)
+                });
+            }
+        }
+    }
+
+    for (var i = 0; i < movedNodes.length; i++) {
+        applyDeltaToExpandedDescendants(movedNodes[i].path, movedNodes[i].delta);
+    }
+
+    for (var trackedPath in spawnedNodes) {
+        if (spawnedNodes.hasOwnProperty(trackedPath)) {
+            lastNodePositions[trackedPath] = cloneVec3(getNodeLocalPosition(trackedPath));
+        }
+    }
+}
+
 function buildTier(tierData, parentPath, depth, centerPosition, visibleAtStart) {
     var nodes = tierData.nodes || [];
     var localPathById = {};
     var count = nodes.length;
     var radius = getTierRadius(nodes, depth);
+    var yOffset = parentPath === ROOT_PATH ? 0 : getChildLayerYOffset();
 
     if (!childPathsByParent[parentPath]) {
         childPathsByParent[parentPath] = [];
@@ -373,12 +498,12 @@ function buildTier(tierData, parentPath, depth, centerPosition, visibleAtStart) 
         var nodeData = nodes[i];
         var nodeId = getNodeId(nodeData);
         var nodePath = parentPath + ">" + nodeId;
-        var angle = count === 1 ? 0 : (Math.PI * 2 * i) / count;
-        var position = new vec3(
-            centerPosition.x + Math.cos(angle) * radius,
-            getYForDepth(depth),
-            centerPosition.z + Math.sin(angle) * radius
-        );
+        var offset = getTierNodeOffset(nodePath, i, count, radius, yOffset);
+        var position = centerPosition.add(offset);
+
+        if (parentPath !== ROOT_PATH) {
+            childOffsetByPath[nodePath] = offset;
+        }
 
         spawnNode(nodeData, nodePath, position, depth, visibleAtStart);
         childPathsByParent[parentPath].push(nodePath);
@@ -425,6 +550,7 @@ function spawnNode(nodeData, nodePath, position, depth, visibleAtStart) {
 
     spawnedNodes[nodePath] = nodeObject;
     fixedNodeScales[nodePath] = fixedScale;
+    lastNodePositions[nodePath] = cloneVec3(position);
 }
 
 function createTierConnections(edges, parentPath, localPathById, visibleAtStart) {
@@ -558,6 +684,8 @@ function expandNode(nodePath) {
         return;
     }
 
+    repositionChildrenAroundParent(nodePath);
+
     for (var i = 0; i < children.length; i++) {
         var childPath = children[i];
         setVisible(spawnedNodes[childPath], true);
@@ -615,6 +743,7 @@ function setTierConnectionsVisible(parentPath, visible) {
 
 function updateConnections() {
     updateNodeInteractionStates();
+    updateExpandedNodeMovement();
 
     for (var nodeId in spawnedNodes) {
         if (spawnedNodes.hasOwnProperty(nodeId)) {
