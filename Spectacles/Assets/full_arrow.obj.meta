@@ -32,10 +32,10 @@
       mesh: Preset
     Overrides:
       {}
-- !<SceneObject/567afc4f-05ce-43fd-7200-f45d732065d5>
+- !<SceneObject/1c697437-d62b-4dc8-406c-dfe98d989d04>
   PrefabRemaps:
     []
-  Name: Cone
+  Name: Cylinder
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
@@ -46,8 +46,13 @@
   Children:
     []
   Components:
-    - !<own> 5aa32ca7-be3d-4ded-5530-8091475b21e9
-- !<RenderMeshVisual/5aa32ca7-be3d-4ded-5530-8091475b21e9>
+    - !<own> 9d246fce-dd73-40df-76a5-f932eb43633d
+- !<ObjectPrefabAssetData/5d819bc6-7fd8-403f-8fd8-a8f7e89e43f1>
+  Prototype: !<ObjectOwner/5355f9f0-ba36-4381-b7c5-f189d040ef6b>
+    PackagePath: ""
+    objects:
+      - !<own> ff06f67b-c011-491b-5f29-62bae917caf6
+- !<RenderMeshVisual/7f6b3bb1-6a64-4990-5ad7-0764f4e21fe4>
   PrefabRemaps:
     []
   Name: component_1
@@ -67,12 +72,22 @@
   BlendNormals: false
   BlendShapes:
     {}
-- !<ObjectPrefabAssetData/5d819bc6-7fd8-403f-8fd8-a8f7e89e43f1>
-  Prototype: !<ObjectOwner/5355f9f0-ba36-4381-b7c5-f189d040ef6b>
-    PackagePath: ""
-    objects:
-      - !<own> d87a902e-4910-48ef-589f-58eeffe2ba5b
-- !<RenderMeshVisual/8ac3442f-0d73-48a1-4a11-2984211e72ff>
+- !<SceneObject/898bc8e6-b145-454d-6ac8-1dd9f28b8400>
+  PrefabRemaps:
+    []
+  Name: Cone
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 7f6b3bb1-6a64-4990-5ad7-0764f4e21fe4
+- !<RenderMeshVisual/9d246fce-dd73-40df-76a5-f932eb43633d>
   PrefabRemaps:
     []
   Name: component_0
@@ -92,22 +107,7 @@
   BlendNormals: false
   BlendShapes:
     {}
-- !<SceneObject/b314d159-e77b-4543-50f6-840af8c9d240>
-  PrefabRemaps:
-    []
-  Name: Cylinder
-  Enabled: true
-  Layers: 1
-  LocalTransform: !<TransformEntity>
-    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
-    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
-    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
-    HasSegmentScaleCompensation: false
-  Children:
-    []
-  Components:
-    - !<own> 8ac3442f-0d73-48a1-4a11-2984211e72ff
-- !<SceneObject/d87a902e-4910-48ef-589f-58eeffe2ba5b>
+- !<SceneObject/ff06f67b-c011-491b-5f29-62bae917caf6>
   PrefabRemaps:
     []
   Name: full_arrow
@@ -119,7 +119,7 @@
     Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     HasSegmentScaleCompensation: false
   Children:
-    - !<own> b314d159-e77b-4543-50f6-840af8c9d240
-    - !<own> 567afc4f-05ce-43fd-7200-f45d732065d5
+    - !<own> 1c697437-d62b-4dc8-406c-dfe98d989d04
+    - !<own> 898bc8e6-b145-454d-6ac8-1dd9f28b8400
   Components:
     []

@@ -69,7 +69,7 @@
       holoGreenMaterial: !<reference.Material> 00000000-0000-0000-0000-000000000000
       dataScale: 0.100000
       connectionThickness: 0.150000
-      flowSpeed: !<float> 1.000000
+      flowSpeed: !<float> 5.000000
       segmentPauseSeconds: 0.150000
       flowTokenScale: 0.180000
       flowTokenPulseAmount: 0.250000

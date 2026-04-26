@@ -47,6 +47,8 @@ var connectionByNodePair = {};
 var routeConnectionByKey = {};
 var rootTintMaterialByPath = {};
 var rootTintMaterialDeck = [];
+var inactiveConnectionMaterial = null;
+var activeConnectionMaterial = null;
 var activeFlow = null;
 
 function callIfAvailable(target, methodName, args) {
@@ -187,11 +189,7 @@ function hasChildNodes(nodeData) {
 }
 
 function getNodeTextColor(nodeData) {
-    if (hasChildNodes(nodeData)) {
-        return new vec4(1, 1, 1, 1);
-    }
-
-    return new vec4(1.0, 0.48, 0.42, 1.0);
+    return new vec4(1, 1, 1, 1);
 }
 
 function getHoloTintMaterials() {
@@ -282,6 +280,82 @@ function applyTintMaterial(sceneObject, material) {
 
     for (var i = 0; i < sceneObject.getChildrenCount(); i++) {
         applyTintMaterial(sceneObject.getChild(i), material);
+    }
+}
+
+function cloneMaterial(material) {
+    if (material && material.clone) {
+        return material.clone();
+    }
+
+    return null;
+}
+
+function setMaterialColor(material, color) {
+    if (!material || !material.mainPass) {
+        return;
+    }
+
+    material.mainPass.baseColor = color;
+    material.mainPass.color = color;
+}
+
+function getInactiveConnectionMaterial() {
+    if (!inactiveConnectionMaterial) {
+        inactiveConnectionMaterial = cloneMaterial(script.holoGreyMaterial);
+        if (inactiveConnectionMaterial) {
+            setMaterialColor(inactiveConnectionMaterial, new vec4(0.72, 0.82, 0.9, 0.16));
+        } else {
+            inactiveConnectionMaterial = script.holoGreyMaterial;
+        }
+    }
+
+    return inactiveConnectionMaterial;
+}
+
+function getActiveConnectionMaterial() {
+    if (!activeConnectionMaterial) {
+        activeConnectionMaterial = cloneMaterial(script.holoBlueMaterial || script.holoGreyMaterial);
+        if (activeConnectionMaterial) {
+            setMaterialColor(activeConnectionMaterial, new vec4(0.1, 0.78, 1.0, 1.0));
+        } else {
+            activeConnectionMaterial = script.holoBlueMaterial || script.holoGreyMaterial;
+        }
+    }
+
+    return activeConnectionMaterial;
+}
+
+function getConnectionFlowMaterial(isActive) {
+    if (isActive) {
+        return getActiveConnectionMaterial();
+    }
+
+    return getInactiveConnectionMaterial();
+}
+
+function getConnectionFlowMaterialKey(isActive) {
+    return isActive ? "active" : "inactive";
+}
+
+function setConnectionFlowMaterial(connection, isActive) {
+    var material = getConnectionFlowMaterial(isActive);
+
+    if (!connection || !connection.sceneObject || !material) {
+        return;
+    }
+
+    var materialKey = getConnectionFlowMaterialKey(isActive);
+
+    if (connection.flowMaterialKey === materialKey) {
+        return;
+    }
+
+    var meshVisual = connection.sceneObject.getComponent("Component.RenderMeshVisual");
+
+    if (meshVisual) {
+        meshVisual.mainMaterial = material;
+        connection.flowMaterialKey = materialKey;
     }
 }
 
@@ -871,11 +945,13 @@ function createConnection(fromPath, toPath, connectionType, visibleAtStart, chil
         nodeB_Transform: nodeB.getTransform(),
         fromPath: fromPath,
         toPath: toPath,
-        key: getConnectionKey(fromPath, toPath)
+        key: getConnectionKey(fromPath, toPath),
+        flowMaterialKey: null
     });
 
     var activeConnection = activeConnections[activeConnections.length - 1];
     connectionByNodePair[activeConnection.key] = activeConnection;
+    setConnectionFlowMaterial(activeConnection, false);
     updateConnection(activeConnection);
     return connectionObject;
 }
@@ -1328,6 +1404,14 @@ function updateRouteConnectionVisibility() {
     }
 }
 
+function updateFlowConnectionMaterials() {
+    var activeConnectionKey = activeFlow ? activeFlow.activeConnectionKey : null;
+
+    for (var i = 0; i < activeConnections.length; i++) {
+        setConnectionFlowMaterial(activeConnections[i], activeConnections[i].key === activeConnectionKey);
+    }
+}
+
 function onNodeClicked(nodePath) {
     var children = childPathsByParent[nodePath];
 
@@ -1430,6 +1514,7 @@ function updateConnections() {
     updateNodeInteractionStates();
     updateExpandedNodeMovement();
     updateFlowAnimation();
+    updateFlowConnectionMaterials();
 
     for (var nodeId in spawnedNodes) {
         if (spawnedNodes.hasOwnProperty(nodeId)) {
@@ -1455,7 +1540,9 @@ function updateConnection(conn) {
     var thickness = script.connectionThickness;
 
     if (activeFlow && activeFlow.activeConnectionKey === conn.key) {
-        thickness *= 2.5;
+        thickness *= 3.25;
+    } else {
+        thickness *= 0.35;
     }
 
     conn.transform.setWorldScale(new vec3(thickness, distance, thickness));
