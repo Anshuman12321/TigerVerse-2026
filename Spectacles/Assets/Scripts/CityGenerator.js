@@ -36,7 +36,6 @@ var lastNodePositions = {};
 var nodePathById = {};
 var nodePathsById = {};
 var connectionByNodePair = {};
-var flowButtonObjects = [];
 var activeFlow = null;
 
 function callIfAvailable(target, methodName, args) {
@@ -442,7 +441,6 @@ function buildInteractiveCity() {
 
     buildTier(rootTier, ROOT_PATH, 1, new vec3(0, 0, 0), true);
     createRootConnectionsFromGlobalEdges(data.edges || []);
-    buildFlowSelector();
 
     print(
         "Visualizer nodes and connections generated from claude_vizualizer_data.js: nodes=" +
@@ -982,6 +980,61 @@ function restartActiveFlow() {
     }
 }
 
+function getFlowScenarioById(scenarioId) {
+    for (var i = 0; i < flowScenarios.length; i++) {
+        if (flowScenarios[i].id === scenarioId) {
+            return flowScenarios[i];
+        }
+    }
+
+    print("WARNING: Flow scenario not found: " + scenarioId);
+    return null;
+}
+
+function startFlowScenarioById(scenarioId) {
+    var scenario = getFlowScenarioById(scenarioId);
+
+    if (scenario) {
+        startFlowScenario(scenario);
+    }
+}
+
+function playFlow() {
+    if (activeFlow) {
+        setActiveFlowPlaying(true);
+    } else if (flowScenarios.length > 0) {
+        startFlowScenario(flowScenarios[0]);
+    }
+}
+
+function pauseFlow() {
+    setActiveFlowPlaying(false);
+}
+
+function restartFlow() {
+    restartActiveFlow();
+}
+
+function startUserPromptFlow() {
+    startFlowScenarioById("user_prompt");
+}
+
+function startToolExecutionFlow() {
+    startFlowScenarioById("tool_execution");
+}
+
+function startProviderRequestFlow() {
+    startFlowScenarioById("provider_request");
+}
+
+function startTelemetryFlow() {
+    startFlowScenarioById("telemetry");
+}
+
+function startRepositoryDrilldownFlow() {
+    startFlowScenarioById("repository_drilldown");
+}
+
 function setActiveFlowPlaying(isPlaying) {
     if (activeFlow) {
         if (isPlaying) {
@@ -1067,72 +1120,6 @@ function updateFlowNodeHighlights() {
                 spawnedNodes[nodePath].getTransform().setLocalScale(baseScale.uniformScale(1.25));
             }
         }
-    }
-}
-
-function bindFlowButton(buttonObject, callback) {
-    var interactable = buttonObject.getComponent(Interactable.getTypeName());
-
-    if (!interactable) {
-        interactable = buttonObject.createComponent(Interactable.getTypeName());
-    }
-
-    if (interactable) {
-        interactable.onTriggerEnd.add(callback);
-    }
-}
-
-function createFlowButton(name, localPosition, callback) {
-    if (!script.nodePrefab) {
-        return null;
-    }
-
-    var buttonObject = script.nodePrefab.instantiate(script.getSceneObject());
-    var buttonScale = new vec3(0.34, 0.06, 0.16);
-
-    buttonObject.name = "FLOW_BUTTON__" + sanitizeName(name);
-    buttonObject.getTransform().setLocalPosition(localPosition);
-    buttonObject.getTransform().setLocalScale(buttonScale);
-    setNodeText(buttonObject, name, "", buttonScale);
-    setVisible(buttonObject, true);
-    bindFlowButton(buttonObject, callback);
-    flowButtonObjects.push(buttonObject);
-
-    return buttonObject;
-}
-
-function buildFlowSelector() {
-    var panelX = -2.2;
-    var panelY = 1.2;
-    var panelZ = -1.2;
-    var rowSpacing = 0.32;
-
-    createFlowButton("Flow: Play", new vec3(panelX, panelY, panelZ), function() {
-        if (activeFlow) {
-            setActiveFlowPlaying(true);
-        } else if (flowScenarios.length > 0) {
-            startFlowScenario(flowScenarios[0]);
-        }
-    });
-
-    createFlowButton("Flow: Pause", new vec3(panelX, panelY - rowSpacing, panelZ), function() {
-        setActiveFlowPlaying(false);
-    });
-
-    createFlowButton("Flow: Restart", new vec3(panelX, panelY - rowSpacing * 2, panelZ), function() {
-        restartActiveFlow();
-    });
-
-    for (var i = 0; i < flowScenarios.length; i++) {
-        (function(scenario, index) {
-            createFlowButton(
-                scenario.name,
-                new vec3(panelX, panelY - rowSpacing * (index + 4), panelZ),
-                function() {
-                    startFlowScenario(scenario);
-                }
-            );
-        })(flowScenarios[i], i);
     }
 }
 
@@ -1281,3 +1268,12 @@ if (script.nodePrefab && script.connectionPrefab) {
 } else {
     print("ERROR: Please assign nodePrefab and connectionPrefab in the Inspector.");
 }
+
+script.playFlow = playFlow;
+script.pauseFlow = pauseFlow;
+script.restartFlow = restartFlow;
+script.startUserPromptFlow = startUserPromptFlow;
+script.startToolExecutionFlow = startToolExecutionFlow;
+script.startProviderRequestFlow = startProviderRequestFlow;
+script.startTelemetryFlow = startTelemetryFlow;
+script.startRepositoryDrilldownFlow = startRepositoryDrilldownFlow;
