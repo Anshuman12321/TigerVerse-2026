@@ -126,6 +126,19 @@ def _extract_json_object(stdout: str) -> dict[str, Any]:
         try:
             value = json.loads(candidate)
         except json.JSONDecodeError as error:
+            repaired_candidate = _repair_extra_relationship_closing_braces(candidate)
+            if repaired_candidate is not None:
+                try:
+                    value = json.loads(repaired_candidate)
+                except json.JSONDecodeError:
+                    pass
+                else:
+                    if isinstance(value, dict):
+                        schema_issue = _analysis_schema_issue(value)
+                        if schema_issue is None:
+                            return value
+                        non_matching_details.append(f"{schema_issue}: {_snippet(repaired_candidate)}")
+                    continue
             malformed_json_seen = True
             parse_errors.append(f"{error.msg} at line {error.lineno} column {error.colno}: {_snippet(candidate)}")
             if _looks_like_analysis_candidate(candidate):
@@ -211,6 +224,62 @@ def _analysis_schema_issue(value: dict[str, Any]) -> str | None:
         return "nodes must be a list"
     if not isinstance(value.get("relationships"), list):
         return "relationships must be a list"
+    return None
+
+
+def _repair_extra_relationship_closing_braces(candidate: str) -> str | None:
+    key_index = candidate.find('"relationships"')
+    if key_index < 0:
+        return None
+    array_start = candidate.find("[", key_index)
+    if array_start < 0:
+        return None
+
+    chars = list(candidate)
+    object_depth = 0
+    array_depth = 0
+    in_string = False
+    escaped = False
+    changed = False
+    index = array_start + 1
+
+    while index < len(chars):
+        char = chars[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            object_depth += 1
+        elif char == "}":
+            if object_depth == 0 and _next_nonspace(chars, index + 1) in {",", "]"}:
+                del chars[index]
+                changed = True
+                continue
+            object_depth -= 1
+        elif char == "[":
+            array_depth += 1
+        elif char == "]":
+            if array_depth == 0:
+                return "".join(chars) if changed else None
+            array_depth -= 1
+        index += 1
+
+    return None
+
+
+def _next_nonspace(chars: list[str], start: int) -> str | None:
+    for index in range(start, len(chars)):
+        if not chars[index].isspace():
+            return chars[index]
     return None
 
 

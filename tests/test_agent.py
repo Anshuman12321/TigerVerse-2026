@@ -450,3 +450,35 @@ def test_opencode_agent_runner_reports_malformed_analysis_json_with_snippet(monk
         assert "analysis-full-v1" in message
     else:
         raise AssertionError("expected ValueError")
+
+
+def test_opencode_agent_runner_repairs_extra_relationship_closing_braces(monkeypatch) -> None:
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(
+            args=args[0],
+            returncode=0,
+            stdout=(
+                '{"type":"text","part":{"type":"text","text":"{\\"schema_version\\":\\"analysis-full-v1\\",'
+                '\\"repo\\":{\\"name\\":\\"demo\\"},'
+                '\\"nodes\\":[{\\"id\\":\\"root\\",\\"parent_id\\":null,\\"name\\":\\"demo\\",'
+                '\\"description\\":\\"Repository root.\\",\\"type\\":\\"repository\\",\\"category\\":\\"repository\\",'
+                '\\"confidence\\":1,\\"related_files\\":[],\\"evidence\\":[],\\"source_context\\":[]},'
+                '{\\"id\\":\\"tools\\",\\"parent_id\\":\\"root\\",\\"name\\":\\"Tools\\",'
+                '\\"description\\":\\"Tooling.\\",\\"type\\":\\"component\\",\\"category\\":\\"tool\\",'
+                '\\"confidence\\":1,\\"related_files\\":[],\\"evidence\\":[],\\"source_context\\":[]}],'
+                '\\"relationships\\":[{\\"id\\":\\"rel-1\\",\\"from\\":\\"root\\",\\"to\\":\\"tools\\",'
+                '\\"type\\":\\"contains\\",\\"description\\":\\"Root contains tools.\\",\\"confidence\\":1,'
+                '\\"evidence\\":[]}},'
+                '{\\"id\\":\\"rel-2\\",\\"from\\":\\"tools\\",\\"to\\":\\"root\\",'
+                '\\"type\\":\\"uses\\",\\"description\\":\\"Tools use root.\\",\\"confidence\\":1,'
+                '\\"evidence\\":[]}]}"}}\n'
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    analysis = OpenCodeAgentRunner(command="opencode").analyze({"repo": {"name": "demo"}, "files": []})
+
+    assert [relationship["id"] for relationship in analysis["relationships"]] == ["rel-1", "rel-2"]
+    validate_full_analysis(analysis)
