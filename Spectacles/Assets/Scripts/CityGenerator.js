@@ -3,7 +3,7 @@
 //@input float dataScale = 1.0
 //@input float connectionThickness = 0.15
 //@input float nodeSize = 1.0
-//@input float depthSpacingY = 5.0
+//@input float depthSpacingY = 8.0
 //@input float rootRadius = 10.0
 //@input float childRadius = 5.0
 //@input float slabHeight = 0.18
@@ -72,7 +72,7 @@ function getNodeId(nodeData) {
 }
 
 function getNodeLabel(nodeData) {
-    return nodeData.name || nodeData.label || nodeData.title || getNodeId(nodeData);
+    return nodeData.name || nodeData.title || nodeData.label || getNodeId(nodeData);
 }
 
 function getNodeDescription(nodeData) {
@@ -158,7 +158,7 @@ function getTierRadius(nodes, depth) {
         return baseRadius;
     }
 
-    var minChordSpacing = maxNodeFootprint * 1.35 + 0.35;
+    var minChordSpacing = maxNodeFootprint * 1.55 + 0.55;
     var requiredRadius = minChordSpacing / (2 * Math.sin(Math.PI / count));
 
     return Math.max(baseRadius, requiredRadius);
@@ -210,11 +210,7 @@ function shortenText(value, maxLength) {
 function formatNodeText(label, description) {
     var title = shortenText(label, 32);
 
-    if (!description) {
-        return title;
-    }
-
-    return title + "\n" + shortenText(description, 72);
+    return title;
 }
 
 function setTextColor(textComponent, color) {
