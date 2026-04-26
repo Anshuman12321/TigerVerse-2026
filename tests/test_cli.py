@@ -49,6 +49,7 @@ def test_cli_project_static_writes_full_and_visualizer_artifacts(tmp_path: Path)
     assert "manifest.json" in result.stdout
     assert "analysis/analysis-full.json" in result.stdout
     assert "visualizer/visualizer-map.mmd" in result.stdout
+    assert "visualizer/positioned-scene.json" in result.stdout
     assert "Preparing repository" in result.stderr
     assert re.search(r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] \+\d+\.\d+s", result.stderr)
     assert "Collecting repository evidence" in result.stderr
@@ -59,15 +60,21 @@ def test_cli_project_static_writes_full_and_visualizer_artifacts(tmp_path: Path)
     manifest = json.loads((out / "manifest.json").read_text())
     analysis = json.loads((out / "analysis" / "analysis-full.json").read_text())
     visualizer = json.loads((out / "visualizer" / "visualizer-map.json").read_text())
+    positioned_scene = json.loads((out / "visualizer" / "positioned-scene.json").read_text())
     assert manifest["schema_version"] == "analysis-artifacts-v1"
     assert analysis["schema_version"] == "analysis-full-v1"
     assert visualizer["schema_version"] == "nested-visualizer-map-v1"
     assert (out / "evidence" / "analysis-evidence.json").exists()
     assert (out / "visualizer" / "visualizer-map.mmd").exists()
+    assert (out / "visualizer" / "positioned-scene.json").exists()
     assert any(node["related_files"] for node in visualizer["root_layer"]["nodes"])
     assert manifest["artifacts"]["analysis"] == "analysis/analysis-full.json"
     assert manifest["artifacts"]["visualizer"]["json"] == "visualizer/visualizer-map.json"
+    assert manifest["artifacts"]["visualizer"]["positioned_scene"] == "visualizer/positioned-scene.json"
     assert manifest["constraints"]["target_user"] == "intermediate"
+    assert positioned_scene["schema_version"] == "positioned-scene-v1"
+    assert positioned_scene["nodes"]
+    assert all(set(node["pos"]) == {"x", "y", "z"} for node in positioned_scene["nodes"])
 
 
 def test_cli_analyze_cleans_remote_clone_after_success(tmp_path: Path) -> None:

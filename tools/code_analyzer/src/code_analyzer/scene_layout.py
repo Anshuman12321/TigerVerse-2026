@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import json
 import copy
+import argparse
+import hashlib
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Tuple
 
 
-def load_llm_graph(path: str | Path) -> Dict[str, Any]:
+def load_visualizer_graph(path: str | Path) -> Dict[str, Any]:
     """
-    Load the LLM-produced graph JSON into a Python dict.
+    Load the nested visualizer graph JSON into a Python dict.
 
     This is intentionally permissive: we only do minimal shape checks so we can
     iteratively add coordinate fields in later steps.
@@ -231,7 +233,8 @@ def _stable_pick_one(tier_id: str, candidates: List[str]) -> str:
     if not candidates:
         raise ValueError("No candidates to pick from")
     candidates_sorted = sorted(candidates)
-    idx = abs(hash((tier_id, "|".join(candidates_sorted)))) % len(candidates_sorted)
+    seed = f"{tier_id}|{'|'.join(candidates_sorted)}".encode("utf-8")
+    idx = int(hashlib.sha256(seed).hexdigest(), 16) % len(candidates_sorted)
     return candidates_sorted[idx]
 
 
@@ -456,6 +459,8 @@ def assign_relative_layout(graph: Dict[str, Any]) -> Dict[str, Any]:
 def assign_world_geometry(
     graph: Dict[str, Any],
     scale: int = 5,
+    x_scale: int | None = None,
+    y_scale: int | None = None,
     half_width: float = 2.0,
     z_scale: int | None = None,
 ) -> Dict[str, Any]:
@@ -466,12 +471,17 @@ def assign_world_geometry(
     - Each node is a "square" (in X) centered at (x,y,z) with width 4 => half_width=2.
     - Edges originate from the right face of the `from` node (x + half_width)
       and terminate at the left face of the `to` node (x - half_width).
-    - Positions are scaled by `scale` (x,y) and `z_scale` (defaults to `scale`).
+    - Positions are scaled by `x_scale`, `y_scale`, and `z_scale`.
+      Any omitted axis scale defaults to `scale`.
     """
     root_tier = graph.get("tier")
     if not isinstance(root_tier, dict):
         raise ValueError('graph["tier"] must be an object')
 
+    if x_scale is None:
+        x_scale = scale
+    if y_scale is None:
+        y_scale = scale
     if z_scale is None:
         z_scale = scale
 
@@ -485,8 +495,8 @@ def assign_world_geometry(
 
     # Node world coords + bounds.
     for node in nodes_by_id.values():
-        x = float(node.get("x_pos", 0)) * float(scale)
-        y = float(node.get("y_pos", 0)) * float(scale)
+        x = float(node.get("x_pos", 0)) * float(x_scale)
+        y = float(node.get("y_pos", 0)) * float(y_scale)
         z = float(node.get("z_pos", 0)) * float(z_scale)
 
         node["pos"] = {"x": x, "y": y, "z": z}
@@ -517,6 +527,8 @@ def assign_world_geometry(
 
     graph["geometry"] = {
         "scale": scale,
+        "x_scale": x_scale,
+        "y_scale": y_scale,
         "z_scale": z_scale,
         "node_half_width": half_width,
         "node_width": half_width * 2,
@@ -525,21 +537,31 @@ def assign_world_geometry(
     return graph
 
 
-def build_positioned_graph(
-    llm_graph: Dict[str, Any],
+def build_positioned_scene_graph(
+    visualizer_graph: Dict[str, Any],
     scale: int = 5,
+    x_scale: int | None = None,
+    y_scale: int | None = None,
+    z_scale: int | None = None,
     half_width: float = 2.0,
 ) -> Dict[str, Any]:
     """
     End-to-end: copy input graph, lift edges, assign x/y/z, then assign world geometry.
     """
-    g = copy.deepcopy(llm_graph)
+    g = copy.deepcopy(visualizer_graph)
     assign_relative_layout(g)
-    assign_world_geometry(g, scale=scale, half_width=half_width)
+    assign_world_geometry(
+        g,
+        scale=scale,
+        x_scale=x_scale,
+        y_scale=y_scale,
+        z_scale=z_scale,
+        half_width=half_width,
+    )
     return g
 
 
-def export_flat_scene(positioned_graph: Dict[str, Any]) -> Dict[str, Any]:
+def export_positioned_scene(positioned_graph: Dict[str, Any]) -> Dict[str, Any]:
     """
     Flatten a positioned graph into two lists: nodes and arrows.
 
@@ -590,6 +612,9 @@ def export_flat_scene(positioned_graph: Dict[str, Any]) -> Dict[str, Any]:
             )
         arrows_out.append(
             {
+                "from": str(e.get("from", "")),
+                "to": str(e.get("to", "")),
+                "type": str(e.get("type", "edge")),
                 "start": {
                     "x": float(start.get("x", 0)),
                     "y": float(start.get("y", 0)),
@@ -605,38 +630,62 @@ def export_flat_scene(positioned_graph: Dict[str, Any]) -> Dict[str, Any]:
 
     # Stable ordering helps diffs and debugging.
     nodes_out.sort(key=lambda n: str(n.get("id", "")))
+    arrows_out.sort(key=lambda e: (str(e.get("from", "")), str(e.get("to", "")), str(e.get("type", ""))))
 
-    return {"nodes": nodes_out, "arrows": arrows_out}
+    return {"schema_version": "positioned-scene-v1", "nodes": nodes_out, "arrows": arrows_out}
 
 
-def write_flat_scene_json(
+def write_positioned_scene_json(
     positioned_graph: Dict[str, Any], output_path: str | Path
 ) -> Path:
-    """Write `export_flat_scene(...)` to disk as JSON."""
+    """Write `export_positioned_scene(...)` to disk as JSON."""
     out = Path(output_path)
-    payload = export_flat_scene(positioned_graph)
+    payload = export_positioned_scene(positioned_graph)
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return out
 
 
-def load_default() -> Dict[str, Any]:
-    """Load json_generation/plot.json relative to this file."""
-    here = Path(__file__).resolve().parent
-    return load_llm_graph(here / "plot.json")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Generate positioned scene JSON from a nested visualizer graph."
+    )
+    parser.add_argument(
+        "input",
+        type=Path,
+        help="Path to visualizer-map.json or compatible nested graph JSON.",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        required=True,
+        help="Path where positioned-scene.json will be written.",
+    )
+    parser.add_argument("--scale", type=int, default=5, help="Default world coordinate scale for any axis without an explicit axis scale.")
+    parser.add_argument("--x-scale", type=int, default=None, help="World coordinate scale for x positions.")
+    parser.add_argument("--y-scale", type=int, default=None, help="World coordinate scale for y positions.")
+    parser.add_argument("--z-scale", type=int, default=None, help="World coordinate scale for z positions.")
+    parser.add_argument("--half-width", type=float, default=2.0, help="Half-width used for edge endpoint offsets.")
+    args = parser.parse_args(argv)
 
-
-if __name__ == "__main__":
-    graph = load_default()
-    assign_relative_layout(graph)
-    assign_world_geometry(graph, scale=5, half_width=2.0)
-    write_flat_scene_json(graph, Path(__file__).resolve().parent / "scene_flat.json")
+    graph = build_positioned_scene_graph(
+        load_visualizer_graph(args.input),
+        scale=args.scale,
+        x_scale=args.x_scale,
+        y_scale=args.y_scale,
+        z_scale=args.z_scale,
+        half_width=args.half_width,
+    )
+    write_positioned_scene_json(graph, args.out)
     tier_id = graph.get("tier", {}).get("id")
     nodes_by_id = index_nodes_by_id(graph["tier"])
     max_x = max((n.get("x_pos", 0) for n in nodes_by_id.values()), default=0)
     max_y = max((n.get("y_pos", 0) for n in nodes_by_id.values()), default=0)
     max_z = max((n.get("z_pos", 0) for n in nodes_by_id.values()), default=0)
     print(
-        f"Loaded graph. root tier id={tier_id!r}, edges={len(graph.get('edges', []))}, nodes={len(nodes_by_id)}, max_x_pos={max_x}, max_y_pos={max_y}, max_z_pos={max_z}"
+        f"Wrote {args.out}. root tier id={tier_id!r}, edges={len(graph.get('edges', []))}, nodes={len(nodes_by_id)}, max_x_pos={max_x}, max_y_pos={max_y}, max_z_pos={max_z}"
     )
-    
-    
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

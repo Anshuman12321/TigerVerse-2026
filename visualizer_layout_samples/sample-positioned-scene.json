@@ -1,4 +1,5 @@
 {
+  "schema_version": "positioned-scene-v1",
   "nodes": [
     {
       "id": "backend_http_ws_api",
@@ -124,102 +125,9 @@
   ],
   "arrows": [
     {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 5.0,
-        "z": 5.0
-      }
-    },
-    {
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 5.0,
-        "z": 5.0
-      }
-    },
-    {
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    },
-    {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 5.0,
-        "z": 5.0
-      }
-    },
-    {
-      "start": {
-        "x": 7.0,
-        "y": 5.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "start": {
-        "x": 7.0,
-        "y": 5.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    },
-    {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
+      "from": "backend_http_ws_api",
+      "to": "backend_llm_pipeline",
+      "type": "invokes",
       "start": {
         "x": 2.0,
         "y": 0.0,
@@ -228,10 +136,28 @@
       "end": {
         "x": -2.0,
         "y": 0.0,
-        "z": 5.0
+        "z": 10.0
       }
     },
     {
+      "from": "backend_http_ws_api",
+      "to": "backend_transcript_filter",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 10.0
+      }
+    },
+    {
+      "from": "backend_http_ws_api",
+      "to": "system_backend",
+      "type": "contains",
       "start": {
         "x": 2.0,
         "y": 0.0,
@@ -244,22 +170,13 @@
       }
     },
     {
+      "from": "backend_http_ws_api",
+      "to": "system_backend",
+      "type": "invokes",
       "start": {
         "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
         "y": 0.0,
         "z": 5.0
-      }
-    },
-    {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
       },
       "end": {
         "x": 3.0,
@@ -268,6 +185,69 @@
       }
     },
     {
+      "from": "frontend_entry_auth_shell",
+      "to": "frontend_supabase_client",
+      "type": "uses",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "frontend_entry_auth_shell",
+      "to": "system_frontend",
+      "type": "uses",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "frontend_stt_capture",
+      "to": "backend_http_ws_api",
+      "type": "calls_http",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "frontend_stt_capture",
+      "to": "system_backend",
+      "type": "calls_http",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "frontend_voice_session",
+      "to": "backend_http_ws_api",
+      "type": "websocket_transport",
       "start": {
         "x": 7.0,
         "y": 5.0,
@@ -280,6 +260,24 @@
       }
     },
     {
+      "from": "frontend_voice_session",
+      "to": "frontend_stt_capture",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 5.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "frontend_voice_session",
+      "to": "system_backend",
+      "type": "websocket_transport",
       "start": {
         "x": 7.0,
         "y": 5.0,
@@ -292,30 +290,24 @@
       }
     },
     {
+      "from": "frontend_voice_session",
+      "to": "system_frontend",
+      "type": "contains",
       "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 7.0,
+        "y": 5.0,
+        "z": 5.0
       },
       "end": {
         "x": -2.0,
         "y": 0.0,
-        "z": 5.0
-      }
-    },
-    {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": 3.0,
-        "y": 0.0,
         "z": 0.0
       }
     },
     {
+      "from": "system_backend",
+      "to": "backend_http_ws_api",
+      "type": "contains",
       "start": {
         "x": 7.0,
         "y": 0.0,
@@ -328,6 +320,39 @@
       }
     },
     {
+      "from": "system_backend",
+      "to": "backend_http_ws_api",
+      "type": "invokes",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_llm_pipeline",
+      "type": "invokes",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 10.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_streaming_text_tts",
+      "type": "contains",
       "start": {
         "x": 7.0,
         "y": 0.0,
@@ -340,6 +365,24 @@
       }
     },
     {
+      "from": "system_backend",
+      "to": "backend_transcript_filter",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 10.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_widget_resolver",
+      "type": "contains",
       "start": {
         "x": 7.0,
         "y": 0.0,
@@ -352,22 +395,103 @@
       }
     },
     {
+      "from": "system_frontend",
+      "to": "backend_http_ws_api",
+      "type": "calls_http",
       "start": {
         "x": 2.0,
         "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
         "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "backend_http_ws_api",
+      "type": "websocket_transport",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "frontend_entry_auth_shell",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "frontend_stt_capture",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "frontend_supabase_client",
+      "type": "uses",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
       },
       "end": {
         "x": -2.0,
         "y": 5.0,
-        "z": 10.0
+        "z": 5.0
       }
     },
     {
+      "from": "system_frontend",
+      "to": "frontend_voice_session",
+      "type": "contains",
       "start": {
         "x": 2.0,
         "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 5.0,
         "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "system_backend",
+      "type": "calls_http",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
       },
       "end": {
         "x": 3.0,
@@ -376,63 +500,18 @@
       }
     },
     {
+      "from": "system_frontend",
+      "to": "system_backend",
+      "type": "websocket_transport",
       "start": {
-        "x": 7.0,
+        "x": 2.0,
         "y": 0.0,
         "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 5.0,
-        "z": 10.0
-      }
-    },
-    {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 10.0
-      }
-    },
-    {
-      "start": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 5.0
       },
       "end": {
         "x": 3.0,
         "y": 0.0,
         "z": 0.0
-      }
-    },
-    {
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 10.0
-      }
-    },
-    {
-      "start": {
-        "x": 7.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "end": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 5.0
       }
     }
   ]

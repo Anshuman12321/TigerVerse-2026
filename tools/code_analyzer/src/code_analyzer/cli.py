@@ -15,6 +15,7 @@ from .io import write_json
 from .projection import DEFAULT_MAX_DEPTH, DEFAULT_MAX_NODES_PER_LAYER, TARGET_USERS, build_nested_visualizer_map
 from .renderer import write_visualizer_mermaid
 from .repository import cleanup_repository, prepare_repository
+from .scene_layout import build_positioned_scene_graph, export_positioned_scene
 from .static_analysis import build_static_full_analysis
 from .validation import validate_full_analysis
 
@@ -127,15 +128,26 @@ def _write_artifact_bundle(
     analysis_path = out_dir / "analysis" / "analysis-full.json"
     visualizer_json_path = out_dir / "visualizer" / "visualizer-map.json"
     visualizer_mmd_path = out_dir / "visualizer" / "visualizer-map.mmd"
+    positioned_scene_path = out_dir / "visualizer" / "positioned-scene.json"
     write_json(analysis_path, full_analysis)
     write_json(visualizer_json_path, visualizer_map)
     write_visualizer_mermaid(visualizer_json_path, visualizer_mmd_path)
-    written.extend([analysis_path, visualizer_json_path, visualizer_mmd_path])
+    positioned_scene = export_positioned_scene(build_positioned_scene_graph(visualizer_map))
+    write_json(positioned_scene_path, positioned_scene)
+    written.extend([analysis_path, visualizer_json_path, visualizer_mmd_path, positioned_scene_path])
 
     manifest_path = out_dir / "manifest.json"
     write_json(
         manifest_path,
-        _artifact_manifest(out_dir, evidence_path, analysis_path, visualizer_json_path, visualizer_mmd_path, visualizer_map),
+        _artifact_manifest(
+            out_dir,
+            evidence_path,
+            analysis_path,
+            visualizer_json_path,
+            visualizer_mmd_path,
+            positioned_scene_path,
+            visualizer_map,
+        ),
     )
     written.insert(0, manifest_path)
     return written
@@ -147,6 +159,7 @@ def _artifact_manifest(
     analysis_path: Path,
     visualizer_json_path: Path,
     visualizer_mmd_path: Path,
+    positioned_scene_path: Path,
     visualizer_map: dict,
 ) -> dict[str, object]:
     root_layer = visualizer_map.get("root_layer", {})
@@ -158,6 +171,7 @@ def _artifact_manifest(
             "visualizer": {
                 "json": str(visualizer_json_path.relative_to(out_dir)),
                 "mermaid": str(visualizer_mmd_path.relative_to(out_dir)),
+                "positioned_scene": str(positioned_scene_path.relative_to(out_dir)),
             },
         },
         "constraints": visualizer_map.get("constraints", {}),

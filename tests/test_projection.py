@@ -97,7 +97,7 @@ def test_build_nested_visualizer_map_includes_spec_json_compatible_tier_shape() 
 
     assert visualizer["edges"] == [{"from": "area-1", "to": "area-2", "type": "depends_on"}]
     assert visualizer["tier"]["id"] == "tier_1"
-    assert visualizer["tier"]["description"] == "Root tier (most simplified). Children tiers hold more detail. Only leaf tiers contain edges and relevant_files."
+    assert visualizer["tier"]["description"] == "Root tier (most simplified). Children tiers hold more detail."
     assert visualizer["tier"]["edges"] is None
 
     first_node = visualizer["tier"]["nodes"][0]
@@ -116,8 +116,6 @@ def test_build_nested_visualizer_map_includes_spec_json_compatible_tier_shape() 
         "id": "area-1-child-1",
         "title": "Area 1 Child 1",
         "description": "Area 1 Child 1 description.",
-        "image_url": None,
-        "relevant_files": ["area1/child1.py"],
         "shape": "cube",
         "tier": None,
     }
