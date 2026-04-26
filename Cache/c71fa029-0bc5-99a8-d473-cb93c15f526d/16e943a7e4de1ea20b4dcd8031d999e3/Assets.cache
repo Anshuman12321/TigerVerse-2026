@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    ba8439c5-924b-4850-803a-3e922ee468da: c71fa029-0bc5-99a8-d473-cb93c15f526d/16e943a7e4de1ea20b4dcd8031d999e3/Data/Gochi.png
+  Assets:
+    - !<FileTexture/ba8439c5-924b-4850-803a-3e922ee468da>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: 16e943a7e4de1ea20b4dcd8031d999e3
+  FileHash: 31d0c49ec708e091f76ee89244b3dc05
+  NativePackageItems:
+    []

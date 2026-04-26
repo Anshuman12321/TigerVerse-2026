@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    705b2c9d-b9ee-4d6f-a605-801ff19cfcaa: f2484045-9509-47b6-87c2-2e289f4f12e1/06a7b476bb32d5b73316975b83ec86cc/Data/Colorful_Orb_Or_Cube_Sticker.png
+  Assets:
+    - !<FileTexture/705b2c9d-b9ee-4d6f-a605-801ff19cfcaa>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 934
+        Height: 937
+  SourceHash: 06a7b476bb32d5b73316975b83ec86cc
+  FileHash: 7c81ae0e369e2a3e0450f833a87c77d2
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    4bf3c4e9-3cee-46bb-82e0-d681ca38e539: e675a5e2-6d7a-25e2-fc5d-58c082f7d0a8/c31e975d549a429ff19789456eac2e59/Data/Outline Thickness.png
+  Assets:
+    - !<FileTexture/4bf3c4e9-3cee-46bb-82e0-d681ca38e539>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 96
+        Height: 96
+  SourceHash: c31e975d549a429ff19789456eac2e59
+  FileHash: a6efdc1c765b95aba6700b00f1958902
+  NativePackageItems:
+    []

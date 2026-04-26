@@ -1,0 +1,17 @@
+- !<AssetCache>
+  AssetFiles:
+    19d6b039-6383-425c-88d7-54475b68f57a: faa7027f-8d79-a6af-ea10-413dc8897723/8e27c33cd40feaff6f758ecb229c6608/Data/Placement.mesh
+  Assets:
+    - !<FileMesh/19d6b039-6383-425c-88d7-54475b68f57a>
+      PackagePath: ""
+      Info: !<MeshInfo>
+        Triangles: 2
+        Vertices: 4
+        Blendshapes:
+          []
+        Joints: 0
+        AabbSize: {x: 200.000000, y: 0.000000, z: 200.000000}
+  SourceHash: 8e27c33cd40feaff6f758ecb229c6608
+  FileHash: 988a9eba2776b4dabb174f123c7d67be
+  NativePackageItems:
+    []

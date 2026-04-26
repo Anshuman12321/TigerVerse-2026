@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    efcfc962-cc48-41ee-9e93-95d6f02f9616: a0799d77-a1ff-2c4a-a23a-1eafd100c08a/79e32e97487511cd0bbc1a71e994f07d/Data/Odibee.png
+  Assets:
+    - !<FileTexture/efcfc962-cc48-41ee-9e93-95d6f02f9616>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: 79e32e97487511cd0bbc1a71e994f07d
+  FileHash: b1cc27ccc4336fb2441a85c4b4a77653
+  NativePackageItems:
+    []

@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    43576a1d-c384-4eb3-ac33-165b942cfe47: 7d6d824e-dcf1-4759-64fd-16c78b3906cb/2b338a598998d2976f2012aa00054572/Data/Hands_Interaction_Glow_Mask.png
+  Assets:
+    - !<FileTexture/43576a1d-c384-4eb3-ac33-165b942cfe47>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: 2b338a598998d2976f2012aa00054572
+  FileHash: aa650c2c1fdfc9d0db2db7a1bcd77957
+  NativePackageItems:
+    []

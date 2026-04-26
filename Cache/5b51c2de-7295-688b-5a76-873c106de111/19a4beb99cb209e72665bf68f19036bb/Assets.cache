@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    95702791-785c-470f-b93a-38d683af81af: 5b51c2de-7295-688b-5a76-873c106de111/19a4beb99cb209e72665bf68f19036bb/Data/Comic.png
+  Assets:
+    - !<FileTexture/95702791-785c-470f-b93a-38d683af81af>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: 19a4beb99cb209e72665bf68f19036bb
+  FileHash: ab4673218a9f4174e58242a7238d6da6
+  NativePackageItems:
+    []

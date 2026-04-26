@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    6a3a96a8-5de0-4aab-9110-847286d609ec: c2925b8a-cca9-248e-2295-45df8b88bab0/9fca3fe42f3c88ee3e15231a41ffc653/Data/Left Align.png
+  Assets:
+    - !<FileTexture/6a3a96a8-5de0-4aab-9110-847286d609ec>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: 9fca3fe42f3c88ee3e15231a41ffc653
+  FileHash: ab597b1beeb563e10ecd920b632403bb
+  NativePackageItems:
+    []

@@ -1,0 +1,61 @@
+- !<ObjectPrefab/19830e76-a684-4fd4-9705-bf9224464175>
+  PackagePath: ""
+  objects:
+    - !<own> cac93217-6531-40e4-9680-ef556662647d
+  LazyLoading: false
+  RetainAssets: true
+- !<RenderMeshVisual/649c9a79-c3cd-4a9f-a4b1-4df5ecfdd0c7>
+  PrefabRemaps:
+    []
+  Name: Render Mesh Visual
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> 2123454f-54b5-489d-baac-1f47b5e6e6bc
+  Mesh: !<reference> a30db2d0-1eef-4100-96e0-0ea65011fbd4
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
+  RayTracing: !<RayTracingVisualSettings>
+    Reflections:
+      caster: false
+      receiver: false
+      receiverLayers: 1
+      planar:
+        enabled: true
+        roughHarden: 0.500000
+        roughCurve: 2.000000
+    GlobalIllumination:
+      caster: false
+      receiver: false
+      receiverLayers: 1
+    Shadows:
+      caster: false
+      receiver: false
+      receiverLayers: 1
+    Material: !<reference> 00000000-0000-0000-0000-000000000000
+    HideFromCamera: false
+- !<SceneObject/cac93217-6531-40e4-9680-ef556662647d>
+  PrefabRemaps:
+    - 649c9a79-c3cd-4a9f-a4b1-4df5ecfdd0c7: 649c9a79-c3cd-4a9f-5b4e-b20a13022f38
+    - cac93217-6531-40e4-9680-ef556662647d: cac93217-6531-40e4-697f-10aa999d9b82
+  Name: Unit_Box__PLACE_IN_SCENE
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 649c9a79-c3cd-4a9f-a4b1-4df5ecfdd0c7

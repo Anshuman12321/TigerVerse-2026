@@ -1,0 +1,101 @@
+{ 
+	"ui": 
+	[
+		{
+        	"label": "Graph Parameters",
+        	"widget": "group_start"
+        },
+{
+                	"bindingName": "baseColor",
+                	"label":       "Base Color",
+                	"widget":      "color",
+                	"sortIndex":   "0",
+                	"hint":        "Specifies the base color (albedo) of the material if the 'Base Textre' is disabled. \nMultiplied with the 'Base Texture' otherwise.",
+                	"default":     "1.0"
+                },
+                
+                { 
+                	"bindingName": "baseTex", 
+                	"label":       "Base Texture", 
+                	"widget":      "texture_group",
+                	"sortIndex":   "2",
+                	"hint":        ""
+                },
+                
+                {
+                	"label":       "Opacity Texture",
+                	"bindingName": "ENABLE_OPACITY_TEX",
+                	"bindingType": "define",
+                	"optimize":    true,
+                	"widget":      "group_start",
+                	"sortIndex":   "0",
+                	"hint":        "Normally, the Base Texture's alpha is taken as opacity. Enabling this allows you to define a separate greyscale opacity texture. \nThe 'Opacity Texture' value will be multiplied with the Base Texture's alpha (which is 1 for textures without alpha) to get the final opacity. \n'Opacity Texture' is only available if 'Blend Mode' is not 'Disabled'."
+                }
+                ,                    
+                    {
+                    	"bindingName": "opacity",
+                    	"label":       "Opacity Scale",
+                    	"widget":      "slider",
+                    	"min":         0,
+                    	"max":         1,
+                    	"step":        "0.01",
+                    	"sortIndex":   "2",
+                    	"hint":        "",
+                    	"default":     "1.0"
+                    },
+                    
+                    { 
+                    	"bindingName": "opacityTex", 
+                    	"label":       "Texture", 
+                    	"widget":      "texture_group",
+                    	"sortIndex":   "4",
+                    	"hint":        ""
+                    },
+                {
+                	"_bindingName": "ENABLE_OPACITY_TEX",
+                	"widget": "group_end"
+                }
+                ,
+                
+                { 
+                	"bindingName": "screenTexture", 
+                	"label":       "Screen Texture", 
+                	"widget":      "texture_group",
+                	"sortIndex":   "4",
+                	"hint":        ""
+                },
+                
+                {
+                	"bindingName": "USE_LEGACY_512_TEXTURE",
+                	"bindingType": "define",
+                	"optimize":    true,
+                	"label":       "Use Legacy 512 Texture",
+                	"widget":      "checkbox",
+                	"sortIndex":   "6",
+                	"hint":        ""
+                },
+
+        {
+        	"widget": "group_end"
+        },
+        
+		
+	{
+		"bindingName": "alphaTestThreshold",
+		"widget": "slider",
+		"min" : 0.0,
+		"max" : 1.0,
+		"step": 0.001,
+		"default": 0.5,
+		"hint": "When the 'Alpha Test' blend mode is enabled, pixels with alpha values lower than this disappear."
+	}
+	
+	],
+	
+	"shaderType": "PostProcessing",
+	
+	"extraDefines":
+	[
+		
+	]
+}

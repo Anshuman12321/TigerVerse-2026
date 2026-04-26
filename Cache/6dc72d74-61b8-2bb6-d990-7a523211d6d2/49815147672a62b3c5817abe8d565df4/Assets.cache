@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    eb4907d0-ac52-4a2a-bcc1-aa2e3491bdf3: 6dc72d74-61b8-2bb6-d990-7a523211d6d2/49815147672a62b3c5817abe8d565df4/Data/BG.png
+  Assets:
+    - !<FileTexture/eb4907d0-ac52-4a2a-bcc1-aa2e3491bdf3>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 96
+        Height: 96
+  SourceHash: 49815147672a62b3c5817abe8d565df4
+  FileHash: 547aba6a4abac96bac64b2cd9f2da421
+  NativePackageItems:
+    []

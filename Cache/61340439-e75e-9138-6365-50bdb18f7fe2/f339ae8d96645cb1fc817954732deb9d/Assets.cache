@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    a627561c-8f18-4092-83a1-ef7161a0effe: 61340439-e75e-9138-6365-50bdb18f7fe2/f339ae8d96645cb1fc817954732deb9d/Data/Bangers.png
+  Assets:
+    - !<FileTexture/a627561c-8f18-4092-83a1-ef7161a0effe>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: f339ae8d96645cb1fc817954732deb9d
+  FileHash: f3ec83110217847753c29e7ce5b4bed4
+  NativePackageItems:
+    []

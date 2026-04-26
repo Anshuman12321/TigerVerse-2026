@@ -1,0 +1,65 @@
+- !<AssetImportMetadata/9ea0077c-ade8-4d85-ad42-dcce67f971da>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 620beb6e-f392-429b-9dbc-aad6a736a157
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 620beb6e-f392-429b-9dbc-aad6a736a157
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> ba7a74f4-cee1-492b-87b0-ca7dc9bb03e0
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/ba7a74f4-cee1-492b-87b0-ca7dc9bb03e0>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: a74db1b5-ad28-4547-915c-31b244b2896d
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    boxTemplate: false
+    branchSpacingX: false
+    forwardSpacingZ: false
+    heightOffsetY: false
+    horizontalSpacing: false
+    rootBox: false
+    showRootChildrenOnStart: false
+    treeRoot: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - rootBox: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      boxTemplate: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      treeRoot: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      horizontalSpacing: !<float> 10.000000
+      forwardSpacingZ: !<float> -10.000000
+      heightOffsetY: 0.500000
+      branchSpacingX: !<float> 34.000000
+      showRootChildrenOnStart: false
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - // @input SceneObject rootBox
+    - // @input Asset.ObjectPrefab boxTemplate
+    - // @input SceneObject treeRoot
+    - // @input float horizontalSpacing = 18
+    - // @input float forwardSpacingZ = -35
+    - // @input float heightOffsetY = 8
+    - // @input float branchSpacingX = 34
+    - // @input bool showRootChildrenOnStart

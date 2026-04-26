@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    71bddd1f-08ef-4ed6-9388-1fdeed1992e2: 187c5698-b89d-e674-b108-b7b46bc575c8/90df30d1eba089ace0ede6c121dba25c/Data/Outline.png
+  Assets:
+    - !<FileTexture/71bddd1f-08ef-4ed6-9388-1fdeed1992e2>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 96
+        Height: 96
+  SourceHash: 90df30d1eba089ace0ede6c121dba25c
+  FileHash: 7aafbddbc6f00b3e27828867033bb8c1
+  NativePackageItems:
+    []

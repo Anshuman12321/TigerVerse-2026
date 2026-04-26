@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    dfaef3e3-26e6-456d-a52b-91b0e2f946f6: 2b2b5d16-d015-c587-bcf8-36cc640160d9/8b9ed4bf593689f2a589e70ac5d984f2/Data/Fredoka.png
+  Assets:
+    - !<FileTexture/dfaef3e3-26e6-456d-a52b-91b0e2f946f6>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: 8b9ed4bf593689f2a589e70ac5d984f2
+  FileHash: 30f96f14dfb6e0164a22d08c9bda3a8d
+  NativePackageItems:
+    []

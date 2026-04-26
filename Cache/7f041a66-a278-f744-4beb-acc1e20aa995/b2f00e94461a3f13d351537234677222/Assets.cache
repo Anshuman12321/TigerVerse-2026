@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    18090bc1-826f-4815-8d6f-589d7fb578a5: 7f041a66-a278-f744-4beb-acc1e20aa995/b2f00e94461a3f13d351537234677222/Data/Oswald.png
+  Assets:
+    - !<FileTexture/18090bc1-826f-4815-8d6f-589d7fb578a5>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: b2f00e94461a3f13d351537234677222
+  FileHash: 2b4f19050e035e0d0bba259da6241855
+  NativePackageItems:
+    []

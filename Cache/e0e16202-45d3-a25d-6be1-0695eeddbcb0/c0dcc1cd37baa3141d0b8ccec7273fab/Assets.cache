@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    0f7f34ac-6ebc-4e4a-af00-11effbbc77de: e0e16202-45d3-a25d-6be1-0695eeddbcb0/c0dcc1cd37baa3141d0b8ccec7273fab/Data/Mobile_Controller_App_Tap.png
+  Assets:
+    - !<FileTexture/0f7f34ac-6ebc-4e4a-af00-11effbbc77de>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 512
+        Height: 512
+  SourceHash: c0dcc1cd37baa3141d0b8ccec7273fab
+  FileHash: 730c5a4a73008d5f09b0921ce4de1eb9
+  NativePackageItems:
+    []

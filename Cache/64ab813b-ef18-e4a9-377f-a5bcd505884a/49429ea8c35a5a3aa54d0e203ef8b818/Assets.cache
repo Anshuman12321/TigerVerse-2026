@@ -1,0 +1,20 @@
+- !<AssetCache>
+  AssetFiles:
+    35681f97-5ccc-4d99-a21d-6a70c7d41407: 64ab813b-ef18-e4a9-377f-a5bcd505884a/49429ea8c35a5a3aa54d0e203ef8b818/Data/RightHandMeshIndexThumb.mesh
+  Assets:
+    - !<FileMesh/35681f97-5ccc-4d99-a21d-6a70c7d41407>
+      PackagePath: ""
+      Info: !<MeshInfo>
+        Triangles: 2224
+        Vertices: 4475
+        Blendshapes:
+          - Thumb_inflate
+          - Thumb_length
+          - Fingers_inflate
+          - Fingers_length
+        Joints: 31
+        AabbSize: {x: 14.959874, y: 6.838975, z: 8.223864}
+  SourceHash: 49429ea8c35a5a3aa54d0e203ef8b818
+  FileHash: 5683bdd53dd0d17b8ab853b662bc8214
+  NativePackageItems:
+    []

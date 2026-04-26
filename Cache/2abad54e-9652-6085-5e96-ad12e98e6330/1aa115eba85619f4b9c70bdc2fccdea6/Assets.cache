@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    ae61a3f8-dee5-4347-9405-251aff089a6c: 2abad54e-9652-6085-5e96-ad12e98e6330/1aa115eba85619f4b9c70bdc2fccdea6/Data/Open Sans.png
+  Assets:
+    - !<FileTexture/ae61a3f8-dee5-4347-9405-251aff089a6c>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: 1aa115eba85619f4b9c70bdc2fccdea6
+  FileHash: d4246441eecca62e504a9395ca2a7198
+  NativePackageItems:
+    []

@@ -1,0 +1,47 @@
+- !<AssetImportMetadata/ee5402e1-3cfe-4129-a1d1-e33314c192c0>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> fca2c547-4b8a-4ecb-a3aa-4650849ce2c1
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> fca2c547-4b8a-4ecb-a3aa-4650849ce2c1
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> d4964ad4-5eb7-4f3d-b5a8-e06ce0f3fc98
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/d4964ad4-5eb7-4f3d-b5a8-e06ce0f3fc98>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 68cb5a16-e132-4b8e-bf12-734974119129
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    clickRadius: false
+    worldCamera: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - worldCamera: !<reference.Camera> 00000000-0000-0000-0000-000000000000
+      clickRadius: 0.120000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - // @input Component.Camera worldCamera
+    - // @input float clickRadius = 0.12

@@ -1,0 +1,10 @@
+- !<AssetCache>
+  AssetFiles:
+    84bfd7a2-1162-4da4-ad30-9f4670fce97e: 490b4a66-d950-f410-ce83-f33f749602bb/97f8738fbf1a7faaaf19c89e3858cb7b/Data/Bangers-Regular.ttf
+  Assets:
+    - !<Font/84bfd7a2-1162-4da4-ad30-9f4670fce97e>
+      PackagePath: ""
+  SourceHash: 97f8738fbf1a7faaaf19c89e3858cb7b
+  FileHash: 304f354a11e7649016ee02ac55364720
+  NativePackageItems:
+    []

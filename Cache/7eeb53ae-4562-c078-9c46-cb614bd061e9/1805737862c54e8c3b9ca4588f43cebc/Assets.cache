@@ -1,0 +1,13 @@
+- !<AssetCache>
+  AssetFiles:
+    849e73bb-82d2-4f19-9c97-3fa9073c1510: 7eeb53ae-4562-c078-9c46-cb614bd061e9/1805737862c54e8c3b9ca4588f43cebc/Data/Rochester.png
+  Assets:
+    - !<FileTexture/849e73bb-82d2-4f19-9c97-3fa9073c1510>
+      PackagePath: ""
+      FileInfo: !<FileTextureInfo>
+        Width: 320
+        Height: 320
+  SourceHash: 1805737862c54e8c3b9ca4588f43cebc
+  FileHash: 65a896fe98836289290461c0b88254e8
+  NativePackageItems:
+    []
