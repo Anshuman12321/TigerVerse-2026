@@ -32,6 +32,7 @@
     connectionThickness: false
     dataScale: false
     depthSpacingY: false
+    dragHoldDelaySeconds: false
     nodePrefab: false
     nodeSize: false
     rootRadius: false
@@ -58,6 +59,7 @@
       slabHeight: 0.180000
       slabDepth: 0.650000
       tapMoveThreshold: 0.150000
+      dragHoldDelaySeconds: 0.350000
       collapseSiblingsOnExpand: false
   ScriptTypes:
     -

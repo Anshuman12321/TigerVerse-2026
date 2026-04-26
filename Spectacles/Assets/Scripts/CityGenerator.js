@@ -9,9 +9,10 @@
 //@input float slabHeight = 0.18
 //@input float slabDepth = 0.65
 //@input float tapMoveThreshold = 0.15
+//@input float dragHoldDelaySeconds = 0.35
 //@input bool collapseSiblingsOnExpand = false
 
-var visualizerData = require("./Data/VisualizerData");
+var visualizerData = require("./Data/claude_vizualizer_data");
 var InteractableManipulation = require("SpectaclesInteractionKit.lspkg/Components/Interaction/InteractableManipulation/InteractableManipulation").InteractableManipulation;
 var Interactable = require("SpectaclesInteractionKit.lspkg/Components/Interaction/Interactable/Interactable").Interactable;
 
@@ -25,11 +26,21 @@ var tierConnectionsByParentPath = {};
 var rootPathByNodeId = {};
 var rootConnectionKeys = {};
 var activeConnections = [];
+var nodeInteractionStates = [];
 
 function callIfAvailable(target, methodName, args) {
     if (target && target[methodName]) {
         target[methodName].apply(target, args || []);
     }
+}
+
+function setManipulationDragging(manipulation, enabled) {
+    if (!manipulation) {
+        return;
+    }
+
+    callIfAvailable(manipulation, "setCanTranslate", [enabled]);
+    callIfAvailable(manipulation, "setCanDrag", [enabled]);
 }
 
 function configureNodeManipulation(sceneObject, rootTransform) {
@@ -41,8 +52,7 @@ function configureNodeManipulation(sceneObject, rootTransform) {
 
     if (manipulation) {
         callIfAvailable(manipulation, "setManipulateRoot", [rootTransform]);
-        callIfAvailable(manipulation, "setCanTranslate", [true]);
-        callIfAvailable(manipulation, "setCanDrag", [true]);
+        setManipulationDragging(manipulation, false);
         callIfAvailable(manipulation, "setCanScale", [false]);
         callIfAvailable(manipulation, "setCanRotate", [false]);
     }
@@ -53,6 +63,8 @@ function configureNodeManipulation(sceneObject, rootTransform) {
             configureNodeManipulation(sceneObject.getChild(i), rootTransform);
         }
     }
+
+    return manipulation;
 }
 
 function getNodeId(nodeData) {
@@ -129,6 +141,27 @@ function getNodeScale(nodeData, depth) {
     var slabDepth = script.slabDepth || 0.65;
 
     return new vec3(size * 1.7, size * slabHeight, size * slabDepth);
+}
+
+function getTierRadius(nodes, depth) {
+    var count = nodes.length;
+    var baseRadius = (depth === 1 ? script.rootRadius : script.childRadius) * script.dataScale;
+    var maxNodeFootprint = 0;
+
+    for (var i = 0; i < count; i++) {
+        var nodeScale = getNodeScale(nodes[i], depth);
+        var nodeFootprint = Math.max(nodeScale.x, nodeScale.z);
+        maxNodeFootprint = Math.max(maxNodeFootprint, nodeFootprint);
+    }
+
+    if (count <= 1) {
+        return baseRadius;
+    }
+
+    var minChordSpacing = maxNodeFootprint * 1.35 + 0.35;
+    var requiredRadius = minChordSpacing / (2 * Math.sin(Math.PI / count));
+
+    return Math.max(baseRadius, requiredRadius);
 }
 
 function setVisible(obj, visible) {
@@ -228,7 +261,7 @@ function setNodeText(sceneObject, label, description, fixedScale) {
     configureText(labelTextComponent, formatNodeText(label, description), new vec4(1, 1, 1, 1));
 }
 
-function bindNodeInteraction(sceneObject, nodePath, rootTransform) {
+function bindNodeInteraction(sceneObject, nodePath, rootTransform, manipulation) {
     var interactable = sceneObject.getComponent(Interactable.getTypeName());
 
     if (!interactable) {
@@ -240,24 +273,40 @@ function bindNodeInteraction(sceneObject, nodePath, rootTransform) {
         return;
     }
 
-    (function(path, transform) {
-        var triggerStartPosition = null;
+    (function(path, transform, nodeManipulation) {
+        var interactionState = {
+            manipulation: nodeManipulation,
+            isTriggerActive: false,
+            isDragActive: false,
+            triggerStartPosition: null,
+            triggerStartTime: 0
+        };
+
+        nodeInteractionStates.push(interactionState);
 
         interactable.onTriggerStart.add(function() {
-            triggerStartPosition = transform.getWorldPosition();
+            interactionState.isTriggerActive = true;
+            interactionState.isDragActive = false;
+            interactionState.triggerStartPosition = transform.getWorldPosition();
+            interactionState.triggerStartTime = getTime();
+            setManipulationDragging(nodeManipulation, false);
         });
 
         interactable.onTriggerEnd.add(function() {
             var currentPosition = transform.getWorldPosition();
-            var movedDistance = triggerStartPosition ? triggerStartPosition.distance(currentPosition) : 0;
+            var movedDistance = interactionState.triggerStartPosition ? interactionState.triggerStartPosition.distance(currentPosition) : 0;
+            var wasDragActive = interactionState.isDragActive;
 
-            triggerStartPosition = null;
+            interactionState.isTriggerActive = false;
+            interactionState.isDragActive = false;
+            interactionState.triggerStartPosition = null;
+            setManipulationDragging(nodeManipulation, false);
 
-            if (movedDistance <= (script.tapMoveThreshold || 0.15)) {
+            if (!wasDragActive && movedDistance <= (script.tapMoveThreshold || 0.15)) {
                 onNodeClicked(path);
             }
         });
-    })(nodePath, rootTransform);
+    })(nodePath, rootTransform, manipulation);
 }
 
 function buildInteractiveCity() {
@@ -277,7 +326,7 @@ function buildInteractiveCity() {
     createRootConnectionsFromGlobalEdges(data.edges || []);
 
     print(
-        "Visualizer nodes and connections generated from visualizer_data.json: nodes=" +
+        "Visualizer nodes and connections generated from claude_vizualizer_data.js: nodes=" +
         getSpawnedNodeCount() +
         " connections=" +
         activeConnections.length
@@ -296,11 +345,25 @@ function getSpawnedNodeCount() {
     return count;
 }
 
+function updateNodeInteractionStates() {
+    var holdDelay = script.dragHoldDelaySeconds || 0.35;
+    var now = getTime();
+
+    for (var i = 0; i < nodeInteractionStates.length; i++) {
+        var state = nodeInteractionStates[i];
+
+        if (state.isTriggerActive && !state.isDragActive && now - state.triggerStartTime >= holdDelay) {
+            state.isDragActive = true;
+            setManipulationDragging(state.manipulation, true);
+        }
+    }
+}
+
 function buildTier(tierData, parentPath, depth, centerPosition, visibleAtStart) {
     var nodes = tierData.nodes || [];
     var localPathById = {};
     var count = nodes.length;
-    var radius = (depth === 1 ? script.rootRadius : script.childRadius) * script.dataScale;
+    var radius = getTierRadius(nodes, depth);
 
     if (!childPathsByParent[parentPath]) {
         childPathsByParent[parentPath] = [];
@@ -308,10 +371,6 @@ function buildTier(tierData, parentPath, depth, centerPosition, visibleAtStart) 
 
     if (!tierConnectionsByParentPath[parentPath]) {
         tierConnectionsByParentPath[parentPath] = [];
-    }
-
-    if (count > 8) {
-        radius *= 1 + (count - 8) * 0.08;
     }
 
     for (var i = 0; i < count; i++) {
@@ -365,8 +424,8 @@ function spawnNode(nodeData, nodePath, position, depth, visibleAtStart) {
 
     setNodeText(nodeObject, getNodeLabel(nodeData), getNodeDescription(nodeData), fixedScale);
     setVisible(nodeObject, visibleAtStart);
-    configureNodeManipulation(nodeObject, transform);
-    bindNodeInteraction(nodeObject, nodePath, transform);
+    var manipulation = configureNodeManipulation(nodeObject, transform);
+    bindNodeInteraction(nodeObject, nodePath, transform, manipulation);
 
     spawnedNodes[nodePath] = nodeObject;
     fixedNodeScales[nodePath] = fixedScale;
@@ -559,6 +618,8 @@ function setTierConnectionsVisible(parentPath, visible) {
 }
 
 function updateConnections() {
+    updateNodeInteractionStates();
+
     for (var nodeId in spawnedNodes) {
         if (spawnedNodes.hasOwnProperty(nodeId)) {
             spawnedNodes[nodeId].getTransform().setLocalScale(fixedNodeScales[nodeId]);
