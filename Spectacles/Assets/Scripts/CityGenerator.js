@@ -5,6 +5,9 @@
 //@input float connectionThickness = 0.15
 //@input float flowSpeed = 5.0
 //@input float segmentPauseSeconds = 0.15
+//@input float flowTokenScale = 0.18
+//@input float flowTokenPulseAmount = 0.25
+//@input float flowTokenPulseSpeed = 6.0
 //@input float nodeSize = 1.0
 //@input float depthSpacingY = 8.0
 //@input float rootRadius = 10.0
@@ -36,6 +39,7 @@ var lastNodePositions = {};
 var nodePathById = {};
 var nodePathsById = {};
 var connectionByNodePair = {};
+var routeConnectionByKey = {};
 var activeFlow = null;
 
 function callIfAvailable(target, methodName, args) {
@@ -441,6 +445,7 @@ function buildInteractiveCity() {
 
     buildTier(rootTier, ROOT_PATH, 1, new vec3(0, 0, 0), true);
     createRootConnectionsFromGlobalEdges(data.edges || []);
+    createFlowScenarioConnections();
 
     print(
         "Visualizer nodes and connections generated from claude_vizualizer_data.js: nodes=" +
@@ -687,6 +692,47 @@ function createRootConnection(fromRootPath, toRootPath, connectionType) {
     createConnection(fromRootPath, toRootPath, connectionType, true, null);
 }
 
+function shouldConnectionBeVisible(fromPath, toPath) {
+    return spawnedNodes[fromPath] &&
+        spawnedNodes[toPath] &&
+        spawnedNodes[fromPath].enabled &&
+        spawnedNodes[toPath].enabled;
+}
+
+function createFlowScenarioConnections() {
+    for (var i = 0; i < flowScenarios.length; i++) {
+        createFlowRouteConnections(flowScenarios[i]);
+    }
+}
+
+function createFlowRouteConnections(scenario) {
+    var resolvedPaths = resolveScenarioPaths(scenario);
+
+    if (!resolvedPaths || resolvedPaths.length < 2) {
+        return;
+    }
+
+    for (var i = 0; i < resolvedPaths.length - 1; i++) {
+        var fromPath = resolvedPaths[i];
+        var toPath = resolvedPaths[i + 1];
+        var connection = getFlowConnectionForSegment(fromPath, toPath);
+
+        if (!connection) {
+            var connectionObject = createConnection(
+                fromPath,
+                toPath,
+                "flow_route",
+                shouldConnectionBeVisible(fromPath, toPath),
+                null
+            );
+
+            if (connectionObject) {
+                routeConnectionByKey[getConnectionKey(fromPath, toPath)] = connectionObject;
+            }
+        }
+    }
+}
+
 function createConnection(fromPath, toPath, connectionType, visibleAtStart, childLookup) {
     var nodeA = spawnedNodes[fromPath];
     var nodeB = spawnedNodes[toPath];
@@ -919,6 +965,29 @@ function getFlowTokenPrefab() {
     return script.flowTokenPrefab || script.nodePrefab;
 }
 
+function getFlowTokenBaseScale() {
+    var scale = script.flowTokenScale || 0.18;
+
+    return new vec3(scale, scale, scale);
+}
+
+function applyFlowTokenPulse(flow, elapsed, segmentDuration) {
+    if (!flow || !flow.tokenTransform || !flow.tokenBaseScale) {
+        return;
+    }
+
+    if (elapsed > segmentDuration) {
+        flow.tokenTransform.setLocalScale(flow.tokenBaseScale);
+        return;
+    }
+
+    var pulseAmount = Math.max(script.flowTokenPulseAmount || 0, 0);
+    var pulseSpeed = Math.max(script.flowTokenPulseSpeed || 0, 0);
+    var pulse = 1 + Math.sin(getTime() * pulseSpeed * Math.PI * 2) * pulseAmount;
+
+    flow.tokenTransform.setLocalScale(flow.tokenBaseScale.uniformScale(pulse));
+}
+
 function createFlowToken(scenario) {
     var prefab = getFlowTokenPrefab();
 
@@ -928,7 +997,7 @@ function createFlowToken(scenario) {
 
     var tokenObject = prefab.instantiate(script.getSceneObject());
     tokenObject.name = "FLOW_TOKEN__" + sanitizeName(scenario.id);
-    tokenObject.getTransform().setLocalScale(new vec3(0.18, 0.18, 0.18));
+    tokenObject.getTransform().setLocalScale(getFlowTokenBaseScale());
     setNodeText(tokenObject, scenario.tokenLabel || scenario.name, "", new vec3(1, 1, 1));
     setVisible(tokenObject, true);
 
@@ -961,6 +1030,7 @@ function startFlowScenario(scenario) {
         paths: resolvedPaths,
         tokenObject: tokenObject,
         tokenTransform: tokenObject.getTransform(),
+        tokenBaseScale: getFlowTokenBaseScale(),
         segmentIndex: 0,
         segmentStartTime: getTime(),
         isPlaying: true,
@@ -1041,6 +1111,7 @@ function setActiveFlowPlaying(isPlaying) {
             activeFlow.segmentStartTime = getTime() - (activeFlow.pausedElapsed || 0);
         } else {
             activeFlow.pausedElapsed = getTime() - activeFlow.segmentStartTime;
+            activeFlow.tokenTransform.setLocalScale(activeFlow.tokenBaseScale);
         }
 
         activeFlow.isPlaying = isPlaying;
@@ -1053,6 +1124,10 @@ function updateActiveFlowSegmentHighlight(fromPath, toPath) {
     activeFlow.activeFromPath = fromPath;
     activeFlow.activeToPath = toPath;
     activeFlow.activeConnectionKey = connection ? connection.key : null;
+
+    if (connection && routeConnectionByKey[connection.key]) {
+        setConnectionVisible(connection.sceneObject, true);
+    }
 }
 
 function updateFlowAnimation() {
@@ -1065,6 +1140,7 @@ function updateFlowAnimation() {
         activeFlow.activeFromPath = null;
         activeFlow.activeToPath = null;
         activeFlow.activeConnectionKey = null;
+        activeFlow.tokenTransform.setLocalScale(activeFlow.tokenBaseScale);
         return;
     }
 
@@ -1097,6 +1173,7 @@ function updateFlowAnimation() {
 
     activeFlow.tokenTransform.setWorldPosition(tokenPosition);
     orientFlowTokenAlongSegment(activeFlow.tokenTransform, fromPosition, toPosition);
+    applyFlowTokenPulse(activeFlow, elapsed, segmentDuration);
 
     if (elapsed >= segmentDuration + pauseSeconds) {
         expandFlowArrivalNode(toPath);
@@ -1118,6 +1195,19 @@ function updateFlowNodeHighlights() {
 
             if (isFlowHighlightedNode(nodePath)) {
                 spawnedNodes[nodePath].getTransform().setLocalScale(baseScale.uniformScale(1.25));
+            }
+        }
+    }
+}
+
+function updateRouteConnectionVisibility() {
+    for (var key in routeConnectionByKey) {
+        if (routeConnectionByKey.hasOwnProperty(key)) {
+            var connectionObject = routeConnectionByKey[key];
+            var connection = connectionByNodePair[key];
+
+            if (connection) {
+                setConnectionVisible(connectionObject, shouldConnectionBeVisible(connection.fromPath, connection.toPath));
             }
         }
     }
@@ -1233,6 +1323,7 @@ function updateConnections() {
     }
 
     updateFlowNodeHighlights();
+    updateRouteConnectionVisibility();
 
     for (var i = 0; i < activeConnections.length; i++) {
         updateConnection(activeConnections[i]);

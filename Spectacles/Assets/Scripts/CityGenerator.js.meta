@@ -35,6 +35,9 @@
     dragHoldDelaySeconds: false
     flowSpeed: false
     flowTokenPrefab: false
+    flowTokenPulseAmount: false
+    flowTokenPulseSpeed: false
+    flowTokenScale: false
     nodePrefab: false
     nodeSize: false
     rootRadius: false
@@ -58,6 +61,9 @@
       connectionThickness: 0.150000
       flowSpeed: !<float> 1.000000
       segmentPauseSeconds: 0.150000
+      flowTokenScale: 0.180000
+      flowTokenPulseAmount: 0.250000
+      flowTokenPulseSpeed: !<float> 6.000000
       nodeSize: !<float> 1.000000
       depthSpacingY: !<float> 8.000000
       rootRadius: !<float> 10.000000
