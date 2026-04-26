@@ -1,0 +1,37 @@
+- !<NativePackageDescriptor/dac43737-b836-4651-9a15-9bfc6c422ec0>
+  PackagePath: ""
+  StudioVersion:
+    major: 5
+    minor: 15
+    patch: 4
+    build: 26022322
+    type: Unset
+    buildFlavor: ""
+    timestamp: 0
+    commit: ""
+  Description: "The Frosted Glass Post Effect emulates the process of acid etching or sandblasting which is used to create patterns that distort the light passing through glass. Set the blur factor and size, which define how much the input image is distorted using the frosted glass technique. It is possible to add an opacity mask to the shader."
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  VersionMajor: 1
+  VersionMinor: 0
+  VersionPatch: 0
+  UpdateCheckpoint: 76
+  ExportUid: cc70c728-b64f-43e0-a573-ba2b3608358d
+  ComponentUid: 7cedc1c1-8285-4af3-a804-1182809e52c7
+  PackagePolicy: CanBeUnpackedTransparent
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  Instantiable: !<reference> 00000000-0000-0000-0000-000000000000
+  AssetLibraryDependencyStructure: !<AssetLibraryDependencyStructure>
+    Name: ""
+    AssetId: ""
+    Hash: ""
+    Version:
+      major: 0
+      minor: 0
+      patch: 0
+      build: 0

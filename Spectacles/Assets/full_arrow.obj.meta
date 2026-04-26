@@ -1,0 +1,125 @@
+- !<AssetImportMetadata/39bbe97d-dceb-41e0-bf86-c61156098561>
+  ImportedAssetIds:
+    0edc0b811f1d76e2: !<reference> b314d159-e77b-4543-af09-7bf507362dbf
+    2fe651d50e3f5cdf: !<reference> 8ac3442f-0d73-48a1-b5ee-d67bdee18d00
+    5d54e7032cb4d461: !<reference> 5aa32ca7-be3d-4ded-aacf-7f6eb8a4de16
+    66780cf3a4dcb2b8: !<reference> d87a902e-4910-48ef-a760-a711001d45a4
+    Meshes/Cone: !<reference> 45cb29d2-3dda-413f-af4b-2a08c300de77
+    Meshes/Cylinder: !<reference> e39173fd-1e91-4d8b-bff8-e6e85c9f5d35
+    Scene: !<reference> c8b34b58-5ef8-4896-b2b9-d30a5d63501d
+    a7eaab9c7245bb32: !<reference> 567afc4f-05ce-43fd-8dff-0ba28cdf9a2a
+  ImporterName: ObjImporter
+  PrimaryAsset: !<reference> c8b34b58-5ef8-4896-b2b9-d30a5d63501d
+  PackageType: LegacyPackage
+  LegacyPackagePolicy: CanBeUnpackedTransparent
+  ExtraData:
+    {}
+  AssetDataMap:
+    Scene: !<own> 5d819bc6-7fd8-403f-8fd8-a8f7e89e43f1
+  DependentFiles:
+    []
+  ImporterSettings: !<D3FileImporterSettingsBase>
+    UseLegacyImporter: false
+    WithMaterials: true
+    NamingConvention: ByCategorySanitizeV2
+    PersistentIdGenerationAlgorithm: DescriptorBased
+  CompressionSettings: !<ComplexCompressionSettings>
+    Presets:
+      Preset: !<SingleCompressionSettings>
+        CompressorName: None
+        CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+    ExtensionMappings:
+      mesh: Preset
+    Overrides:
+      {}
+- !<SceneObject/567afc4f-05ce-43fd-7200-f45d732065d5>
+  PrefabRemaps:
+    []
+  Name: Cone
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 5aa32ca7-be3d-4ded-5530-8091475b21e9
+- !<RenderMeshVisual/5aa32ca7-be3d-4ded-5530-8091475b21e9>
+  PrefabRemaps:
+    []
+  Name: component_1
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    []
+  Mesh: !<reference> 45cb29d2-3dda-413f-af4b-2a08c300de77
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
+- !<ObjectPrefabAssetData/5d819bc6-7fd8-403f-8fd8-a8f7e89e43f1>
+  Prototype: !<ObjectOwner/5355f9f0-ba36-4381-b7c5-f189d040ef6b>
+    PackagePath: ""
+    objects:
+      - !<own> d87a902e-4910-48ef-589f-58eeffe2ba5b
+- !<RenderMeshVisual/8ac3442f-0d73-48a1-4a11-2984211e72ff>
+  PrefabRemaps:
+    []
+  Name: component_0
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    []
+  Mesh: !<reference> e39173fd-1e91-4d8b-bff8-e6e85c9f5d35
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
+- !<SceneObject/b314d159-e77b-4543-50f6-840af8c9d240>
+  PrefabRemaps:
+    []
+  Name: Cylinder
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 8ac3442f-0d73-48a1-4a11-2984211e72ff
+- !<SceneObject/d87a902e-4910-48ef-589f-58eeffe2ba5b>
+  PrefabRemaps:
+    []
+  Name: full_arrow
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    - !<own> b314d159-e77b-4543-50f6-840af8c9d240
+    - !<own> 567afc4f-05ce-43fd-7200-f45d732065d5
+  Components:
+    []

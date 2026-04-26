@@ -59,10 +59,10 @@
   Shape: !<Box>
     FitVisual: true
     Size: {x: 15.000000, y: 15.000000, z: 15.000000}
-  Matter: !<reference> 00000000-0000-0000-0000-000000000000
-  Filter: !<reference> 00000000-0000-0000-0000-000000000000
-  OverlapFilter: !<reference> 00000000-0000-0000-0000-000000000000
-  WorldSettings: !<reference> 00000000-0000-0000-0000-000000000000
+  Matter: !<reference> 74ad0920-7065-4563-9910-bb6541e49b37
+  Filter: !<reference> 53805017-72e3-4d76-b326-e4783a7296e8
+  OverlapFilter: !<reference> 53805017-72e3-4d76-b326-e4783a7296e8
+  WorldSettings: !<reference> 7048ca9b-d946-440b-8fb4-c4a77137f7f6
   EnableSmoothing: false
   PositionTension: 30.000000
   RotationTension: 30.000000

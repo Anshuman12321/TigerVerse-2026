@@ -1,0 +1,37 @@
+- !<NativePackageDescriptor/5b471180-471f-4453-98e9-ac3f8174f81b>
+  PackagePath: ""
+  StudioVersion:
+    major: 5
+    minor: 15
+    patch: 0
+    build: 25101318
+    type: Unset
+    buildFlavor: ""
+    timestamp: 0
+    commit: ""
+  Description: "Refraction Material This material is a good starting point for glass or any transparent objects with thickness. Packed with easy control of refraction index, chromatic- aberration and fresnel. You can also achieve a faceted look by one click."
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  VersionMajor: 1
+  VersionMinor: 0
+  VersionPatch: 0
+  UpdateCheckpoint: 76
+  ExportUid: b1d0ab1f-c53b-4c0a-a97d-0dee970ff6e4
+  ComponentUid: 2fec2c8e-76b0-4fb4-a6c3-c28ab1f7e5a7
+  PackagePolicy: CanBeUnpackedTransparent
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  Instantiable: !<reference> 00000000-0000-0000-0000-000000000000
+  AssetLibraryDependencyStructure: !<AssetLibraryDependencyStructure>
+    Name: ""
+    AssetId: ""
+    Hash: ""
+    Version:
+      major: 0
+      minor: 0
+      patch: 0
+      build: 0
