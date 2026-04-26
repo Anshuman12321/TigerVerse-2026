@@ -1,0 +1,518 @@
+{
+  "schema_version": "positioned-scene-v1",
+  "nodes": [
+    {
+      "id": "backend_http_ws_api",
+      "title": "HTTP and WebSocket API",
+      "description": "Exposes /scribe-token for ElevenLabs realtime STT authorization and /ws for multiplexed transcript, text, audio, tool, widget, and done messages.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "id": "backend_llm_pipeline",
+      "title": "Gemini Reasoning and Tool Loop",
+      "description": "Maintains conversation history, streams Gemini 2.5 Flash responses, executes manual function calls for up to five rounds, and feeds tool responses back into the model.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 10.0
+      }
+    },
+    {
+      "id": "backend_streaming_text_tts",
+      "title": "Text Streaming and ElevenLabs TTS",
+      "description": "Streams Gemini text chunks to the frontend, chunks complete sentences to ElevenLabs TTS over WebSocket, and forwards base64 audio chunks back to the client.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "id": "backend_transcript_filter",
+      "title": "Transcript Noise Filtering",
+      "description": "Rejects empty, very short, and parenthetical STT noise transcripts before invoking the voice pipeline.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 5.0,
+        "z": 10.0
+      }
+    },
+    {
+      "id": "backend_widget_resolver",
+      "title": "Widget Resolver and Formatter",
+      "description": "Chooses one tool result to visualize and converts tool outputs into frontend widget payload schemas.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 10.0,
+        "z": 5.0
+      }
+    },
+    {
+      "id": "frontend_entry_auth_shell",
+      "title": "Application Entry and Auth Shell",
+      "description": "Initializes the React app under AuthProvider and gates the main HUD behind Supabase authentication state.",
+      "shape": "cube",
+      "pos": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "id": "frontend_stt_capture",
+      "title": "ElevenLabs Scribe STT Capture",
+      "description": "Captures microphone input using ElevenLabs Scribe realtime STT with VAD auto-commit, sends committed transcripts to the backend, and displays partial transcript previews.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "id": "frontend_supabase_client",
+      "title": "Supabase Client Configuration",
+      "description": "Creates the Supabase client from Vite environment variables and fails fast if required values are missing.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "id": "frontend_voice_session",
+      "title": "Voice Session Client",
+      "description": "Manages browser-side speech input, WebSocket transport to the backend, streamed assistant text, streamed audio chunks, reconnection behavior, and voice session state.",
+      "shape": "cube",
+      "pos": {
+        "x": 5.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "id": "system_backend",
+      "title": "FastAPI Voice Pipeline Backend",
+      "description": "Python 3.12 backend serving STT token and WebSocket endpoints, orchestrating Gemini reasoning, tool execution, streaming TTS, and widget payload resolution.",
+      "shape": "cube",
+      "pos": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "id": "system_frontend",
+      "title": "React HUD Frontend",
+      "description": "Browser-based React 19 and TypeScript frontend that hosts the glassmorphic HUD, voice interaction controls, streamed audio playback, transcript panel, authentication gate, and draggable widgets.",
+      "shape": "cube",
+      "pos": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  ],
+  "arrows": [
+    {
+      "from": "backend_http_ws_api",
+      "to": "backend_llm_pipeline",
+      "type": "invokes",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 10.0
+      }
+    },
+    {
+      "from": "backend_http_ws_api",
+      "to": "backend_transcript_filter",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 10.0
+      }
+    },
+    {
+      "from": "backend_http_ws_api",
+      "to": "system_backend",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "backend_http_ws_api",
+      "to": "system_backend",
+      "type": "invokes",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "frontend_entry_auth_shell",
+      "to": "frontend_supabase_client",
+      "type": "uses",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "frontend_entry_auth_shell",
+      "to": "system_frontend",
+      "type": "uses",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "frontend_stt_capture",
+      "to": "backend_http_ws_api",
+      "type": "calls_http",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "frontend_stt_capture",
+      "to": "system_backend",
+      "type": "calls_http",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "frontend_voice_session",
+      "to": "backend_http_ws_api",
+      "type": "websocket_transport",
+      "start": {
+        "x": 7.0,
+        "y": 5.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "frontend_voice_session",
+      "to": "frontend_stt_capture",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 5.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "frontend_voice_session",
+      "to": "system_backend",
+      "type": "websocket_transport",
+      "start": {
+        "x": 7.0,
+        "y": 5.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "frontend_voice_session",
+      "to": "system_frontend",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 5.0,
+        "z": 5.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_http_ws_api",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_http_ws_api",
+      "type": "invokes",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_llm_pipeline",
+      "type": "invokes",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 10.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_streaming_text_tts",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_transcript_filter",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 10.0
+      }
+    },
+    {
+      "from": "system_backend",
+      "to": "backend_widget_resolver",
+      "type": "contains",
+      "start": {
+        "x": 7.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 10.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "backend_http_ws_api",
+      "type": "calls_http",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "backend_http_ws_api",
+      "type": "websocket_transport",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "frontend_entry_auth_shell",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "frontend_stt_capture",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "frontend_supabase_client",
+      "type": "uses",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": -2.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "frontend_voice_session",
+      "type": "contains",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 5.0,
+        "z": 5.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "system_backend",
+      "type": "calls_http",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "from": "system_frontend",
+      "to": "system_backend",
+      "type": "websocket_transport",
+      "start": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "end": {
+        "x": 3.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  ]
+}

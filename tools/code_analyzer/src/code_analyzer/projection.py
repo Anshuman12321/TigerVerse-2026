@@ -222,16 +222,13 @@ def _spec_node(node: dict[str, Any]) -> dict[str, Any]:
         "shape": "cube",
         "tier": _spec_tier(child_layer) if child_layer else None,
     }
-    if child_layer is None:
-        spec_node["image_url"] = None
-        spec_node["relevant_files"] = node.get("related_files", [])
     return spec_node
 
 
 def _spec_tier_description(layer: dict[str, Any]) -> str:
     depth = int(layer["depth"])
     if depth == 1:
-        return "Root tier (most simplified). Children tiers hold more detail. Only leaf tiers contain edges and relevant_files."
+        return "Root tier (most simplified). Children tiers hold more detail."
     if _is_leaf_tier(layer):
         return f"Leaf tier for {layer['parent_node_id']} details. Edges may point to nodes in other tiers."
     return f"Tier {depth} for {layer['parent_node_id']} details. Children tiers hold more detail."
