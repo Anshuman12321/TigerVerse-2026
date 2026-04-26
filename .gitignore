@@ -218,3 +218,14 @@ __marimo__/
 .streamlit/secrets.toml
 
 Spectacles-Sample/
+Cache/
+
+AGENTS.md
+.codex
+idea.md
+
+.analyzer-output/
+analyze-output/
+analysis-output/
+spec.json
+docs/

@@ -1,0 +1,31 @@
+[project]
+name = "tigerverse-code-analyzer"
+version = "0.1.0"
+description = "Offline agentic codebase analyzer for TigerVerse Spectacles visualizations."
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+ui = [
+    "streamlit>=1.35",
+]
+
+[project.scripts]
+code-analyzer = "code_analyzer.cli:main"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["tools/code_analyzer/src/code_analyzer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tools/code_analyzer/src"]
